@@ -8,11 +8,15 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M0-03
+- Done: S-2 Hermes vs TF TTFT — direct p50 884 ms, Hermes p50 2287 ms, overhead p50 **1385 ms** (FAIL ≤450); ~$0.006; D-20260920-20 adopts R-02 thin FAQ fast-path.
+- Next: After merge mark T-M0-03 done; S1 M0 spikes complete → start **T-M1-01** (or DEV_GUIDE S2: T-M1-01 / T-M1-12).
+- Open questions: exact worker router heuristics for FAQ vs Hermes; whether T-M1-09 can shrink Hermes prompt enough to revisit.
+- Commands to resume: `git switch spike/T-M0-03-hermes-overhead && make ci`
+
 ## 2026-09-20 / T-M0-06
-- Done: S-5 native ASR/TTS/VAD probe; shortlist mlx-whisper-tiny + faster-whisper-base, Piper + kokoro-onnx, Silero; `eval/probe/` 30 utts; D-20260920-19; E2 deferred.
-- Next: After merge mark T-M0-06 done; start **T-M0-03** (Hermes overhead vs TF) — last S1 M0 spike (depends on T-M0-04 done).
-- Open questions: Piper GPL vs Kokoro Apache for distribution; improve WER scoring with digit normalisation.
-- Commands to resume: `git switch spike/T-M0-06-asr-tts-vad && make ci`
+- Done: S-5 native ASR/TTS/VAD shortlist; merged #57; status done.
+- Next: T-M0-03 (started).
 
 ## 2026-09-20 / T-M0-04
 - Done: Spike S-3 — Hermes 0.19.0 → Token Factory; winner **Nemotron-3_5-Lightning** 100%; merged #56; status done.

@@ -54,7 +54,7 @@ The earlier recommendation was to build streaming TTS and barge-in as the projec
 | # | Unknown | Spike |
 |---|---|---|
 | U1 | How a per-call correlation ID reaches Hermes hook kwargs when called through the API server | S-1 — **resolved (D-20260920-04):** metadata/`user`/headers do not reach hooks; use user-message `CALL_CONTEXT` + tool-arg `call_id` |
-| U2 | Per-turn overhead Hermes adds (system prompt size, memory/skills load) on time-to-first-token with a slim profile | S-2 |
+| U2 | Per-turn overhead Hermes adds (system prompt size, memory/skills load) on time-to-first-token with a slim profile | S-2 — **resolved (D-20260920-20):** overhead p50 **1385 ms** (FAIL ≤450 ms); adopt thin FAQ fast-path (R-02) |
 | U3 | Tool-calling reliability of the chosen open-weight LLM through Token Factory + Hermes | S-3 — **resolved (D-20260920-18):** choose `nvidia/Nemotron-3_5-Lightning` (100% / 60 turns); Qwen3-30B alternate |
 | U4 | LiveKit Agents: custom STT/TTS plugin wiring, interruption behaviour, exact parameter names in the installed version | S-4 — **resolved (D-20260920-05):** own Agents worker + stub providers work; §4.2→`TurnHandlingOptions` mapped on 1.8.2; hermes-livekit not adopted |
 | U5 | Candidate ASR/TTS/VAD on Apple Silicon: streaming, licence, unified-memory, RTF, telephony WER | S-5 — **resolved (D-20260920-19):** mlx-whisper-tiny + faster-whisper-base; Piper + kokoro-onnx; Silero VAD |
@@ -349,12 +349,12 @@ flowchart TB
 |---|---|---|
 | Endpointing (silence after speech) | 400 ms | Tunable; trades against premature cut-off |
 | ASR finalization after endpoint | 100–150 ms | Needs true streaming or chunk-aligned finalization |
-| Worker → Hermes → first LLM token | 350–450 ms | Hermes overhead (U2) + vLLM TTFT |
+| Worker → Hermes → first LLM token | 350–450 ms *(local vLLM era)* | **S-2 measured (hosted TF):** Hermes−direct overhead p50 **~1.4 s** — too high for every turn → R-02 thin FAQ path (D-20260920-20) |
 | First-sentence accumulation | 150 ms | Sentence/clause chunker; shorter with clause splitting |
-| TTS time-to-first-byte | 150–200 ms | Per candidate model |
+| TTS time-to-first-byte | 150–200 ms | Per candidate model (S-5: Piper ~53 ms p50) |
 | Network + jitter buffer | 100 ms | Browser; more on SIP |
-| **Network / Token Factory TTFT** | **≈ 0.2–0.8 s (hypothesis; measure in S-6)** | Separable from local stages |
-| **Total** | **≈ 1.5–2.3 s (hypothesis)** | Matches re-baselined NFR-01 p50≤1.8s; measure before claiming |
+| **Network / Token Factory TTFT** | **≈ 0.2–0.8 s (hypothesis; measure in S-6)** → **measured direct p50 ~884 ms** (Lightning, S-2) | Separable from local stages; S-6 chat probe on Nano was ~699 ms |
+| **Total** | **≈ 1.5–2.3 s (hypothesis)** | NFR-01 p50≤1.8s needs FAQ fast-path and/or Hermes-only-on-tools (D-20260920-20) |
 
 
 ## 4. LLD — Detailed Technical Design
@@ -1267,7 +1267,7 @@ Each spike ends with a one-paragraph result appended to the relevant ADR and a g
 | Spike | Question | Exit criterion | Fallback |
 |---|---|---|---|
 | S-1 | Can a call/turn ID reach Hermes hook kwargs via the API server? | **Done (D-20260920-04):** no for `user`/headers; yes for user-message `CALL_CONTEXT` + tool-arg `call_id` | `CALL_CONTEXT` in user message + `call_id` tool arg (confirmed) |
-| S-2 | Hermes overhead per turn with a slim profile on the chosen LLM | Measured `brain_ttft` p50/p95 for 50 turns; ≤ 450 ms p50 budget | Trim skills/system prompt, enable prefix caching; last resort: thin FAQ fast-path (R-02) |
+| S-2 | Hermes overhead per turn with a slim profile on the chosen LLM | Measured `brain_ttft` p50/p95 for 50 turns; ≤ 450 ms p50 budget | **Done (D-20260920-20):** overhead p50 1385 ms FAIL → R-02 thin FAQ fast-path |
 | S-3 | Tool-call reliability of 2–3 candidate LLMs via Token Factory + Hermes | ≥ 95% valid tool calls on 60 scripted turns; parser flags recorded | **Done (D-20260920-18):** Lightning 100%, Qwen 100%, Nano 98.3%; choose Lightning |
 | S-4 | LiveKit Agents wiring with custom STT/TTS/LLM adapters; interruption behaviour; compare with `hermes-livekit` | **Done (D-20260920-05):** browser/headless call works with stubs on Agents 1.8.2; §4.2 mapped; own worker confirmed; hermes-livekit not adopted | Pipecat pipeline (same provider interfaces) — fallback only |
 | S-5 | ASR/TTS/VAD on Apple Silicon: streaming, licences, unified-memory, RTF, WER on C0/C1 | Shortlist of 2 ASR + 2 TTS + VAD with measured memory | **Done (D-20260920-19):** see shortlist; VAD-segmented Whisper |

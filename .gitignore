@@ -50,3 +50,5 @@ spikes/**/livekit-agents-src/
 spikes/**/.model_cache/
 spikes/**/:memory:
 spikes/**/*.ses
+
+spikes/T-M0-03/.venv
