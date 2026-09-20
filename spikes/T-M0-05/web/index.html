@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CallScope spike T-M0-05</title>
+  <style>
+    :root {
+      --bg: #0f1419;
+      --fg: #e7ecf1;
+      --muted: #8b98a5;
+      --accent: #3d9a6a;
+      --warn: #c47a2a;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: "IBM Plex Sans", "Segoe UI", sans-serif;
+      background:
+        radial-gradient(1200px 600px at 10% -10%, #1a2a22 0%, transparent 55%),
+        radial-gradient(900px 500px at 100% 0%, #1a2230 0%, transparent 50%),
+        var(--bg);
+      color: var(--fg);
+      display: grid;
+      place-items: center;
+      padding: 1.5rem;
+    }
+    main {
+      width: min(420px, 100%);
+    }
+    h1 {
+      font-family: "IBM Plex Serif", Georgia, serif;
+      font-weight: 600;
+      font-size: 1.6rem;
+      margin: 0 0 0.35rem;
+      letter-spacing: -0.02em;
+    }
+    p.lead { color: var(--muted); margin: 0 0 1.25rem; line-height: 1.45; }
+    label { display: block; font-size: 0.75rem; color: var(--muted); margin: 0.75rem 0 0.25rem; }
+    input, textarea {
+      width: 100%;
+      background: #171d24;
+      border: 1px solid #2a3440;
+      color: var(--fg);
+      border-radius: 6px;
+      padding: 0.55rem 0.65rem;
+      font: inherit;
+    }
+    textarea { min-height: 4.5rem; resize: vertical; }
+    .row { display: flex; gap: 0.6rem; margin-top: 1rem; }
+    button {
+      flex: 1;
+      border: 0;
+      border-radius: 6px;
+      padding: 0.7rem 0.9rem;
+      font: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+    #join { background: var(--accent); color: #04140c; }
+    #leave { background: #2a3440; color: var(--fg); }
+    button:disabled { opacity: 0.45; cursor: not-allowed; }
+    #status {
+      margin-top: 1rem;
+      padding: 0.75rem;
+      border-radius: 6px;
+      background: #171d24;
+      border: 1px solid #2a3440;
+      font-size: 0.85rem;
+      color: var(--muted);
+      white-space: pre-wrap;
+      min-height: 3.5rem;
+    }
+    #status.live { color: var(--accent); border-color: #2f5a44; }
+    #status.warn { color: var(--warn); }
+    audio { width: 100%; margin-top: 0.75rem; }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>CallScope</h1>
+    <p class="lead">Spike T-M0-05 — browser ↔ LiveKit ↔ stub agent. Paste a token from <code>mint_token.py</code>.</p>
+
+    <label for="url">LiveKit URL</label>
+    <input id="url" value="ws://127.0.0.1:7880" />
+
+    <label for="token">Access token</label>
+    <textarea id="token" placeholder="Paste JWT from scripts/mint_token.py"></textarea>
+
+    <div class="row">
+      <button id="join" type="button">Join call</button>
+      <button id="leave" type="button" disabled>Leave</button>
+    </div>
+
+    <div id="status">Idle — grant mic when prompted.</div>
+    <audio id="remote" autoplay playsinline></audio>
+  </main>
+
+  <script type="module">
+    import { Room, RoomEvent, Track, createLocalTracks } from "https://cdn.jsdelivr.net/npm/livekit-client@2.15.6/+esm";
+
+    const statusEl = document.getElementById("status");
+    const joinBtn = document.getElementById("join");
+    const leaveBtn = document.getElementById("leave");
+    const remoteAudio = document.getElementById("remote");
+
+    let room = null;
+
+    function setStatus(msg, kind = "") {
+      statusEl.textContent = msg;
+      statusEl.className = kind;
+    }
+
+    joinBtn.addEventListener("click", async () => {
+      const url = document.getElementById("url").value.trim();
+      const token = document.getElementById("token").value.trim();
+      if (!url || !token) {
+        setStatus("URL and token are required.", "warn");
+        return;
+      }
+      joinBtn.disabled = true;
+      setStatus("Connecting…");
+
+      try {
+        room = new Room({ adaptiveStream: true, dynacast: true });
+        room.on(RoomEvent.TrackSubscribed, (track) => {
+          if (track.kind === Track.Kind.Audio) {
+            track.attach(remoteAudio);
+            setStatus("Connected — agent audio attached. Speak to trigger stub STT.", "live");
+          }
+        });
+        room.on(RoomEvent.Disconnected, () => {
+          setStatus("Disconnected.");
+          joinBtn.disabled = false;
+          leaveBtn.disabled = true;
+        });
+        room.on(RoomEvent.ParticipantConnected, (p) => {
+          setStatus(`Participant joined: ${p.identity}`, "live");
+        });
+
+        await room.connect(url, token);
+        const tracks = await createLocalTracks({
+          audio: {
+            echoCancellation: true,
+            noiseSuppression: true,
+            autoGainControl: true,
+          },
+          video: false,
+        });
+        for (const t of tracks) {
+          await room.localParticipant.publishTrack(t);
+        }
+        leaveBtn.disabled = false;
+        setStatus(`In room ${room.name} as ${room.localParticipant.identity}. Waiting for agent…`, "live");
+      } catch (err) {
+        console.error(err);
+        setStatus(`Join failed: ${err}`, "warn");
+        joinBtn.disabled = false;
+      }
+    });
+
+    leaveBtn.addEventListener("click", async () => {
+      if (room) {
+        await room.disconnect();
+        room = null;
+      }
+      joinBtn.disabled = false;
+      leaveBtn.disabled = true;
+      setStatus("Left call.");
+    });
+  </script>
+</body>
+</html>

@@ -24,6 +24,15 @@ ADR-009 Two-node, on-demand GPU, Compose | ADR-010 Security posture | ADR-011 Go
 ADR-012 SIP is a stretch | ADR-013 Streamlit review console
 
 ## Entries
+### D-20260920-05 - S-4: Keep own LiveKit Agents worker; do not adopt hermes-livekit
+- Date / Task: 2026-09-20 / T-M0-05
+- Context: Spike S-4 (U4). Installed `livekit-agents[silero]==1.8.2`, `livekit==1.1.18`, `livekit-api==1.2.1`; ran `livekit/livekit-server:v1.9.1 --dev`. Minimal AgentServer worker with EchoSTT (`StreamAdapter`+Silero), CannedLLM, SineTTS under `spikes/T-M0-05/`. Headless smoke `SMOKE_OK agent_audio_subscribed` on room `callscope-spike-2` after adding `RoomAgentDispatch` to caller tokens. Reviewed `kortexa-ai/hermes-livekit` 0.4.0 @ `640812f` (MIT; requires Hermes ≥0.20.0 not on PyPI; not LiveKit Agents-based). Config mapping in `spikes/T-M0-05/results/config_mapping.md`.
+- Decision: **Confirm ADR-002** — assemble the realtime loop with **our** LiveKit Agents worker + provider adapters. **Do not adopt** `hermes-livekit` for the public/demo path. Map design §4.2 keys onto `TurnHandlingOptions` / Silero `VAD.load` / `aec_warmup_duration` (seconds). Pipecat remains the documented fallback only if Agents wiring regresses.
+- Alternatives considered: adopt hermes-livekit (rejected: Hermes 0.20+ unavailable, weak FR-06 stage events, couples media to Hermes); Pipecat now (rejected: unnecessary — Agents stubs work); custom aiortc (rejected: more ownership than needed).
+- Consequences: T-M1-10 implements the real worker against this mapping; session tokens must include agent dispatch; interruption fidelity work stays in T-M2-05.
+- Design doc impact: ADR-002 status note + U4/S-4 rows marked resolved by S-4 / D-20260920-05; §4.2 mapping footnote.
+- Status: accepted
+
 ### D-20260920-04 - S-1: API-server metadata does not reach Hermes hooks; keep CALL_CONTEXT fallback
 - Date / Task: 2026-09-20 / T-M0-02
 - Context: Spike S-1 (U1). Installed `hermes-agent==0.19.0` (latest on PyPI; design cited 0.20.0 — not published). Python 3.12.13 scratch venv under `spikes/T-M0-02/`. Verified APIs from installed source (`hermes_cli.plugins.PluginContext.register_hook`, `agent.turn_context` `pre_llm_call` kwargs, `gateway.platforms.api_server._handle_chat_completions` / `_write_sse_chat_completion`). Ran correlation matrix + SSE close probe with a mock OpenAI stub; scrubbed evidence in `spikes/T-M0-02/results/`.

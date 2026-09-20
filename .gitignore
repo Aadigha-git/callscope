@@ -40,3 +40,6 @@ spikes/**/hermes_home/
 spikes/**/__pycache__/
 spikes/**/results/hook_kwargs.jsonl
 spikes/**/results/*.log
+# Throwaway clones used during spikes (never vendor)
+spikes/**/hermes-livekit-src/
+spikes/**/livekit-agents-src/
