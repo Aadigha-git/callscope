@@ -22,7 +22,7 @@ def test_schema_sql_parses() -> None:
     assert pglast.parse_sql((ROOT / "db/schema.sql").read_text(encoding="utf-8"))
 
 
-@pytest.mark.integration()
+@pytest.mark.integration
 @pytest.mark.skipif(not os.environ.get("CALLSCOPE_TEST_DATABASE_URL"), reason="no test database")
 def test_schema_applies_to_real_postgres() -> None:
     import psycopg

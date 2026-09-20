@@ -40,8 +40,8 @@ jobs:
           POSTGRES_DB: callscope_test
         ports: ["5432:5432"]
         options: >-
-          --health-cmd "pg_isready -U callscope" --health-interval 5s
-          --health-timeout 3s --health-retries 10
+          --health-cmd "pg_isready -U callscope -d callscope_test"
+          --health-interval 5s --health-timeout 3s --health-retries 10
     env:
       CALLSCOPE_ENV: test
       CALLSCOPE_TEST_DATABASE_URL: postgresql://callscope:ci_only_password@localhost:5432/callscope_test
@@ -59,6 +59,9 @@ jobs:
 
   security:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
     steps:
       - uses: actions/checkout@v4
         with: { fetch-depth: 0 }
@@ -68,7 +71,13 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with: { python-version: "3.11" }
       - run: uv sync --extra dev
-      - run: uv run pip-audit --strict --skip-editable
+      # Audit locked third-party deps. Do not combine --strict with --skip-editable:
+      # pip-audit treats skipped editables as fatal under --strict (verified in
+      # pip_audit._cli for the installed version). Export omits the local project.
+      - name: Audit locked dependencies
+        run: |
+          uv export --frozen --no-emit-project --extra dev -o /tmp/requirements-audit.txt
+          uv run pip-audit -r /tmp/requirements-audit.txt --strict --disable-pip
 
   artifacts-gate:
     if: github.event_name == 'pull_request'

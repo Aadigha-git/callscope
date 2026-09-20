@@ -6,7 +6,7 @@
 
 | Milestone | Done | In flight | Total | Est. hours (remaining) |
 |---|---|---|---|---|
-| M0 Setup and spikes | 0 | 0 | 7 | 43 |
+| M0 Setup and spikes | 0 | 1 | 7 | 43 |
 | M1 Walking skeleton | 0 | 0 | 11 | 106 |
 | M2 Receptionist behaviour | 0 | 0 | 6 | 58 |
 | M3 Eval core | 0 | 0 | 8 | 92 |
@@ -20,7 +20,7 @@
 
 | ID | Title | Est (h) | Status |
 |---|---|---|---|
-| T-M0-01 | Engineering environment and repository bootstrap | 4 | ready |
+| T-M0-01 | Engineering environment and repository bootstrap | 4 | in_review |
 | T-M0-02 | Spike S-1: can a call/turn ID reach Hermes hooks via the API server? | 4 | ready |
 | T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | 8 | backlog |
 | T-M0-07 | Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles | 6 | backlog |
@@ -31,7 +31,7 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M0-01 | Engineering environment and repository bootstrap | NFR-05, NFR-12 |  | 4 | BAG | ready | S1 | #1 |
+| T-M0-01 | Engineering environment and repository bootstrap | NFR-05, NFR-12 |  | 4 | BAG | in_review | S1 | #1 |
 | T-M0-02 | Spike S-1: can a call/turn ID reach Hermes hooks via the API server? | FR-02, NFR-08 | T-M0-01 | 4 | BAG | ready | S1 | #2 |
 | T-M0-03 | Spike S-2: Hermes per-turn overhead with a slim profile | NFR-01 | T-M0-01, T-M0-04 | 5 | BAG | backlog |  | #3 |
 | T-M0-04 | Spike S-3: LLM shortlist tool-call reliability via vLLM + Hermes | FR-02, FR-05 | T-M0-01, T-M0-07 | 8 | BAG | backlog |  | #4 |

@@ -100,14 +100,17 @@ NFR-01 targets). `docker-compose.local.yml` runs Prometheus + Grafana locally; t
 and real scrape targets arrive in T-M1-11.
 
 ### 2.10 4.1 done-when checklist
-- [ ] `make setup && make ci` green on a clean clone; pre-commit installed
+- [x] `make setup && make ci` green on a clean clone; pre-commit installed
 - [ ] GitHub repo, branch protection, squash-only, secret scanning + push protection active
 - [ ] CI green on a trivial PR (this also unlocks the required-check names)
-- [ ] Labels, milestones, 46 issues, Project board exist; `tasks.yaml` has issue numbers
-- [ ] `docs/design/` contains the design doc (.md and .docx); Cursor rules load
-- [ ] Environments `staging`/`demo` created; secrets placeholders documented
+- [x] Labels, milestones, 46 issues, Project board exist; `tasks.yaml` has issue numbers
+- [x] `docs/design/` contains the design doc (.md and .docx); Cursor rules load
+- [x] Environments `staging`/`demo` created; secrets placeholders documented
 - [ ] `T-M0-01` set to done through the normal PR flow
 
+Note: branch protection is already configured on `main`. Re-check after the first green PR.
+Secret scanning may need enabling in Settings on free private repos (API can return 422).
+Project board: ensure Status field values exist and issues are added.
 ## 3. Step 4.2 - implementing features
 
 ### 3.1 Task template (every task in `backlog/tasks.yaml`)
