@@ -1,0 +1,217 @@
+{
+  "n": 30,
+  "voice": "Albert (macOS say \u2014 synthetic system TTS, not a personal recording)",
+  "c1": "band 300-3400 Hz, 8 kHz \u03bc-law round-trip, resampled to 16 kHz",
+  "utterances": [
+    {
+      "id": "u01",
+      "text": "What are your hours of operation?",
+      "c0": "eval/probe/audio/c0/u01.wav",
+      "c1": "eval/probe/audio/c1/u01.wav",
+      "duration_c0_s": 2.95
+    },
+    {
+      "id": "u02",
+      "text": "Do you serve Lakeside County?",
+      "c0": "eval/probe/audio/c0/u02.wav",
+      "c1": "eval/probe/audio/c1/u02.wav",
+      "duration_c0_s": 2.376
+    },
+    {
+      "id": "u03",
+      "text": "How much is a standard visit?",
+      "c0": "eval/probe/audio/c0/u03.wav",
+      "c1": "eval/probe/audio/c1/u03.wav",
+      "duration_c0_s": 2.479
+    },
+    {
+      "id": "u04",
+      "text": "I'd like to book a plumbing appointment.",
+      "c0": "eval/probe/audio/c0/u04.wav",
+      "c1": "eval/probe/audio/c1/u04.wav",
+      "duration_c0_s": 3.066
+    },
+    {
+      "id": "u05",
+      "text": "Is Tuesday September twenty ninth available?",
+      "c0": "eval/probe/audio/c0/u05.wav",
+      "c1": "eval/probe/audio/c1/u05.wav",
+      "duration_c0_s": 3.74
+    },
+    {
+      "id": "u06",
+      "text": "My phone number is five five five zero one zero zero one zero zero.",
+      "c0": "eval/probe/audio/c0/u06.wav",
+      "c1": "eval/probe/audio/c1/u06.wav",
+      "duration_c0_s": 5.772
+    },
+    {
+      "id": "u07",
+      "text": "Please call Alex Rivera back at five five five zero one zero zero two zero zero.",
+      "c0": "eval/probe/audio/c0/u07.wav",
+      "c1": "eval/probe/audio/c1/u07.wav",
+      "duration_c0_s": 7.289
+    },
+    {
+      "id": "u08",
+      "text": "Confirmation code L H S one zero zero one.",
+      "c0": "eval/probe/audio/c0/u08.wav",
+      "c1": "eval/probe/audio/c1/u08.wav",
+      "duration_c0_s": 4.184
+    },
+    {
+      "id": "u09",
+      "text": "Reschedule to October first at eleven thirty.",
+      "c0": "eval/probe/audio/c0/u09.wav",
+      "c1": "eval/probe/audio/c1/u09.wav",
+      "duration_c0_s": 4.169
+    },
+    {
+      "id": "u10",
+      "text": "Cancel my appointment confirmation L H S two zero zero one.",
+      "c0": "eval/probe/audio/c0/u10.wav",
+      "c1": "eval/probe/audio/c1/u10.wav",
+      "duration_c0_s": 5.515
+    },
+    {
+      "id": "u11",
+      "text": "The address is one two three Maple Street.",
+      "c0": "eval/probe/audio/c0/u11.wav",
+      "c1": "eval/probe/audio/c1/u11.wav",
+      "duration_c0_s": 3.292
+    },
+    {
+      "id": "u12",
+      "text": "I need an H V A C tune-up quote.",
+      "c0": "eval/probe/audio/c0/u12.wav",
+      "c1": "eval/probe/audio/c1/u12.wav",
+      "duration_c0_s": 3.147
+    },
+    {
+      "id": "u13",
+      "text": "Are you open on Saturdays?",
+      "c0": "eval/probe/audio/c0/u13.wav",
+      "c1": "eval/probe/audio/c1/u13.wav",
+      "duration_c0_s": 2.381
+    },
+    {
+      "id": "u14",
+      "text": "Book electrical for October second at three P M.",
+      "c0": "eval/probe/audio/c0/u14.wav",
+      "c1": "eval/probe/audio/c1/u14.wav",
+      "duration_c0_s": 4.505
+    },
+    {
+      "id": "u15",
+      "text": "My name is Jordan Lee.",
+      "c0": "eval/probe/audio/c0/u15.wav",
+      "c1": "eval/probe/audio/c1/u15.wav",
+      "duration_c0_s": 1.871
+    },
+    {
+      "id": "u16",
+      "text": "The callback reason is a remodel quote.",
+      "c0": "eval/probe/audio/c0/u16.wav",
+      "c1": "eval/probe/audio/c1/u16.wav",
+      "duration_c0_s": 3.257
+    },
+    {
+      "id": "u17",
+      "text": "Please transfer me to a human agent.",
+      "c0": "eval/probe/audio/c0/u17.wav",
+      "c1": "eval/probe/audio/c1/u17.wav",
+      "duration_c0_s": 3.132
+    },
+    {
+      "id": "u18",
+      "text": "What is the price for an H V A C tune-up?",
+      "c0": "eval/probe/audio/c0/u18.wav",
+      "c1": "eval/probe/audio/c1/u18.wav",
+      "duration_c0_s": 3.844
+    },
+    {
+      "id": "u19",
+      "text": "Check availability for appliance repair on October third.",
+      "c0": "eval/probe/audio/c0/u19.wav",
+      "c1": "eval/probe/audio/c1/u19.wav",
+      "duration_c0_s": 5.105
+    },
+    {
+      "id": "u20",
+      "text": "Phone five five five zero two zero zero three zero zero.",
+      "c0": "eval/probe/audio/c0/u20.wav",
+      "c1": "eval/probe/audio/c1/u20.wav",
+      "duration_c0_s": 4.929
+    },
+    {
+      "id": "u21",
+      "text": "Confirm booking for Sam Patel on October second.",
+      "c0": "eval/probe/audio/c0/u21.wav",
+      "c1": "eval/probe/audio/c1/u21.wav",
+      "duration_c0_s": 4.3
+    },
+    {
+      "id": "u22",
+      "text": "We are at four five six Oak Avenue unit B.",
+      "c0": "eval/probe/audio/c0/u22.wav",
+      "c1": "eval/probe/audio/c1/u22.wav",
+      "duration_c0_s": 4.03
+    },
+    {
+      "id": "u23",
+      "text": "The appointment was for nine A M.",
+      "c0": "eval/probe/audio/c0/u23.wav",
+      "c1": "eval/probe/audio/c1/u23.wav",
+      "duration_c0_s": 2.851
+    },
+    {
+      "id": "u24",
+      "text": "I confirm those details yes.",
+      "c0": "eval/probe/audio/c0/u24.wav",
+      "c1": "eval/probe/audio/c1/u24.wav",
+      "duration_c0_s": 2.416
+    },
+    {
+      "id": "u25",
+      "text": "How far out do you travel from downtown?",
+      "c0": "eval/probe/audio/c0/u25.wav",
+      "c1": "eval/probe/audio/c1/u25.wav",
+      "duration_c0_s": 3.455
+    },
+    {
+      "id": "u26",
+      "text": "Code L H S one zero zero five please.",
+      "c0": "eval/probe/audio/c0/u26.wav",
+      "c1": "eval/probe/audio/c1/u26.wav",
+      "duration_c0_s": 3.936
+    },
+    {
+      "id": "u27",
+      "text": "Date twenty twenty six dash ten dash zero seven.",
+      "c0": "eval/probe/audio/c0/u27.wav",
+      "c1": "eval/probe/audio/c1/u27.wav",
+      "duration_c0_s": 4.238
+    },
+    {
+      "id": "u28",
+      "text": "Name Casey Ng phone five five five zero one zero zero four zero zero.",
+      "c0": "eval/probe/audio/c0/u28.wav",
+      "c1": "eval/probe/audio/c1/u28.wav",
+      "duration_c0_s": 6.248
+    },
+    {
+      "id": "u29",
+      "text": "Is downtown Lakeside in your service area?",
+      "c0": "eval/probe/audio/c0/u29.wav",
+      "c1": "eval/probe/audio/c1/u29.wav",
+      "duration_c0_s": 3.531
+    },
+    {
+      "id": "u30",
+      "text": "Take a callback for Pat Caller about plumbing.",
+      "c0": "eval/probe/audio/c0/u30.wav",
+      "c1": "eval/probe/audio/c1/u30.wav",
+      "duration_c0_s": 3.82
+    }
+  ]
+}

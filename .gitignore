@@ -23,7 +23,10 @@ recordings/
 *.wav
 *.flac
 *.mp3
-*.ogg
+!eval/probe/**/*.wav
+!eval/probe/**/*.flac
+!eval/probe/**/*.mp3
+spikes/**/.model_cache/*.ogg
 *.onnx
 *.safetensors
 *.gguf
@@ -44,3 +47,6 @@ spikes/**/results/*.log
 # Throwaway clones used during spikes (never vendor)
 spikes/**/hermes-livekit-src/
 spikes/**/livekit-agents-src/
+spikes/**/.model_cache/
+spikes/**/:memory:
+spikes/**/*.ses
