@@ -1,0 +1,84 @@
+{
+  "spike": "T-M0-07",
+  "started_utc": "2026-09-20T21:38:06Z",
+  "samples": 100,
+  "network": [
+    {
+      "host": "api.tokenfactory.nebius.com",
+      "port": 443,
+      "kind": "https",
+      "tcp_connect": {
+        "n": 100,
+        "p50_ms": 191.01,
+        "p95_ms": 205.04,
+        "mean_ms": 193.37,
+        "min_ms": 185.19,
+        "max_ms": 223.97,
+        "errors": 0
+      },
+      "https_ttfb": {
+        "n": 20,
+        "p50_ms": 763.73,
+        "p95_ms": 900.13,
+        "mean_ms": 781.11,
+        "min_ms": 746.83,
+        "max_ms": 933.19,
+        "errors": 0
+      },
+      "region": "eu-north1"
+    },
+    {
+      "host": "api.tokenfactory.eu-west1.nebius.com",
+      "port": 443,
+      "kind": "https",
+      "tcp_connect": {
+        "n": 100,
+        "p50_ms": 150.67,
+        "p95_ms": 167.17,
+        "mean_ms": 154.2,
+        "min_ms": 145.73,
+        "max_ms": 220.1,
+        "errors": 0
+      },
+      "https_ttfb": {
+        "n": 20,
+        "p50_ms": 620.92,
+        "p95_ms": 701.26,
+        "mean_ms": 640.5,
+        "min_ms": 581.54,
+        "max_ms": 914.81,
+        "errors": 0
+      },
+      "region": "eu-west1"
+    },
+    {
+      "host": "api.tokenfactory.us-central1.nebius.com",
+      "port": 443,
+      "kind": "https",
+      "tcp_connect": {
+        "n": 100,
+        "p50_ms": 49.79,
+        "p95_ms": 66.1,
+        "mean_ms": 53.1,
+        "min_ms": 45.31,
+        "max_ms": 151.68,
+        "errors": 0
+      },
+      "https_ttfb": {
+        "n": 20,
+        "p50_ms": 198.64,
+        "p95_ms": 221.52,
+        "mean_ms": 203.02,
+        "min_ms": 186.57,
+        "max_ms": 230.17,
+        "errors": 0
+      },
+      "region": "us-central1"
+    }
+  ],
+  "recommended_region_by_tcp_p50": "us-central1",
+  "chat": {
+    "skipped": true,
+    "reason": "--skip-chat"
+  }
+}

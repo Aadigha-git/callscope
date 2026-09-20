@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M0-07
+- Done: Mac baseline; native livekit 1.13.7; TF regional RTT (us-central1); chat probe 100× Nemotron-3-Nano p50 **699 ms** / p95 **824 ms**, spend ~$0.00022; D-20260920-17 complete.
+- Next: `make status T=T-M0-07 S=in_review`, open PR, then T-M0-04 or T-M0-06.
+- Open questions / blockers: Docker still holds :7880; prefer us-central1-hosted models in T-M0-04 when possible.
+- Commands to resume: `git switch spike/T-M0-07-mac-sizing-tf && make ci`
+
 ## 2026-09-20 / chore/rescope-local-mac
 - Done: Documentation/backlog rescope from public Nebius GPU VM demo → local Apple Silicon Mac +
   Token Factory LLM. Facts in DECISIONS D-20260920-10..16; design v1.1; backlog rewrite (+dropped);
