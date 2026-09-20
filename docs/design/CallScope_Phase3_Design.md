@@ -46,7 +46,7 @@ The earlier recommendation was to build streaming TTS and barge-in as the projec
 | U1 | How a per-call correlation ID reaches Hermes hook kwargs when called through the API server | S-1 — **resolved (D-20260920-04):** metadata/`user`/headers do not reach hooks; use user-message `CALL_CONTEXT` + tool-arg `call_id` |
 | U2 | Per-turn overhead Hermes adds (system prompt size, memory/skills load) on time-to-first-token with a slim profile | S-2 |
 | U3 | Tool-calling reliability of the chosen open-weight LLM through vLLM + Hermes | S-3 |
-| U4 | LiveKit Agents: custom STT/TTS plugin wiring, interruption behaviour, exact parameter names in the installed version | S-4 |
+| U4 | LiveKit Agents: custom STT/TTS plugin wiring, interruption behaviour, exact parameter names in the installed version | S-4 — **resolved (D-20260920-05):** own Agents worker + stub providers work; §4.2→`TurnHandlingOptions` mapped on 1.8.2; hermes-livekit not adopted |
 | U5 | Candidate ASR/TTS models: real streaming support, licence, VRAM, telephony-audio accuracy | S-5 |
 | U6 | GPU sizing and RTT from Los Angeles to the chosen Nebius region | S-6 |
 | U7 | SIP trunk + `livekit-sip` path (stretch) | S-7 |
@@ -394,7 +394,9 @@ stateDiagram-v2
 | `call.max_duration_s` | 240 | Hard cap for public sessions |
 | `call.silence_timeout_s` | 20 | Polite prompt, then end |
 
-(Parameter names of LiveKit Agents in the installed version are confirmed in spike S-4; the config layer maps these keys onto them.)
+(Parameter names of LiveKit Agents confirmed in spike S-4 / D-20260920-05 against
+`livekit-agents==1.8.2`: map §4.2 keys onto `TurnHandlingOptions` /
+`silero.VAD.load` / `aec_warmup_duration` — see `spikes/T-M0-05/results/config_mapping.md`.)
 
 **Provider interfaces** (`callscope/providers/base.py`)
 
@@ -702,8 +704,9 @@ Format: Context → Decision → Alternatives → Consequences. Status of all: *
 
 - **Context:** Hermes v0.20.0 already ships streaming TTS and barge-in (V5); a third-party `hermes-livekit` plugin exists (V6). Self-hosted models and telephony evaluation need our own stage instrumentation.
 - **Decision:** Assemble the loop from LiveKit Agents (VAD/turn/interruption plumbing) with our provider adapters. In spike S-4, also try `hermes-livekit` for comparison; if it exposes the events we need, we may adopt it instead of our worker.
-- **Alternatives:** Hermes-native voice mode only (no self-hosted per-stage evaluation); Pipecat; custom aiortc pipeline.
-- **Consequences:** + no duplicate engineering, WebRTC+SIP in one stack; − dependency on LiveKit Agents API stability (pin versions), some behaviour (interruptions) is framework-defined and must be measured, not assumed.
+- **Status:** Accepted (2026-09-19); S-4 / D-20260920-05 (2026-09-20) **confirmed own worker** — `hermes-livekit` 0.4.0 reviewed and **not adopted** (Hermes ≥0.20.0 unavailable on PyPI; does not use Agents `TurnHandlingOptions`; weak fit for FR-06 stage events). Pipecat remains fallback only.
+- **Alternatives:** Hermes-native voice mode only (no self-hosted per-stage evaluation); Pipecat; custom aiortc pipeline; adopt `hermes-livekit` (rejected after S-4).
+- **Consequences:** + no duplicate engineering, WebRTC+SIP in one stack; − dependency on LiveKit Agents API stability (pin versions), some behaviour (interruptions) is framework-defined and must be measured, not assumed. Session tokens must include `RoomAgentDispatch` for unnamed workers.
 
 ### ADR-003 — Self-hosted open-weight ASR/TTS/LLM behind provider interfaces; selection by benchmark
 
@@ -1180,7 +1183,7 @@ Each spike ends with a one-paragraph result appended to the relevant ADR and a g
 | S-1 | Can a call/turn ID reach Hermes hook kwargs via the API server? | **Done (D-20260920-04):** no for `user`/headers; yes for user-message `CALL_CONTEXT` + tool-arg `call_id` | `CALL_CONTEXT` in user message + `call_id` tool arg (confirmed) |
 | S-2 | Hermes overhead per turn with a slim profile on the chosen LLM | Measured `brain_ttft` p50/p95 for 50 turns; ≤ 450 ms p50 budget | Trim skills/system prompt, enable prefix caching; last resort: thin FAQ fast-path (R-02) |
 | S-3 | Tool-call reliability of 2–3 candidate LLMs via vLLM + Hermes | ≥ 95% valid tool calls on 60 scripted turns; parser flags recorded | Choose next candidate; tighten schemas |
-| S-4 | LiveKit Agents wiring with custom STT/TTS/LLM adapters; interruption behaviour; compare with `hermes-livekit` | Browser call works end to end with stub providers; parameter names mapped; decision recorded (ADR-002 update) | Pipecat pipeline (same provider interfaces) |
+| S-4 | LiveKit Agents wiring with custom STT/TTS/LLM adapters; interruption behaviour; compare with `hermes-livekit` | **Done (D-20260920-05):** browser/headless call works with stubs on Agents 1.8.2; §4.2 mapped; own worker confirmed; hermes-livekit not adopted | Pipecat pipeline (same provider interfaces) — fallback only |
 | S-5 | ASR/TTS shortlist: streaming support, licences, VRAM, WER on C0/C1 for a 30-utterance probe | Shortlist of 2 ASR + 2 TTS with numbers and licence check | Widen shortlist; use chunked pseudo-streaming |
 | S-6 | GPU sizing, model load/warm-up time, RTT from Los Angeles | VRAM table and warm-up minutes measured; region picked | Smaller LLM/quantisation |
 | S-7 (optional, before M6) | SIP trunk path with `livekit-sip` | One inbound test call reaches a stub agent | Drop M6 |

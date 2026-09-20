@@ -1,0 +1,6 @@
+# Pinned at spike time for S-4 (T-M0-05). Re-verify APIs from installed source.
+livekit-agents[silero]==1.8.2
+livekit==1.1.18
+livekit-api==1.2.1
+httpx>=0.28
+numpy>=2.0
