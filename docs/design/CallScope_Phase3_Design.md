@@ -58,7 +58,7 @@ The earlier recommendation was to build streaming TTS and barge-in as the projec
 | U3 | Tool-calling reliability of the chosen open-weight LLM through Token Factory + Hermes | S-3 |
 | U4 | LiveKit Agents: custom STT/TTS plugin wiring, interruption behaviour, exact parameter names in the installed version | S-4 — **resolved (D-20260920-05):** own Agents worker + stub providers work; §4.2→`TurnHandlingOptions` mapped on 1.8.2; hermes-livekit not adopted |
 | U5 | Candidate ASR/TTS/VAD on Apple Silicon: streaming, licence, unified-memory, RTF, telephony WER | S-5 |
-| U6 | Mac unified-memory budget + Token Factory RTT/TTFT from this location | S-6 |
+| U6 | Mac unified-memory budget + Token Factory RTT/TTFT from this location | S-6 — **resolved (D-20260920-17):** baseline + livekit + regional RTT + chat latency |
 | U7 | ~~SIP trunk + `livekit-sip`~~ — **dropped**; telephony realism via C1–C5 only (Future work) | — |
 
 
@@ -1123,18 +1123,21 @@ Process runner: prefer a **Procfile + honcho** (or overmind) invoked by `make de
 | LangSmith / Toloka | Opt-in; fictional scrubbed text only; never audio |
 | Everything else | Default deny for egress from tool execution |
 
-### 9.5 Unified-memory budget (to be filled by S-6 / T-M0-07)
+### 9.5 Unified-memory budget (S-6 / T-M0-07)
 
-Machine baseline (fact-check 2026-09-20): **Apple M5, 16 GB** unified memory, macOS 26.6.2, arm64. Usable for models ≈ **12 GB** after reserving ≥4 GB for OS/browser.
+Machine baseline (measured 2026-09-20, T-M0-07): **Apple M5, 16 GB** unified memory, macOS 26.6.2, arm64. Usable for models ≈ **12 GB** after reserving ≥4 GB for OS/browser. Raw: `spikes/T-M0-07/results/mac_baseline.json`.
 
 | Item | Measured memory | RTF / notes |
 |---|---|---|
-| ASR (candidate) | *TBD S-5/S-6* | Prefer RTF < 1.0 |
-| TTS (candidate) | *TBD* | First-audio latency |
-| VAD (Silero) | *TBD* | |
-| Hermes + worker + APIs | *TBD* | |
-| Optional local LLM fallback | *TBD* | Best-effort; may be too tight on 16 GB with ASR+TTS |
+| ASR (candidate) | *T-M0-06 (S-5)* | Prefer RTF < 1.0; native only (no Docker Metal) |
+| TTS (candidate) | *T-M0-06* | First-audio latency |
+| VAD (Silero) | *T-M0-06* | Already used in Agents spike |
+| Hermes + worker + APIs | *measure in M1* | Native processes |
+| Optional local LLM fallback | *likely deferred on 16 GB* | Token Factory is primary (ADR-014) |
 | Headroom | ≥4 GB reserved | OS + browser + Compose |
+| livekit-server | Homebrew **1.13.7** arm64 | `--dev` OK (verified); use port 17880 if 7880 taken by Docker |
+
+**Token Factory from this Mac (T-M0-07):** network prefer **us-central1** (TCP p50 ≈ 50 ms, HTTPS TTFB p50 ≈ 199 ms) over eu-north1 (TCP p50 ≈ 191 ms). Chat probe on Nemotron-3-Nano via default eu-north1 endpoint: **p50 699 ms / p95 824 ms** (100 tiny non-streaming completions, ~$0.00022). Details: `spikes/T-M0-07/results/SUMMARY.md`.
 
 Training (optional E2 LoRA on whisper-small/base) only if S-5 says feasible; never during a live demo.
 

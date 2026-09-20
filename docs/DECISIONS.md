@@ -28,6 +28,15 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-17 - S-6: Mac baseline, native livekit-server, Token Factory regional RTT
+- Date / Task: 2026-09-20 / T-M0-07
+- Context: Spike S-6 under local-Mac scope. Measured on Apple M5 / 16 GB / macOS 26.6.2 arm64. Installed Homebrew `livekit` 1.13.7 (arm64 bottle). Ran `livekit-server --dev --config-body "port: 17880"` → HTTP 200 (port 7880 was held by Docker Desktop publishing an older LiveKit). Probed Token Factory edges with 100 TCP + 20 HTTPS samples/region (no API key; no chat spend). Raw: `spikes/T-M0-07/results/`.
+- Decision: (1) Size local models to ≈12 GB usable (reserve ≥4 GB). ASR/TTS memory deferred to T-M0-06. (2) **Keep ADR-002** — native livekit-server works on macOS; no FastAPI WebSocket fallback ADR. For demo, prefer native on 7880 or document Docker conflict. (3) Prefer Token Factory **us-central1** for network RTT from this location (TCP p50 ≈ 50 ms vs ≈ 191 ms eu-north1). If the chosen model only exists in eu-north1, accept the higher floor and measure chat TTFT in T-M0-04. (4) Chat probe (100 non-streaming tiny completions) on `nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B` via default `api.tokenfactory.nebius.com`: **p50 699 ms / p95 824 ms**, ~$0.00022 spend, 0 errors (`spikes/T-M0-07/results/tf_chat_ttft.json`).
+- Alternatives considered: Docker-only LiveKit (works but 7880 conflict / no need); skip regional probe (rejected — catalog regions differ).
+- Consequences: design §9.5 updated; start/stop notes in `spikes/T-M0-07/docs/START_STOP.md` (input to T-M6-03). NFR-01 brain budget must include ~0.7 s hosted hop on eu-north1 for this model class.
+- Design doc impact: §9.5 filled; U6 resolved by S-6 / D-20260920-17.
+- Status: accepted
+
 ### D-20260920-16 - Toloka for TEXT human labels (optional stretch); privacy notes
 - Date / Task: 2026-09-20 / chore/rescope-local-mac
 - Context: $100 Toloka credit available. Docs: platform API can drive TEXT labelling pipelines ([Programmatic access](https://platform.toloka.ai/docs/integration/programmatic-access/)); unverified teams are on trial and **cannot start a run** until identity/business verification. Platform does not delete datasets via UI/API in the product itself — deletion is account-level under the Privacy Notice ([Security and data handling](https://platform.toloka.ai/docs/explanation/security-and-data-handling/), [Privacy Notice](https://toloka.ai/legal/privacy-notice)). DPA: delete/return on termination subject to legal retention.

@@ -1,0 +1,28 @@
+{
+  "spike": "T-M0-07",
+  "started_utc": "2026-09-20T21:42:35Z",
+  "samples": 100,
+  "network": [],
+  "recommended_region_by_tcp_p50": null,
+  "chat": {
+    "skipped": false,
+    "model": "nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B",
+    "base_url": "https://api.tokenfactory.nebius.com/v1/",
+    "requested_samples": 100,
+    "completed": 100,
+    "latency_ms": {
+      "n": 100,
+      "p50_ms": 699.47,
+      "p95_ms": 823.68,
+      "mean_ms": 718.76,
+      "min_ms": 677.18,
+      "max_ms": 885.27,
+      "errors": 0
+    },
+    "prompt_tokens": 2100,
+    "completion_tokens": 400,
+    "estimated_spend_usd": 0.000222,
+    "max_usd": 0.25,
+    "note": "Non-streaming end-to-end latency (not true SSE TTFT); good network+queue proxy."
+  }
+}

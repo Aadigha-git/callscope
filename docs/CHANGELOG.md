@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Spike S-6 (T-M0-07): Mac baseline, native livekit-server 1.13.7 verification, Token Factory regional RTT harness under `spikes/T-M0-07/` (D-20260920-17)
 - Local-Mac rescope: ADR-014..017, budget/cassette tasks (T-M1-12/13), LangSmith task (T-M4-06),
   optional E2 task (T-M5-05); `dropped` backlog status; `make demo`/`budget` stubs; `.gitleaks.toml`
 - Engineering environment: CI, backlog tooling, logging/metrics baseline, Cursor rules and prompt library (T-M0-01)

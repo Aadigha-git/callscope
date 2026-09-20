@@ -6,7 +6,7 @@
 
 | Milestone | Done | In flight | Total | Est. hours (remaining) |
 |---|---|---|---|---|
-| M0 Setup and spikes | 3 | 0 | 7 | 34 |
+| M0 Setup and spikes | 3 | 1 | 7 | 34 |
 | M1 Walking skeleton | 0 | 0 | 13 | 116 |
 | M2 Receptionist behaviour | 0 | 0 | 6 | 56 |
 | M3 Eval core | 0 | 0 | 8 | 84 |
@@ -26,7 +26,7 @@
 | T-M0-04 | Spike S-3: LLM shortlist tool-call reliability via Token Factory + Hermes | 10 | backlog |
 | T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | 8 | done |
 | T-M0-06 | Spike S-5: Apple Silicon ASR/TTS/VAD shortlist probe | 10 | backlog |
-| T-M0-07 | Spike S-6: Mac sizing + Token Factory latency | 8 | ready |
+| T-M0-07 | Spike S-6: Mac sizing + Token Factory latency | 8 | in_review |
 
 
 ## M0 Setup and spikes
@@ -39,7 +39,7 @@
 | T-M0-04 | Spike S-3: LLM shortlist tool-call reliability via Token Factory + Hermes | FR-02, FR-05 | T-M0-01, T-M0-07 | 10 | BAG | backlog | S1 | #4 |
 | T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | FR-01, FR-03, FR-04 | T-M0-01 | 8 | BAG | done | S1 | #5 |
 | T-M0-06 | Spike S-5: Apple Silicon ASR/TTS/VAD shortlist probe | FR-05, FR-07 | T-M0-01, T-M0-07 | 10 | BAG | backlog | S1 | #6 |
-| T-M0-07 | Spike S-6: Mac sizing + Token Factory latency | NFR-01, NFR-03, NFR-11 | T-M0-01 | 8 | BAG | ready | S1 | #7 |
+| T-M0-07 | Spike S-6: Mac sizing + Token Factory latency | NFR-01, NFR-03, NFR-11 | T-M0-01 | 8 | BAG | in_review | S1 | #7 |
 
 ## M1 Walking skeleton
 
