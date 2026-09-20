@@ -1,0 +1,31 @@
+# Gitleaks config for CallScope.
+# Extends default rules; ensures Token Factory / LangSmith / Toloka key names are covered
+# when they appear as assignments in tracked files.
+
+title = "callscope"
+
+[[rules]]
+id = "callscope-token-factory-key"
+description = "Nebius Token Factory / Nebius API key assignment"
+regex = '''(?i)(?:TOKEN_FACTORY_API_KEY|NEBIUS_API_KEY)\s*[=:]\s*['\"]?([^\s'\"]{8,})'''
+tags = ["key", "callscope"]
+
+[[rules]]
+id = "callscope-langsmith-key"
+description = "LangSmith API key assignment"
+regex = '''(?i)LANGSMITH_API_KEY\s*[=:]\s*['\"]?([^\s'\"]{8,})'''
+tags = ["key", "callscope"]
+
+[[rules]]
+id = "callscope-toloka-key"
+description = "Toloka API key assignment"
+regex = '''(?i)TOLOKA_API_KEY\s*[=:]\s*['\"]?([^\s'\"]{8,})'''
+tags = ["key", "callscope"]
+
+[allowlist]
+paths = [
+  '''^\.env\.example$''',
+  '''^docs/''',
+  '''^prompts/''',
+  '''^tests/test_logging\.py$''',
+]

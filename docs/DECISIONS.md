@@ -1,7 +1,8 @@
 # Technical decision log
 
 Append-only. Newest first. One entry per decision, spike result, or deviation from the design doc
-(`docs/design/CallScope_Phase3_Design.md`). ADR-001..013 from the design doc are the baseline.
+(`docs/design/CallScope_Phase3_Design.md`). ADR-001..013 from the design doc are the baseline;
+ADR-014..017 added in the local-Mac rescope.
 
 ## Template
 ```
@@ -17,19 +18,108 @@ Append-only. Newest first. One entry per decision, spike result, or deviation fr
 
 ## Baseline ADRs (from the design doc)
 ADR-001 Hermes via API server | ADR-002 LiveKit Agents, no rebuild of streaming TTS/barge-in |
-ADR-003 Self-hosted models, benchmark-driven | ADR-004 Cascaded STT-LLM-TTS |
+ADR-003 Self-hosted models (superseded by ADR-014) | ADR-004 Cascaded STT-LLM-TTS |
 ADR-005 Postgres + event log + object store | ADR-006 Worker is latency source of truth |
 ADR-007 Two eval modes | ADR-008 Synthetic-first data + recorded set |
-ADR-009 Two-node, on-demand GPU, Compose | ADR-010 Security posture | ADR-011 Governance as code |
-ADR-012 SIP is a stretch | ADR-013 Streamlit review console
+ADR-009 Two-node GPU (superseded by ADR-015) | ADR-010 Security posture | ADR-011 Governance as code |
+ADR-012 SIP stretch (dropped) | ADR-013 Streamlit review console |
+ADR-014 Hybrid models + Token Factory | ADR-015 Local-only Mac deployment |
+ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
+
+### D-20260920-16 - Toloka for TEXT human labels (optional stretch); privacy notes
+- Date / Task: 2026-09-20 / chore/rescope-local-mac
+- Context: $100 Toloka credit available. Docs: platform API can drive TEXT labelling pipelines ([Programmatic access](https://platform.toloka.ai/docs/integration/programmatic-access/)); unverified teams are on trial and **cannot start a run** until identity/business verification. Platform does not delete datasets via UI/API in the product itself — deletion is account-level under the Privacy Notice ([Security and data handling](https://platform.toloka.ai/docs/explanation/security-and-data-handling/), [Privacy Notice](https://toloka.ai/legal/privacy-notice)). DPA: delete/return on termination subject to legal retention.
+- Decision: Optional stretch only for ≥50 fictional agent utterances (supported/unsupported) and optional RCA labels on fictional transcripts. **Never upload audio or real personal data.** If verification/minimum spend/terms do not fit, use manual labelling and record that choice.
+- Alternatives considered: skip human labels (weakens judge calibration); upload audio (rejected).
+- Consequences: T-M3-08 accepts Toloka or manual; document choice in DECISIONS when executed.
+- Design doc impact: §8.6 data-flow.
+- Status: accepted
+
+### D-20260920-15 - LangSmith optional tracing (off by default); retention notes
+- Date / Task: 2026-09-20 / chore/rescope-local-mac
+- Context: $100 LangSmith credit. Python SDK supports tracing; OpenTelemetry ingestion to `https://api.smith.langchain.com/otel` (recommend langsmith≥0.4.25) ([OTEL docs](https://docs.langchain.com/langsmith/trace-with-opentelemetry.md)). Trace retention: base **14 days** or extended **400 days**; datasets retain indefinitely ([usage/billing](https://docs.langchain.com/langsmith/usage-and-billing)). Hide/redact inputs via SDK flags or collector.
+- Decision: Optional behind `CALLSCOPE_LANGSMITH_ENABLED` (default off). Trace scrubbed **fictional text only** (brain turns + eval items). Postgres remains SoT (ADR-006). Decide later whether LangSmith datasets/experiments earn a place for judge eval (T-M4-06); if not, document why.
+- Alternatives considered: always-on tracing (unnecessary cost/privacy surface); skip entirely (forfeit credit/learning).
+- Consequences: T-M4-06; scrubber must run first.
+- Design doc impact: §8.6; ADR-017 adjacent.
+- Status: accepted
+
+### D-20260920-14 - Apple Silicon ASR/TTS/VAD candidates (docs/PyPI/GitHub; not yet run on this Mac)
+- Date / Task: 2026-09-20 / chore/rescope-local-mac
+- Context: No CUDA; Docker Desktop cannot use Mac GPU/Metal for containers — ASR/TTS must run natively. Candidates checked from public docs (not installed/benchmarked yet; T-M0-06 runs them):
+  - **ASR:** `mlx-whisper` / Whisper via [mlx-audio](https://github.com/Blaizzy/mlx-audio) (MIT); [parakeet-mlx](https://github.com/senstella/parakeet-mlx) Apache-2.0 (weights often CC-BY-4.0 with attribution); whisper.cpp Metal/Core ML; faster-whisper CPU-only on Mac.
+  - **VAD:** Silero VAD (ONNX/torch CPU) — already used in LiveKit Agents spike.
+  - **TTS:** Kokoro via mlx-audio / [kokoro-mlx](https://pypi.org/project/kokoro-mlx/) (MIT code; Kokoro weights Apache-2.0); kokoro-onnx; Piper (CPU ONNX; GPL-3.0-or-later — licence caution for distribution).
+- Decision: Shortlist by **running** on this Mac in T-M0-06 (RTF, memory, first-audio, WER clean vs C1). Prefer streaming ASR; else VAD-segmented chunking. E2 LoRA only if whisper-small/base fits in remaining RAM via MPS/MLX; else defer (T-M5-05).
+- Alternatives considered: cloud ASR/TTS (rejected: portfolio story); Dockerized GPU ASR (impossible on Mac Desktop).
+- Consequences: T-M0-06 / T-M1-05 / T-M1-06 native servers.
+- Design doc impact: §4.3, §9.5.
+- Status: accepted (pending measurements)
+
+### D-20260920-13 - livekit-server and Hermes on macOS; prefer Token Factory over Ollama
+- Date / Task: 2026-09-20 / chore/rescope-local-mac
+- Context:
+  - LiveKit docs: `brew install livekit` then `livekit-server --dev` ([local self-hosting](https://docs.livekit.io/transport/self-hosting/local/)); Homebrew formula ships arm64 bottles, Apache-2.0 ([formulae.brew.sh/formula/livekit](https://formulae.brew.sh/formula/livekit)). **Not yet executed on this machine** — verify in T-M0-07. Fallback if fail: FastAPI WebSocket audio + own VAD (new ADR + tasks).
+  - Hermes: installs on macOS; custom OpenAI-compatible provider via `hermes model` / `config.yaml` `provider: custom` + `base_url` ([providers docs](https://hermes-agent.nousresearch.com/docs/integrations/providers); [local LLM on Mac](https://hermes-agent.nousresearch.com/docs/guides/local-llm-on-mac) recommends mlx-lm / llama.cpp). Prior design note V7: Ollama stream+tools hang risk → avoid Ollama as primary.
+- Decision: Keep ADR-002; run livekit-server natively. Hermes → Token Factory as custom provider; optional mlx-lm/llama.cpp fallback. Confirm end-to-end in S-6 / S-3.
+- Alternatives considered: Docker-only LiveKit (works but extra networking); Ollama primary (rejected).
+- Consequences: T-M0-07 acceptance includes brew `--dev` proof.
+- Design doc impact: ADR-002 kept; ADR-014/015.
+- Status: accepted (pending S-6 runtime proof)
+
+### D-20260920-12 - Nebius Token Factory API facts, candidate LLMs, $25 budget estimate
+- Date / Task: 2026-09-20 / chore/rescope-local-mac
+- Context: Public docs (no API spend during this rescope):
+  - Base URL: `https://api.tokenfactory.nebius.com/v1/` ([list models example](https://docs.tokenfactory.nebius.com/api-reference/examples/list-of-models)).
+  - Auth: Bearer API key (`NEBIUS_API_KEY` / we will use `TOKEN_FACTORY_API_KEY` in CallScope `.env`).
+  - Catalog: public [`/api/public/models_info`](https://tokenfactory.nebius.com/api/public/models_info) + [model-catalog.md](https://tokenfactory.nebius.com/model-catalog.md) (fetched 2026-09-20).
+  - Tools: OpenAI-compatible function calling documented ([function-calling](https://docs.tokenfactory.nebius.com/ai-models-inference/function-calling.md)); chat completions support `stream` ([API ref](https://docs.tokenfactory.nebius.com/api-reference/inference/create-chat-completion)).
+  - Rate limits: dynamic; headers `x-ratelimit-*`; HTTP 429 + `Retry-After` ([rate-limits](https://docs.tokenfactory.nebius.com/ai-models-inference/rate-limits.md)). Per-model `per_request_limits` appear in verbose `/v1/models` responses (requires key — **not queried** this session).
+  - Speech ASR/TTS: **none** found in the 24-entry public catalog (text2text / image2text / embedding only). Embeddings: e.g. `Qwen/Qwen3-Embedding-8B` @ $0.01/M input.
+- Decision: Use Token Factory for the agent LLM (and a different model for the judge). Candidate **function_calling** text2text models from the public catalog (prices USD per 1M tokens):
+
+  | Model ID | In | Out | Licence (catalog) |
+  |---|---:|---:|---|
+  | nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B | 0.06 | 0.24 | nvidia-open-model-license |
+  | nvidia/Nemotron-3_5-Lightning | 0.06 | 0.24 | OpenMDW v1.1 |
+  | Qwen/Qwen3-30B-A3B-Instruct-2507 | 0.10 | 0.30 | Apache 2.0 |
+  | google/gemma-3-27b-it | 0.10 | 0.30 | Gemma License |
+  | deepseek-ai/DeepSeek-V4-Flash-0731 | 0.14 | 0.28 | MIT |
+  | openai/gpt-oss-120b | 0.15 | 0.60 | Apache 2.0 |
+  | Qwen/Qwen3-235B-A22B-Instruct-2507 | 0.20 | 0.60 | Apache 2.0 |
+
+  **$25 budget sketch (assumption, not a measurement):** ~4k input + 300 output tokens/turn ≈ $0.00049/turn on Qwen3-30B → on the order of **~50k turns** raw, or roughly **hundreds to low thousands of multi-turn receptionist calls** once tools, retries, judge calls, and eval are included. Prefer Nemotron Nano / Qwen3-30B class for cost; keep a $10 reserve (cap $15 default). **Verify tool quality in T-M0-04 before locking.**
+- Alternatives considered: local-only LLM (tight on 16 GB with ASR+TTS); spend without cassettes (rejected).
+- Consequences: ADR-014/016; T-M0-03/04; no speech models from TF.
+- Design doc impact: §4.4, §9, ADR-014.
+- Status: accepted
+
+### D-20260920-11 - Machine facts (Apple M5, 16 GB)
+- Date / Task: 2026-09-20 / chore/rescope-local-mac
+- Context: Ran on this machine: `sysctl -n machdep.cpu.brand_string` → **Apple M5**; `hw.memsize` → 17179869184 (**16 GB**); `sw_vers` → macOS 26.6.2 (25G83); `uname -m` → **arm64**.
+- Decision: Size all local model choices to ≤ ~12 GB working set (reserve ≥4 GB for OS + browser). Concurrency default 1 (NFR-03).
+- Alternatives considered: n/a (hardware fact).
+- Consequences: drives S-5/S-6 memory tables; E2 optional/deferred likely.
+- Design doc impact: §9.5 baseline filled.
+- Status: accepted
+
+### D-20260920-10 - Rescope: local Mac demo + Token Factory LLM (supersedes GPU VM public demo)
+- Date / Task: 2026-09-20 / chore/rescope-local-mac
+- Context: Nebius access is Token Factory inference only (no VM provisioning); no other cloud GPU credits. Program credits: Token Factory $25, LangSmith $100, Toloka $100; Tavily not used.
+- Decision: Apply ADR-014..017; drop public-demo controls; rewrite backlog (T-M6-04 dropped); deliver `make demo` + video + static showcase.
+- Alternatives considered: pause project until GPU credits (rejected); public demo without GPU (infeasible for self-hosted LLM).
+- Consequences: large backlog/design update; old total ~459 h → new ~462 h (excl. dropped); schedule regenerated in DEV_GUIDE §5.
+- Design doc impact: revision changelog; ADRs; §§1–2, 3.6, 4, 8–12.
+- Status: accepted
+
 ### D-20260920-05 - S-4: Keep own LiveKit Agents worker; do not adopt hermes-livekit
 - Date / Task: 2026-09-20 / T-M0-05
 - Context: Spike S-4 (U4). Installed `livekit-agents[silero]==1.8.2`, `livekit==1.1.18`, `livekit-api==1.2.1`; ran `livekit/livekit-server:v1.9.1 --dev`. Minimal AgentServer worker with EchoSTT (`StreamAdapter`+Silero), CannedLLM, SineTTS under `spikes/T-M0-05/`. Headless smoke `SMOKE_OK agent_audio_subscribed` on room `callscope-spike-2` after adding `RoomAgentDispatch` to caller tokens. Reviewed `kortexa-ai/hermes-livekit` 0.4.0 @ `640812f` (MIT; requires Hermes ≥0.20.0 not on PyPI; not LiveKit Agents-based). Config mapping in `spikes/T-M0-05/results/config_mapping.md`.
-- Decision: **Confirm ADR-002** — assemble the realtime loop with **our** LiveKit Agents worker + provider adapters. **Do not adopt** `hermes-livekit` for the public/demo path. Map design §4.2 keys onto `TurnHandlingOptions` / Silero `VAD.load` / `aec_warmup_duration` (seconds). Pipecat remains the documented fallback only if Agents wiring regresses.
+- Decision: **Confirm ADR-002** — assemble the realtime loop with **our** LiveKit Agents worker + provider adapters. **Do not adopt** `hermes-livekit` for the demo path. Map design §4.2 keys onto `TurnHandlingOptions` / Silero `VAD.load` / `aec_warmup_duration` (seconds). Pipecat remains the documented fallback only if Agents wiring regresses.
 - Alternatives considered: adopt hermes-livekit (rejected: Hermes 0.20+ unavailable, weak FR-06 stage events, couples media to Hermes); Pipecat now (rejected: unnecessary — Agents stubs work); custom aiortc (rejected: more ownership than needed).
-- Consequences: T-M1-10 implements the real worker against this mapping; session tokens must include agent dispatch; interruption fidelity work stays in T-M2-05.
+- Consequences: T-M1-10 implements the real worker against this mapping; session tokens must include agent dispatch; interruption fidelity work stays in T-M2-05. Native brew livekit-server re-verified in T-M0-07.
 - Design doc impact: ADR-002 status note + U4/S-4 rows marked resolved by S-4 / D-20260920-05; §4.2 mapping footnote.
 - Status: accepted
 
@@ -67,4 +157,4 @@ ADR-012 SIP is a stretch | ADR-013 Streamlit review console
 - Alternatives considered: shrink estimates to fit 6 weeks (rejected: not credible); drop protected M3-M5 (rejected: it is the portfolio value).
 - Consequences: sprint plan in DEV_GUIDE section 5; milestone dates move; design 12.3 effort sentence updated.
 - Design doc impact: section 12.3 effort sentence only.
-- Status: accepted
+- Status: accepted (hours superseded by D-20260920-10 rescope totals)

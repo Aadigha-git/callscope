@@ -16,6 +16,21 @@ def test_scrub_masks_phone_and_email() -> None:
     assert "[email]" in out
 
 
+def test_scrub_masks_token_factory_and_related_secrets() -> None:
+    # Deliberately fake values — exercise scrub(), not real credentials.
+    out = scrub(
+        "TOKEN_FACTORY_API_KEY=fake-tf-key-for-scrub-test "
+        "LANGSMITH_API_KEY=fake-ls-key-for-scrub-test "
+        "api_key: fake-generic-key-for-scrub-test "
+        "TOLOKA_API_KEY=fake-toloka-key-for-scrub-test"
+    )
+    assert "fake-tf-key-for-scrub-test" not in out
+    assert "fake-ls-key-for-scrub-test" not in out
+    assert "fake-generic-key-for-scrub-test" not in out
+    assert "fake-toloka-key-for-scrub-test" not in out
+    assert out.count("[redacted]") >= 4
+
+
 def test_json_lines_carry_call_id_and_scrub(capsys: pytest.CaptureFixture[str]) -> None:
     configure_logging("INFO", json_output=True)
     log = logging.getLogger("t")

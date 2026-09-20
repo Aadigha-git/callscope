@@ -1,7 +1,7 @@
 # CallScope developer guide (Phase 4)
 
-Covers step 4.1 (engineering environment) and 4.2 (feature implementation workflow).
-Design of record: `docs/design/CallScope_Phase3_Design.md`.
+Covers engineering environment and feature implementation workflow.
+Design of record: `docs/design/CallScope_Phase3_Design.md` (Markdown supersedes any sibling `.docx`).
 
 ## 1. How the pieces fit
 
@@ -11,7 +11,7 @@ Design of record: `docs/design/CallScope_Phase3_Design.md`.
 | Sprint backlog | `sprint:` field + `docs/BACKLOG.md` (generated) + `docs/sprints/Sx-plan.md` | `make sprint` | CI checks BACKLOG.md is current |
 | Code repository | GitHub `main` (protected) | PRs only | branch protection |
 | Pull requests | one per task, template checklist | you | required checks + template |
-| CI/CD pipeline | `.github/workflows/{ci,release,deploy}.yml` | you | required status checks |
+| CI pipeline | `.github/workflows/{ci,release}.yml` | you | required status checks |
 | Technical decision log | `docs/DECISIONS.md` (+ ADRs in design doc) | Cursor per rule 20 | PR template + review prompt |
 | Updated API / schema docs | `docs/api/openapi.yaml`, `db/schema.sql` | with the code | artifact gate + contract tests |
 | Issue tracker | GitHub Issues + Project board + milestones M0-M6 | `make issues` | setup script |
@@ -20,13 +20,13 @@ Design of record: `docs/design/CallScope_Phase3_Design.md`.
 | Build artifact | wheel/sdist via `make build`, release on tag | `release.yml` | tag push |
 | Session continuity | `docs/SESSION_NOTES.md` | session-end prompt | rule 20 |
 
-## 2. Step 4.1 - engineering environment (do these in order)
+## 2. Engineering environment (do these in order)
 
 ### 2.1 Prerequisites
-Python 3.11+, `uv`, Git, GitHub CLI (`gh`), Docker (+ compose plugin), Node 20+ (web client from M1),
-`pre-commit`, optional `gitleaks`, `pandoc`. Cursor with the repo folder as workspace.
-macOS ships GNU Make 3.81; the repo Makefile uses tab-prefixed recipes so `/usr/bin/make` works
-(no need for Homebrew `gmake`).
+Apple Silicon Mac recommended. Python 3.11+, `uv`, Git, GitHub CLI (`gh`), Docker Desktop (+ compose)
+for Postgres/Prometheus/Grafana only, Node 20+ (web client from M1), `pre-commit`, optional
+`gitleaks`, Homebrew (`brew install livekit` when you reach S-6). Cursor with the repo as workspace.
+macOS ships GNU Make 3.81; the repo Makefile uses tab-prefixed recipes so `/usr/bin/make` works.
 
 ### 2.2 Create the repository
 ```bash
@@ -38,12 +38,10 @@ make ci                                           # must be green before anythin
 scripts/setup_github.sh callscope private         # repo, settings, labels, milestones, issues, protection
 ```
 The script: creates the repo and pushes `main`; squash-merge only + auto-delete branches; secret
-scanning + push protection; labels; milestones M0-M6; one issue per task (numbers written back to
-`tasks.yaml`); staging/demo Environments; branch protection. Branch protection requires the CI check
-names to exist, so if that last step fails, open a trivial PR to trigger CI once, then re-run it.
-Create the Project board (`gh project create`), add a Status field (Backlog, Ready, In progress,
-In review, Done) and add all issues. Keep the repo private until the demo is ready; the write-up
-will make it public later.
+scanning + push protection; labels; milestones M0-M6; one issue per task; branch protection.
+**It does not create staging/demo Environments** (local-Mac scope). Create the Project board
+(`gh project create`), add a Status field, add all issues. Keep the repo private until the showcase
+is ready.
 
 ### 2.3 Branching strategy (trunk-based, solo-friendly)
 - `main` is always releasable and protected: PR required, required checks, linear history, no force-push.
@@ -56,109 +54,107 @@ will make it public later.
 ### 2.4 Environments
 | Environment | What | Purpose | How |
 |---|---|---|---|
-| dev | laptop, docker-compose.local.yml + mock providers, no GPU | daily development | `make dev-up`, `make test` |
-| test | GitHub Actions runners + Postgres service | automated gates on every PR | `ci.yml` |
-| staging | private Nebius GPU node ("gpu-dev") with real models | benchmarks, spikes, training, caller-sim, security suite | `deploy.yml` target=staging |
-| demo (prod) | CPU node + GPU node, public | live demo windows | `deploy.yml` target=demo (manual approval) |
-Staging and demo use separate env files on the node (`/opt/callscope/.env`, mode 600) and separate keys.
+| dev | This Mac: native processes + `docker-compose.local.yml` (Postgres/Prom/Grafana); mocks or cassettes | daily development | `make dev-up`, later `make demo` |
+| test | GitHub Actions + Postgres service + **LLM cassettes only** | automated gates on every PR | `ci.yml` |
+| demo | This Mac with real local ASR/TTS + Token Factory (budgeted) or cassettes | interviews / screen-share | `make demo` |
+
+No staging/demo cloud nodes. No `deploy.yml`.
 
 ### 2.5 CI/CD
 - `ci.yml` (PR + main): `lint` (ruff), `typecheck` (mypy strict), `test` (pytest + coverage gate +
-  Postgres service, runs contract tests incl. openapi/schema validity and real-Postgres schema apply),
-  `security` (gitleaks, pip-audit), `artifacts-gate` (PRs: backlog valid + BACKLOG.md current +
-  CHANGELOG/tasks/API/schema updated with code), `build` (wheel/sdist artifact).
+  Postgres service), `security` (gitleaks, pip-audit), `artifacts-gate`, `build`.
 - `release.yml`: on `v*` tag: tests, build, release notes from CHANGELOG, GitHub Release with artifacts.
-- `deploy.yml`: manual, GitHub Environments with secrets `DEPLOY_HOST/USER/SSH_KEY`; runs
-  `scripts/deploy.sh` (rsync compose/config, `docker compose up -d`). Secrets stay on the node.
-- GPU-only tests (`-m gpu`) never run in CI; they run on staging via `make test-gpu` (add in M1).
-- Later additions are tracked as tasks (docker image builds T-M1-11, `promtool` T-M4-05).
+- Live Token Factory calls never run in CI. Mac-native ML tests are local (`make test` markers as added).
 
 ### 2.6 Coding standards
-Enforced by ruff (E,F,I,B,UP,SIM,ASYNC,PT,RUF,S,T20), ruff-format, mypy strict, pytest markers
-(`unit/contract/integration/gpu`), coverage gate (70% now; raise as code lands), pre-commit, and the
-Cursor rules in `.cursor/rules/`. Key rules: typed Pydantic boundaries, async-safe code, monotonic
-clocks for latency, no PII in logs, providers behind interfaces, small pure functions for scoring/policy.
+Enforced by ruff, ruff-format, mypy strict, pytest markers (`unit/contract/integration`), coverage
+gate, pre-commit, and `.cursor/rules/`. Key rules: typed Pydantic boundaries, async-safe code,
+monotonic clocks for latency, no PII in logs, providers behind interfaces, budget guard before live LLM.
 
 ### 2.7 Secrets management
 - Never in git: `.env*` ignored (except `.env.example`), gitleaks in pre-commit and CI, GitHub push protection.
-- Local: `.env` from `.env.example` (dev-only defaults). CI: GitHub Actions secrets/Environments.
-- Servers: `/opt/callscope/.env` (600) created by hand or via SOPS+age; compose reads `env_file`, never inline values.
-- Rotate demo keys (LiveKit, Hermes API key, DB) at each demo teardown; different values per environment.
-- Cloud credentials for GPU lifecycle stay on your machine or in GitHub Environment secrets, never in the repo.
+- Local: `.env` from `.env.example`. Keys: `TOKEN_FACTORY_API_KEY`, optional LangSmith/Toloka, LiveKit, Hermes.
+- CI: GitHub Actions secrets only if ever needed (prefer cassettes).
+- Rotate demo keys between interview sessions if you shared a machine.
 
 ### 2.8 Issue tracking
-GitHub Issues (one per task, created from `tasks.yaml`), milestones M0-M6, labels `type:*`/`prio:*`,
-Project board with Status. `tasks.yaml` is the source of truth for fields; the issue body is generated.
-Flow: `backlog` -> `ready` -> `in_progress` -> `in_review` -> `done` (or `blocked`). Change status with
-`make status T=T-M1-03 S=in_progress`, never by hand-editing the generated `docs/BACKLOG.md`.
-Sprints are one week: `make sprint N=S2 T=T-M1-02,T-M1-03`, report with `make report SPRINT=S2`.
+GitHub Issues (one per task), milestones M0-M6, labels `type:*`/`prio:*`, Project board.
+Statuses: `backlog` → `ready` → `in_progress` → `in_review` → `done` (or `blocked` / `dropped`).
+`make status T=T-M1-03 S=in_progress`. Sprints: `make sprint N=S2 T=T-M1-02,T-M1-03`.
 
-### 2.9 Logging and basic monitoring (already in the kit)
-`callscope/observability/logging.py`: JSON logs with `call_id`/`turn_id` context and PII scrubbing;
-`metrics.py`: the Prometheus catalogue from design 4.10 (latency histograms with buckets around the
-NFR-01 targets). `docker-compose.local.yml` runs Prometheus + Grafana locally; the Live-ops dashboard
-and real scrape targets arrive in T-M1-11.
+### 2.9 Logging and basic monitoring
+JSON logs with `call_id`/`turn_id` and PII scrubbing; Prometheus metrics. Compose runs Prometheus +
+Grafana; Live-ops wiring arrives in T-M1-11. `make budget` shows Token Factory spend vs cap (T-M1-12).
 
-### 2.10 4.1 done-when checklist
+### 2.10 Bootstrap done-when checklist
 - [x] `make setup && make ci` green on a clean clone; pre-commit installed
 - [ ] GitHub repo, branch protection, squash-only, secret scanning + push protection active
-- [ ] CI green on a trivial PR (this also unlocks the required-check names)
-- [x] Labels, milestones, 46 issues, Project board exist; `tasks.yaml` has issue numbers
-- [x] `docs/design/` contains the design doc (.md and .docx); Cursor rules load
-- [x] Environments `staging`/`demo` created; secrets placeholders documented
-- [ ] `T-M0-01` set to done through the normal PR flow
+- [ ] CI green on a trivial PR
+- [x] Labels, milestones, issues, Project board exist; `tasks.yaml` has issue numbers
+- [x] `docs/design/` contains the design doc; Cursor rules load
+- [x] No staging/demo Environments required (local-Mac scope)
+- [ ] `T-M0-01` closed only when the checklist above matches the updated acceptance criteria
 
-Note: branch protection is already configured on `main`. Re-check after the first green PR.
-Secret scanning may need enabling in Settings on free private repos (API can return 422).
-Project board: ensure Status field values exist and issues are added.
-## 3. Step 4.2 - implementing features
+## 3. Implementing features
 
-### 3.1 Task template (every task in `backlog/tasks.yaml`)
-`id`, `title`, `milestone`, `type`, `requirements` (FR/NFR IDs), `description`, `technical_approach`,
-`dependencies` (task IDs), `acceptance_criteria` (checklist), `owner`, `estimate_h`, `priority`,
-`status`, `sprint`, `issue`, `prompt` (pointer into `prompts/`). Add new tasks with the grooming prompt;
-`make ci` validates required fields, unique IDs, known dependencies and requirement IDs.
+### 3.1 Task template
+See `backlog/tasks.yaml` required fields. `make ci` validates IDs, dependencies (no deps on `dropped`),
+and requirement IDs.
 
-### 3.2 The per-task loop (Cursor follows this via rule 20)
-1. New chat -> paste the task prompt from `prompts/Mx_*.md` (or P01 with the task ID).
-2. Cursor: reads task + design section -> branch -> `make status ... in_progress` -> plan.
-3. Implement with tests; log decisions; keep `make ci` green.
+### 3.2 The per-task loop
+1. New chat → paste the task prompt from `prompts/Mx_*.md` (or P01 with the task ID).
+2. Cursor: reads task + design section → branch → `make status ... in_progress` → plan.
+3. Implement with tests; log decisions; keep `make ci` green. Verify third-party APIs against installed source.
 4. Update CHANGELOG, API/schema docs, status `in_review`, regenerate BACKLOG.md, SESSION_NOTES.
-5. PR from the template; run the PR self-review prompt; merge when green; status `done`.
+5. PR from the template; merge when green; status `done`.
 
 ### 3.3 Sprint and milestone ceremonies
-Sprint planning, session start/end, sprint close + report, retro/re-estimate, milestone close (checks:
-implementation complete, code reviewed and merged, unit tests pass, documentation updated, build
-artifact created, milestone review completed) are all in `prompts/ceremonies.md`.
+See `prompts/ceremonies.md`.
 
 ## 4. Working with Cursor
-- Agent mode for building, Ask mode for reviews and design questions. One task per chat.
-- Rules in `.cursor/rules` are always-on (context, workflow, security) or file-scoped (Python, tests).
-- Attach `@docs/design/CallScope_Phase3_Design.md` sections for context; keep chats short.
-- Make Cursor verify third-party APIs (Hermes, LiveKit, vLLM, model libs) in installed source. Do not accept
-  "plausible" method names. If it cannot verify, it must log a spike/decision instead.
-- Never let it lower gates (coverage, lint rules, thresholds) to get green; fix the cause.
+- Agent mode for building, Ask mode for reviews. One task per chat.
+- Rules in `.cursor/rules` are always-on. Attach design sections for context.
+- Verify Hermes, LiveKit, Token Factory, MLX/model libs against installed source/docs — never invent APIs.
+- Never lower gates to get green; fix the cause.
+- Do not spend Token Factory credit without `--estimate` / budget check once T-M1-12 exists.
 
-## 5. Schedule reality check and sprint plan
-Backlog estimates: M0 43 h, M1 106, M2 58, M3 92, M4 60, M5 50, M6 50 = **459 h** (P0: 375 h). At 30 h/week
-that is about 15 weeks (12.5 for P0 only). The "5-6 weeks" in the first design draft was optimistic (D-20260919-01).
-Estimates are hands-on hours including review, debugging and GPU waiting; measure actuals in S1-S2 and re-scale.
+## 5. Schedule and sprint plan (local-Mac rescope)
 
-Proposed sprints (30 h/week, greedy by dependencies; S1 is already set in `tasks.yaml`):
-S1 T-M0-01, 02, 05, 07, T-M1-01 | S2 T-M0-04, 06, T-M1-02, 03 | S3 T-M0-03, T-M1-04, 05 | S4 T-M1-06, 07, 08 |
-S5 T-M1-09, 10 | S6 T-M1-11, T-M2-01, 06 | S7 T-M2-02, 03, 04 | S8 T-M2-05, T-M3-01, T-M6-02 |
-S9 T-M3-02, 03 | S10 T-M3-04, 05 | S11 T-M3-06, 07 | S12 T-M3-08, T-M4-01, 05 | S13 T-M4-02, 03 |
-S14 T-M4-04, T-M5-01 | S15 T-M5-02, 03 | S16 T-M5-04, T-M6-01 | S17 T-M6-03, 04 | S18 T-M6-05.
-(Move T-M6-02 later if you prefer; it was pulled early only because its dependencies were done.)
+**Old total (GPU VM scope):** ~459 h (D-20260919-01).
+**New total (excl. dropped):** **462 h** — M0 50, M1 116, M2 56, M3 84, M4 60, M5 58, M6 38.
+At **30 h/week** ≈ **15.4 weeks** wall clock (optional E2 T-M5-05 is 16 h of that).
 
-Thin-slice cut if you need to shorten (about 375 h -> ~290 h): defer T-M4-04 caller-sim, T-M4-05,
-T-M3-08, T-M6-01, T-M6-04, T-M2-06 (keep consent gating, do retention manually), and simplify
-T-M1-11 to Compose only. Never cut: eval harness (M3 core), review console, one improvement
-experiment, governance artifacts. Record any cut as a DECISIONS.md entry.
+Proposed sprints (greedy by dependencies; S1 = remaining M0 spikes):
+
+| Sprint | Tasks (~30 h) |
+|---|---|
+| S1 | T-M0-07, T-M0-04, T-M0-06, T-M0-03 (done already: T-M0-01/02/05) |
+| S2 | T-M1-01, T-M1-12, T-M1-02, T-M1-03 |
+| S3 | T-M1-13, T-M1-04, T-M1-05 |
+| S4 | T-M1-06, T-M1-07, T-M1-08 |
+| S5 | T-M1-09, T-M1-10 |
+| S6 | T-M1-11, T-M2-01, T-M2-06 |
+| S7 | T-M2-02, T-M2-03, T-M2-04 |
+| S8 | T-M2-05, T-M3-01, T-M6-02 |
+| S9 | T-M3-02, T-M3-03 |
+| S10 | T-M3-04, T-M3-05 |
+| S11 | T-M3-06, T-M3-07 |
+| S12 | T-M3-08, T-M4-01, T-M4-05 |
+| S13 | T-M4-02, T-M4-03 |
+| S14 | T-M4-04, T-M4-06, T-M5-01 |
+| S15 | T-M5-02, T-M5-03 |
+| S16 | T-M5-04, T-M5-05 (optional) |
+| S17 | T-M6-01, T-M6-03 |
+| S18 | T-M6-05 |
+
+Thin-slice cut (~462 → ~390 h): defer T-M4-04, T-M4-05, T-M4-06, T-M5-05, T-M3-08, T-M6-01; simplify
+T-M1-11. Never cut: eval harness core, review console, E1 or E3, governance artifacts, budget+cassettes.
 
 ## 6. Troubleshooting
 - `artifacts-gate` fails: run `make backlog-render`, update CHANGELOG/tasks.yaml, or add `[skip-artifacts]`
   to the PR title for docs/chore-only PRs.
 - Branch protection call fails: required checks do not exist until CI has run once.
-- `make ci` mypy errors on new libs: add stubs (`types-*`) or a narrow `# type: ignore[code]` with a comment.
-- Cursor ignores rules: check Settings > Rules; start a new chat; reference `@.cursor/rules/20-workflow-artifacts.mdc`.
+- `make ci` mypy errors on new libs: add stubs or a narrow `# type: ignore[code]` with a comment.
+- Token Factory 429: honor `Retry-After`; reduce concurrency; check `make budget`.
+- MLX / memory pressure: stop Compose browsers, use smaller ASR/TTS, defer local LLM fallback.
+- Cursor ignores rules: Settings > Rules; new chat; `@.cursor/rules/20-workflow-artifacts.mdc`.

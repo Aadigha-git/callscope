@@ -12,7 +12,6 @@ from pydantic_settings import BaseSettings, SettingsConfigDict
 class Env(StrEnum):
     DEV = "dev"
     TEST = "test"
-    STAGING = "staging"
     DEMO = "demo"
 
 
@@ -35,13 +34,17 @@ class Settings(BaseSettings):
 
     livekit_url: str = "ws://127.0.0.1:7880"
     livekit_api_key: str = "devkey"
-    livekit_api_secret: SecretStr = SecretStr("devsecret-change-me-min-32-chars-long")
+    livekit_api_secret: SecretStr = SecretStr("secret")
 
+    # Kept for schema compatibility; unused in local-Mac scope (no public captcha).
     captcha_secret: SecretStr = SecretStr("")
+
+    llm_budget_usd: float = 15.0
+    llm_spend_usd: float = 0.0
 
     @property
     def is_production_like(self) -> bool:
-        return self.env in (Env.STAGING, Env.DEMO)
+        return self.env == Env.DEMO
 
 
 @lru_cache

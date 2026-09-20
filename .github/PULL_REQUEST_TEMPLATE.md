@@ -21,6 +21,8 @@ Closes #<issue>  |  Task ID: T-M?-??  |  Requirement IDs: FR-??
 - [ ] No secrets, tokens, real PII or recordings committed
 - [ ] Logs contain no transcripts, tool args or phone numbers
 - [ ] New inputs from callers are treated as untrusted
+- [ ] Live Token Factory calls are budgeted; CI uses cassettes only (if LLM involved)
+- [ ] Third-party exports (LangSmith/Toloka) are fictional scrubbed text only — never audio
 
 ## Risk and rollback
 <!-- What could break, and how to revert. -->

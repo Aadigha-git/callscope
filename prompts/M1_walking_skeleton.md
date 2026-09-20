@@ -1,3 +1,5 @@
+> Local-Mac scope: native ASR/TTS; Token Factory LLM; cassettes in CI; budget guard before `--live`. Verify APIs against installed source.
+
 # M1 - Walking skeleton (a 60-second live browser call, events in Postgres)
 Exit criterion: a live call with greeting + two turns + clean end; events reconstruct the timeline.
 Wrap every prompt with P01 workflow. Design refs: sections 4.2, 4.3, 6.x, 7.
@@ -114,12 +116,12 @@ Implement T-M1-07: CallScope API (contract-first).
 Files: apps/api/{main.py,routes/,deps.py,ratelimit.py,livekit_tokens.py}, tests/api/.
 - Implement /v1/status, /v1/sessions (POST), /v1/sessions/{id}/end, /v1/events:batch exactly per
   docs/api/openapi.yaml. Add contract tests that validate every response against the spec.
-- Sessions: require consent_recording=true and policy_version match; verify captcha (skip only when
+- Sessions: require consent_recording=true and policy_version match; verify consent (skip only when
   CALLSCOPE_ENV=dev/test); enforce caps (2 concurrent public sessions, 240 s max duration, 3
   sessions/min/IP, 20/day/IP) using a small in-process limiter behind an interface (Redis later);
   create the calls row (consent flags + policy version) and mint a LiveKit token (5 min TTL,
   identity- and room-scoped, publish audio only) with livekit-api (verify the package API from
-  source). Return 503 problem+json when the GPU node/worker is offline (status endpoint reflects it).
+  source). Return 503 problem+json when the local Mac/worker is offline (status endpoint reflects it).
 - Ingest: bulk insert with ON CONFLICT DO NOTHING; returns accepted/duplicates; service-token auth.
 - RFC 7807 errors, request-id middleware binding call_id to logs, /metrics endpoint.
 - Tests: consent missing -> 4xx; caps; token claims; idempotent ingest; auth required on internal routes.
@@ -137,7 +139,7 @@ Implement T-M1-08: web client (apps/web, Vite + vanilla TypeScript, no framework
   handle the `callscope` data topic (agent.state, transcript.partial/final, agent.text, notice,
   error), End button sends control.end and POST /end.
 - Security: strict CSP meta, render all transcript text with textContent (never innerHTML), no
-  third-party scripts except the captcha widget, no secrets in the bundle.
+  third-party scripts except the consent widget, no secrets in the bundle.
 - Tests (vitest): consent gating, state machine of the UI, XSS test with a hostile transcript string.
 - Add `make web-build` and CI job for lint/test/build if Node is available in the workflow.
 ```
@@ -146,7 +148,7 @@ Implement T-M1-08: web client (apps/web, Vite + vanilla TypeScript, no framework
 ```text
 Implement T-M1-09: Hermes receptionist profile + HermesBackend.
 Files: infra/hermes/{profile,README.md}, callscope/providers/hermes_backend.py, tests/providers/.
-- infra/hermes: the receptionist profile config (memory off, API server on, provider = vLLM
+- infra/hermes: the receptionist profile config (memory off, API server on, provider = Token Factory
   OpenAI-compatible endpoint, toolset restricted to plugin tools; verify each setting name in
   Hermes docs/source) and a startup self-test script that lists the effective toolset and exits
   non-zero if it contains anything outside the allowlist.
@@ -157,7 +159,7 @@ Files: infra/hermes/{profile,README.md}, callscope/providers/hermes_backend.py, 
 - Send full history each turn plus the CALL_CONTEXT message if S-1 requires it; support the
   interruption note.
 - Tests: recorded SSE fixtures (normal, error mid-stream, slow first token, tool-call-heavy),
-  cancel behaviour, contract suite; a `gpu`-marked live test against the staging Hermes.
+  cancel behaviour, contract suite; a `gpu`-marked live test against the local Hermes.
 ```
 
 ## T-M1-10
@@ -175,23 +177,40 @@ Files: apps/worker/{main.py,session.py,state.py,config.py,livekit_glue.py}, test
 - Metrics: RESPONSE_LATENCY (end of caller speech -> first agent audio), stage histograms,
   ACTIVE_CALLS, CALLS_TOTAL. Start the metrics server on CALLSCOPE_METRICS_PORT.
 - Tests: every state transition, empty transcript, ASR error, brain timeout, TTS error, greeting,
-  call end paths, deterministic latency with fake clock. Then a live manual test on the staging
+  call end paths, deterministic latency with fake clock. Then a live manual test on the local
   node: 60 s call; show me the reconstructed timeline query.
 Do not: implement barge-in/filler/degradation here beyond hooks; that is T-M2-05.
 ```
 
 ## T-M1-11
 ```text
-Implement T-M1-11: compose stacks, LiveKit config, monitoring.
-- docker-compose.cpu.yml (caddy, api, postgres, minio, prometheus, grafana, review placeholder) and
-  docker-compose.gpu.yml (livekit-server(+sip placeholder), worker, hermes, vllm, asr, tts,
-  exporters) with profiles, healthchecks, restart policies, resource limits, private-network-only
-  ports except LiveKit media/TURN and Caddy 80/443, read-only FS where possible, non-root users.
-- Secrets: env_file paths outside the repo (/opt/callscope/.env), none in compose; document required
-  variables in .env.example.
-- Caddyfile (TLS, headers/CSP, basic-auth for grafana/review, rate limits), livekit.yaml, Grafana
-  provisioning (datasource + Live-ops dashboard JSON: active calls, latency p50/p95 vs NFR-01
-  lines, error rates, GPU utilisation), Prometheus scrape configs and rules placeholder.
-- `make dev-up` (mock providers) works on a laptop; `scripts/deploy.sh` succeeds on staging.
-Verify with `docker compose config` in CI. Document the firewall table from design 9.4.
+Implement T-M1-11: local runner + Compose data plane + make demo.
+- Keep docker-compose.local.yml for Postgres, Prometheus, Grafana (MinIO optional). Do NOT put
+  ASR/TTS/Hermes/worker/livekit in Compose (no Metal passthrough on Docker Desktop Mac).
+- Add a Procfile + honcho (or overmind) OR a make demo script that starts native processes:
+  livekit-server --dev, API, biz, worker, ASR, TTS, Hermes. make demo-stop tears down.
+- Grafana scrape via host.docker.internal; small Live-ops dashboard (active calls, latency p50/p95).
+- Document ports and startup order in DEV_GUIDE. Target: fresh clone → working demo <20 min (NFR-07).
+Verify compose config in CI. No deploy.sh, no Caddy, no GPU compose.
+```
+
+
+## T-M1-12
+```text
+Implement T-M1-12: LLM budget guard.
+- callscope/providers/budget.py: estimate cost from Token Factory usage or token counts × $/1M;
+  read CALLSCOPE_LLM_BUDGET_USD (default 15) and CALLSCOPE_LLM_SPEND_USD; refuse when projected
+  spend would exceed remaining. Persist estimated_usd on eval_runs when that table exists.
+- CLI / `make budget` prints spend vs cap. `--estimate` dry-run for eval entrypoints.
+- Unit tests for pricing math and refusal. Never call the network in tests.
+Verify pricing fields against Token Factory docs/response shapes; do not invent fields.
+```
+
+## T-M1-13
+```text
+Implement T-M1-13: LLM record/replay cassettes.
+- Store request/response by content hash under eval/cassettes/ (or tests/cassettes/).
+- BrainBackend looks up cassette first; CI must never hit the network (fail if missing).
+- `--live` records new cassettes only when budget guard allows. Redact secrets in fixtures.
+- Contract tests against cassettes for HermesBackend streaming + cancel.
 ```

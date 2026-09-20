@@ -1,4 +1,5 @@
-# Local dev services (no GPU). Ports are bound to localhost only.
+# Local data/observability plane only. ASR/TTS/Hermes/worker/livekit-server run natively
+# (Docker Desktop on Mac cannot use Metal/GPU). Ports bound to localhost only.
 name: callscope-local
 services:
   postgres:

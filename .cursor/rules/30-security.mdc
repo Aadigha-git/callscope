@@ -2,14 +2,23 @@
 description: Security and privacy guardrails (always loaded)
 alwaysApply: true
 ---
-- Secrets only from environment/secret stores; `.env.example` holds placeholders only.
+- Secrets only from environment/secret stores; `.env.example` holds placeholders only
+  (`TOKEN_FACTORY_API_KEY`, LangSmith/Toloka keys, LiveKit, Hermes, DB).
 - Caller speech and transcripts are UNTRUSTED input. Never build shell commands, SQL, file paths or
   HTML from them. Escape on render (`textContent`, no `unsafe_allow_html`).
 - Hermes toolset must equal the plugin allowlist; never enable terminal/file/browser tools on the
-  public agent. Startup self-test must fail closed.
+  demo agent. Startup self-test must fail closed.
 - Mutating tools require `confirmed=true`, validated arguments and an active `call_id`.
 - Consent is enforced server-side before any session token or recording. Store consent + policy version.
-- Retention: raw audio/payloads purged after 30 days unless reviewed opt-in donations. Logs use scrubbed values only.
-- New endpoints need: authN/Z decision, rate limit, input validation, and a test for each.
+  Show the fictional-data banner for volunteers.
+- Retention: raw audio/payloads purged after 30 days via local `purge` unless reviewed opt-in
+  donations. Logs use scrubbed values only.
+- Third-party data flow: Token Factory / LangSmith / Toloka may receive **fictional scrubbed text
+  only** — never raw audio, never real personal voice data. LangSmith/Toloka are opt-in (default off).
+  Tavily is not used. See design §8.6.
+- LLM budget: respect `CALLSCOPE_LLM_BUDGET_USD`; refuse live runs that would exceed it; prefer
+  cassettes. Do not burn the $25 Token Factory credit casually.
+- New endpoints need: authN/Z decision, input validation, and a test for each. Public captcha /
+  per-IP abuse controls are N/A for local-only demo (ADR-017).
 - Treat third-party code (plugins, models, containers) as untrusted: pin versions, check licences,
   record them in the model inventory / DECISIONS.md.

@@ -1,10 +1,20 @@
 # CallScope — Phase 3: Solution Architecture & Technical Design
 
-**Working name:** CallScope (rename freely) · **Version:** 1.0 draft · **Date:** 2026-09-19
+**Working name:** CallScope (rename freely) · **Version:** 1.1 (local-Mac rescope) · **Date:** 2026-09-20
 **Companion files:** `schema.sql` (full DDL), `openapi.yaml` (Session / Review / Eval / Governance API)
 
-**One-line pitch:** A live, self-hosted voice agent (Hermes Agent as the reasoning backend) plus the machinery a voice-AI ML team actually needs around it: a telephony-realistic evaluation harness, a call-review and root-cause workflow, a model-improvement loop, and governance artifacts.
+> **Note:** The Markdown file is the design of record and **supersedes** any sibling `.docx`. Regenerate the Word file from this Markdown when needed; do not edit the `.docx` by hand.
 
+**One-line pitch:** A live voice agent (Hermes Agent as the reasoning backend) running as a **local demo on Apple Silicon**, with telephony-realistic evaluation, call review, a measured improvement loop, and governance artifacts — showcased via `make demo`, a recorded video, and a static site (not a public GPU VM).
+
+### Change log of this design revision (2026-09-20)
+- **Scope:** public Nebius GPU VM demo → local Apple Silicon Mac demo; LLM inference via Nebius Token Factory (hosted open-weight) with optional local LLM fallback.
+- **ADR-003** → hybrid models; **ADR-009** → local-only runtime; **ADR-012** / **FR-15** → dropped (SIP = Future work).
+- **New ADRs:** ADR-014 hybrid models + Token Factory; ADR-015 local-only deployment; ADR-016 budget guard + cassettes; ADR-017 showcase deliverable.
+- **NFRs re-baselined as hypotheses:** NFR-01 p50≤1.8s / p95≤3.0s (incl. hosted TTFT); NFR-03 = 1 call (2 stretch); NFR-07 = fresh clone → `make demo` <20 min; NFR-11 = LLM budget cap; NFR-13 = local `purge`.
+- **Removed:** captcha, public rate limits, Caddy/TLS public edge, deploy.yml, GPU compose, staging/demo Environments, idle GPU shutdown.
+- **Kept:** consent, fictional-data banner, Hermes toolset lockdown, policy hook, prompt-injection tests, secrets hygiene, PII scrubbing.
+- Facts and decisions recorded in `docs/DECISIONS.md` (D-20260920-10..).
 
 ## 0. Status, scope of this document, and what changed since the earlier plan
 
@@ -16,7 +26,7 @@
 | 2 | SAD — System Architecture Document | 8 | Security design |
 | 3 | HLD — High-level design (3.1) | 9 | Infrastructure design |
 | 4 | LLD — Detailed technical design (3.2) | 10 | NFRs with measurement methods |
-| 5 | ADRs (13) | 11 | Traceability (requirements → design → tests → JD) |
+| 5 | ADRs (13 + ADR-014..017) | 11 | Traceability (requirements → design → tests → JD) |
 | 6 | API specs (+ `openapi.yaml`) | 12 | Design review, spike plan, implementation readiness |
 
 ### 0.2 Important change to the earlier plan (read this first)
@@ -37,7 +47,7 @@ The earlier recommendation was to build streaming TTS and barge-in as the projec
 | V4 | Built-in API server exposes OpenAI-compatible `/v1/chat/completions` (SSE streaming) and `/v1/responses` (default port 8642, `API_SERVER_ENABLED`, `API_SERVER_KEY`). Each request creates a server-side `AIAgent`; **tools execute on the API-server host**; the request `model` field is ignored unless `direct_model_requests` is enabled. | ADR-001; toolset lockdown |
 | V5 | Native streaming TTS + barge-in exist in Hermes v0.20.0; gateway platform adapters extend `BasePlatformAdapter` and can be packaged as plugins. | ADR-002 |
 | V6 | Third-party `hermes-livekit` (LiveKit WebRTC voice gateway plugin) exists. | ADR-002 (reuse/compare) |
-| V7 | A reported Hermes + Ollama issue: `stream=true` with tools can hang, and Hermes runs Ollama-specific route detection. | Serve the LLM with vLLM, not Ollama |
+| V7 | Hermes + Ollama: `stream=true` with tools can hang (reported); Hermes supports custom OpenAI-compatible providers and local mlx-lm/llama.cpp on Mac. | Prefer Token Factory (or mlx-lm/llama.cpp) over Ollama |
 
 **Not yet verified — each has a spike in §12.2 with a fallback:**
 
@@ -45,11 +55,11 @@ The earlier recommendation was to build streaming TTS and barge-in as the projec
 |---|---|---|
 | U1 | How a per-call correlation ID reaches Hermes hook kwargs when called through the API server | S-1 — **resolved (D-20260920-04):** metadata/`user`/headers do not reach hooks; use user-message `CALL_CONTEXT` + tool-arg `call_id` |
 | U2 | Per-turn overhead Hermes adds (system prompt size, memory/skills load) on time-to-first-token with a slim profile | S-2 |
-| U3 | Tool-calling reliability of the chosen open-weight LLM through vLLM + Hermes | S-3 |
+| U3 | Tool-calling reliability of the chosen open-weight LLM through Token Factory + Hermes | S-3 |
 | U4 | LiveKit Agents: custom STT/TTS plugin wiring, interruption behaviour, exact parameter names in the installed version | S-4 — **resolved (D-20260920-05):** own Agents worker + stub providers work; §4.2→`TurnHandlingOptions` mapped on 1.8.2; hermes-livekit not adopted |
-| U5 | Candidate ASR/TTS models: real streaming support, licence, VRAM, telephony-audio accuracy | S-5 |
-| U6 | GPU sizing and RTT from Los Angeles to the chosen Nebius region | S-6 |
-| U7 | SIP trunk + `livekit-sip` path (stretch) | S-7 |
+| U5 | Candidate ASR/TTS/VAD on Apple Silicon: streaming, licence, unified-memory, RTF, telephony WER | S-5 |
+| U6 | Mac unified-memory budget + Token Factory RTT/TTFT from this location | S-6 |
+| U7 | ~~SIP trunk + `livekit-sip`~~ — **dropped**; telephony realism via C1–C5 only (Future work) | — |
 
 
 ## 1. Requirements baseline
@@ -74,19 +84,21 @@ There are no Phase 1/2 documents for this project, so the baseline is defined he
 | FR-12 | Live monitoring dashboards: latency percentiles, error rates, ASR-confidence drift, session counts. | Should |
 | FR-13 | Guardrails: tool allowlist, confirmation before state-changing actions, answers grounded in a knowledge base, out-of-scope → handoff. | Must |
 | FR-14 | Simulated caller: scripted/LLM-driven synthetic caller that joins a room and runs scenarios end to end. | Should |
-| FR-15 | Telephony: inbound call through a SIP trunk into the same agent (8 kHz). | Could (stretch) |
+| FR-15 | Telephony: inbound call through a SIP trunk into the same agent (8 kHz). | **Dropped** (Future work; C1–C5 cover telephony realism) |
 
 ### 1.2 Non-functional requirements (summary; full table in §10)
 
 | ID | Target |
 |---|---|
-| NFR-01 | End-of-caller-speech → first agent audio: p50 ≤ 1.5 s, p95 ≤ 2.5 s (stretch 1.2 / 2.0) |
-| NFR-02 | Barge-in: worker-side stop ≤ 250 ms p95 from VAD onset |
-| NFR-03 | ≥ 3 concurrent calls on one GPU node; public sessions capped at 2 concurrent, 4 min each |
+| NFR-01 | **Hypothesis (pre-measure):** end-of-caller-speech → first agent audio p50 ≤ 1.8 s, p95 ≤ 3.0 s (hosted-LLM network/TTFT included; stage breakdown separates local vs network) |
+| NFR-02 | Barge-in: worker-side stop ≤ 250 ms p95 from VAD onset (unchanged) |
+| NFR-03 | Concurrency: 1 call required, 2 stretch on this Mac; simple local session cap |
 | NFR-04 | Quality thresholds (declared before measuring, §10): e.g. phone-number sequence accuracy ≥ 90% clean / ≥ 80% telephony; tool-arg accuracy ≥ 90%; hallucination ≤ 3% |
-| NFR-05 | Security: consent gate, least-privilege tools, no secrets in repo, 30-day audio retention by default |
-| NFR-06 | Reproducibility: any reported number is regenerable from a git SHA + dataset version + stack version |
-| NFR-07 | Demo availability best-effort with graceful offline mode (recorded calls + dashboards) when the GPU node is off |
+| NFR-05 | Security: consent gate, least-privilege tools, no secrets in repo, 30-day local audio retention by default |
+| NFR-06 | Reproducibility: any reported number is regenerable from a git SHA + dataset version + stack version (+ LLM cassettes) |
+| NFR-07 | A fresh clone reaches a working demo in under 20 minutes with `make demo` (hypothesis) |
+| NFR-11 | LLM spend stays under the configured budget cap (`CALLSCOPE_LLM_BUDGET_USD`, default $15 of $25 Token Factory credit) |
+| NFR-13 | Retention via local `purge` / `delete-call` for recordings |
 
 
 ## 2. SAD — System Architecture Document
@@ -113,10 +125,13 @@ There are no Phase 1/2 documents for this project, so the baseline is defined he
 | Benchmark, validate against targets, ship with monitoring | Eval harness + regression gate + Prometheus/Grafana |
 | Datasets, labelling workflows, data-quality checks | Dataset manifests, DQ checks, review console with export |
 | Model governance | Model inventory + validation reports as code (ADR-011) |
-| Inference latency and cost | Self-hosted serving, latency budget, on-demand GPU node |
+| Inference latency and cost | Local ASR/TTS + Token Factory LLM; latency budget; budget guard |
 | Hermes / agent demo | Hermes as reasoning backend + real plugin (tools, hooks, skill) |
 
 ### 2.3 Constraints and assumptions
+
+**Updated 2026-09-20:** Runtime is an **Apple Silicon Mac** (no CUDA). LLM inference uses **Nebius Token Factory** ($25 hard credit budget) with optional local fallback. No Nebius GPU VMs. Docker Compose is for data/observability only. Showcase = `make demo` + video + static site (not a public live demo).
+
 
 - Solo developer, part-time; Cursor IDE; Python-first; Nebius credits for the GPU.
 - Public demo visitors are untrusted; all business data is fictional.
@@ -187,7 +202,7 @@ flowchart TB
 | Review UI | Streamlit | Fast to build; audio + tables | Label Studio (ADR-013) |
 | Frontend | Static TypeScript page + `livekit-client` | No framework needed | Next.js starter |
 | Observability | Prometheus + Grafana, JSON logs, OpenTelemetry optional | Latency histograms | Datadog etc. |
-| Packaging/CI | Docker Compose, GitHub Actions, `uv`, ruff, pytest | Simple | Kubernetes (ADR-009) |
+| Packaging/CI | Compose (Postgres/Prom/Grafana), native Procfile/`make demo`, GitHub Actions, `uv`, ruff, pytest | Simple | Kubernetes (rejected) |
 
 ### 2.8 Feasibility assessment
 
@@ -196,7 +211,7 @@ flowchart TB
 | Hermes as backend over API server | V4 documented; OpenAI-compatible SSE | High | Overhead per turn (U2) → slim profile, prompt caching, measure in S-2 |
 | Hermes plugin (tools/hooks/skill) | V1–V3 documented, several third-party plugins exist | High | Hook kwargs lack call ID (U1) → worker is latency source of truth; correlate by tool-arg `call_id` injected by plugin |
 | LiveKit realtime loop | Mature stack; `hermes-livekit` precedent | High | Custom STT/TTS plumbing (U4) → adapter classes; fallback to Pipecat or reuse `hermes-livekit` (ADR-002) |
-| Self-hosted ASR/TTS/LLM on 1 GPU | Small/medium models fit comfortably in 24–48 GB (estimate; verify S-6) | Medium-High | Concurrency limits → session caps (NFR-03) |
+| Local ASR/TTS on Mac + hosted LLM | ASR/TTS fit in ~12 GB usable unified memory (verify S-5/S-6); LLM on Token Factory | Medium | Memory pressure + budget → NFR-03/NFR-11 |
 | Telephony-degraded eval | Standard DSP (resample, μ-law codec via `sox`/`ffmpeg`, noise mixing) | High | Synthetic speech is cleaner than real → recorded set + report the gap |
 | Fine-tuning ASR (LoRA) | Established for Whisper-family; small data OK | Medium | Overfitting to synthetic voices → frozen recorded holdout |
 | SIP path | `livekit-sip` + trunk provider is documented practice | Medium | Cost/abuse (toll fraud) → stretch, allowlist, caps (§8) |
@@ -209,13 +224,19 @@ flowchart TB
 | R-02 | Hermes per-turn overhead breaks latency target | M | H | Slim profile, S-2 measurement, fallback: Hermes handles only tool/plan turns while a thin path answers simple FAQs (only if S-2 fails) |
 | R-03 | Open-weight LLM flaky at tool calling | M | H | S-3 model shortlist; constrained parameter schemas; policy hook validates args; retry-once with error text |
 | R-04 | Barge-in false triggers (echo/noise) | M | M | Browser AEC/NS/AGC, VAD hysteresis, min interruption duration, measured false-barge-in rate |
-| R-05 | Public endpoint abuse / credit burn | M | H | Consent + captcha, token TTL, concurrency + duration caps, GPU auto-shutdown, budget alerts |
+| R-05 | Local demo abuse / LLM credit burn | L | H | Consent + fictional banner, token TTL, local session cap, budget guard + cassettes |
 | R-06 | Synthetic-only eval overstates quality | H | M | Recorded human set; report synthetic-vs-real gap explicitly |
 | R-07 | Recording-consent/privacy violation | L | H | Explicit consent gate, retention policy, no real PII solicited (fictional data banner) |
 | R-08 | LLM-judge unreliable for hallucination scoring | M | M | Rule-based claim checks first; judge calibrated to human labels on ≥ 50 samples before use |
 | R-09 | Upstream Hermes API change | M | M | Pin versions; contract tests on the API-server surface; plugin `doctor --ci` in CI |
 | R-10 | GPU not available/expensive at demo time | M | M | Offline mode with recorded calls; on-demand start script; documented warm-up time |
 
+
+| R-TF | Token Factory budget exhaustion ($25) | Live eval / iteration blocked | Budget guard + cassettes (ADR-016); default $15 cap; cassette-first workflow |
+| R-LAT | Hosted-LLM latency variance (network TTFT) | Miss NFR-01 hypothesis | Stage breakdown; measure S-6; optional local fallback; widen NFR-01 |
+| R-MEM | Mac unified-memory pressure (ASR+TTS+apps on 16 GB) | OOM / swap thrash | S-5/S-6 sizing; leave ≥4 GB; defer E2; single-call default |
+| R-MLX | MLX / torch-MPS library churn | Broken pins, non-reproducible builds | Pin versions; record in inventory; cassette CI independent of MLX |
+| R-LK | livekit-server macOS issues | No WebRTC path | S-6 verifies brew `--dev`; fallback FastAPI WebSocket + own VAD (new ADR + tasks) |
 
 ## 3. HLD — High-Level Design
 
@@ -247,7 +268,7 @@ sequenceDiagram
   participant A as ASR
   participant H as Hermes
   participant T as TTS
-  Note over B,LK: Session start via CallScope API (consent, captcha, 5-min token)
+  Note over B,LK: Session start via CallScope API (consent, 5-min token)
   B->>LK: join room, publish mic
   LK->>W: dispatch worker to room
   W->>B: greeting (TTS) and agent.state
@@ -332,7 +353,8 @@ flowchart TB
 | First-sentence accumulation | 150 ms | Sentence/clause chunker; shorter with clause splitting |
 | TTS time-to-first-byte | 150–200 ms | Per candidate model |
 | Network + jitter buffer | 100 ms | Browser; more on SIP |
-| **Total** | **≈ 1.3–1.5 s** | Matches NFR-01 p50; stretch needs fewer/faster stages |
+| **Network / Token Factory TTFT** | **≈ 0.2–0.8 s (hypothesis; measure in S-6)** | Separable from local stages |
+| **Total** | **≈ 1.5–2.3 s (hypothesis)** | Matches re-baselined NFR-01 p50≤1.8s; measure before claiming |
 
 
 ## 4. LLD — Detailed Technical Design
@@ -542,7 +564,7 @@ tags: [correction, digits, names]
 
 | Set | Size (target) | Split policy |
 |---|---|---|
-| Synthetic (callers voiced by a *different* TTS than the agent, ≥ 6 voices) | ~300 calls (~1,500 turns) × conditions | Split by scenario-variant and voice groups: 2 voices + 2 variants held out entirely; 200 train / 50 dev / 50 test |
+| Synthetic (callers voiced by a *different* TTS than the agent, ≥ 6 voices) | ~120 calls (~1,500 turns) × conditions | Split by scenario-variant and voice groups: 2 voices + 2 variants held out entirely; 200 train / 50 dev / 50 test |
 | Recorded human calls (author + consenting volunteers, scripted scenarios, real phone-quality and laptop-mic conditions) | ~40 calls | 20 dev / 20 **frozen test** (never used for tuning) |
 | Labelled production failures (from Review console) | grows over time | Train/dev only; never enters frozen test |
 
@@ -619,7 +641,7 @@ Protocol (mandatory for every experiment): hypothesis and metric declared first 
 | Experiment | Change | Success criterion (declared up front) | Cost |
 |---|---|---|---|
 | E1 | ASR hotword / initial-prompt biasing with the domain vocabulary (street names, service terms) | Entity accuracy (ADDRESS, NAME) +N points on telephony slices without WER regression on C0 | No training |
-| E2 | LoRA adaptation of the selected Whisper-family model on telephony-augmented synthetic + recorded-dev audio | Telephony WER and digit-sequence accuracy improve on the frozen recorded test; C0 WER not worse than the margin | GPU hours (serving paused during training) |
+| E2 | LoRA adaptation (optional / deferred if RAM insufficient) of the selected Whisper-family model on telephony-augmented synthetic + recorded-dev audio | Telephony WER and digit-sequence accuracy improve on the frozen recorded test; C0 WER not worse than the margin | GPU hours (serving paused during training) |
 | E3 | Endpointing/VAD grid search | Premature-endpoint rate down without raising p50 latency > 100 ms | No training |
 | E4 (optional) | Distilled intent classifier vs LLM zero-shot for routing | Intent macro-F1 parity at lower latency | Small |
 
@@ -659,7 +681,7 @@ stateDiagram-v2
 | `callscope_provider_errors_total{stage}` | Counter |
 | GPU (DCGM/`nvidia_gpu_exporter`), vLLM, ASR/TTS server metrics | Exporters |
 
-Dashboards: **Live ops** (active calls, latency percentiles vs target, error rates), **Quality & drift** (ASR-confidence distribution, tool-error rate, policy denials, flagged-call rate, latest eval metrics), **Cost** (GPU node uptime, sessions per hour). Alerts: p95 latency above target for 10 min; provider error rate > 5%; GPU node up with zero sessions for 30 min (triggers shutdown script); monthly credit budget threshold.
+Dashboards: **Live ops** (active calls, latency percentiles vs target, error rates), **Quality & drift** (ASR-confidence distribution, tool-error rate, policy denials, flagged-call rate, latest eval metrics), **Cost** (GPU node uptime, sessions per hour). Alerts: p95 latency above target for 10 min; provider error rate > 5%; LLM budget burn rate / remaining credit threshold.
 
 ### 4.11 Error handling and graceful degradation
 
@@ -710,8 +732,9 @@ Format: Context → Decision → Alternatives → Consequences. Status of all: *
 
 ### ADR-003 — Self-hosted open-weight ASR/TTS/LLM behind provider interfaces; selection by benchmark
 
-- **Context:** JD emphasises owning models, inference latency/cost, GPU work; credits are available for GPU.
-- **Decision:** Serve open-weight models locally. Choose ASR/TTS/LLM from a shortlist using S-5/S-3 benchmarks on telephony-degraded audio. Hosted APIs are allowed only in `baseline` eval mode.
+- **Status:** **Superseded by ADR-014** (2026-09-20 local-Mac rescope). Historical context retained.
+- **Context (original):** JD emphasises owning models, inference latency/cost, GPU work; credits are available for GPU.
+- **Decision (original):** Serve open-weight models locally. Choose ASR/TTS/LLM from a shortlist using S-5/S-3 benchmarks on telephony-degraded audio. Hosted APIs are allowed only in `baseline` eval mode.
 - **Alternatives:** Hosted APIs only (fast, but no model ownership story).
 - **Consequences:** + real model evaluation/improvement work; − ops burden, GPU cost, lower absolute quality than frontier hosted models (reported honestly).
 
@@ -739,25 +762,26 @@ Format: Context → Decision → Alternatives → Consequences. Status of all: *
 ### ADR-007 — Two eval modes: stage-replay (deterministic) and caller-sim (end-to-end)
 
 - **Context:** Deterministic, cheap regression checks and realistic turn-taking tests are different needs.
-- **Decision:** `stage-replay`/`text-replay` for CI and attribution; `caller-sim` for e2e latency and barge-in on the GPU node.
+- **Decision:** `stage-replay`/`text-replay` for CI and attribution (cassettes by default); `caller-sim` for e2e latency and barge-in on the **local Mac** stack. Live Token Factory runs are explicit (`--live`) and budgeted.
 - **Consequences:** + fast iteration and realism; − two harness paths to maintain (shared scorer and event schema limit that).
 
 ### ADR-008 — Synthetic-first test data with telephony augmentation, plus a small recorded human set
 
-- **Decision:** Scenario-driven synthetic calls (callers voiced by a *different* TTS than the agent) across the conditions matrix, plus ~40 recorded calls with a frozen test half. Datasets are versioned by manifest hash (`sha256` of sorted item hashes + spec).
-- **Alternatives:** Public corpora only (not domain-matched), DVC (extra tooling).
-- **Consequences:** + controllable, reproducible, labels come free; − synthetic speech is easier than real speech (R-06) → mandatory reporting of the synthetic-vs-recorded gap.
+- **Decision:** Scenario-driven synthetic calls (callers voiced by a *different* TTS than the agent) across the conditions matrix — default **~120** synthetic calls (not 300) — plus **~30** recorded calls (15 dev / 15 frozen test). Datasets are versioned by manifest hash. Smaller n → wider CIs; report CI width honestly.
+- **Alternatives:** Public corpora only (not domain-matched), DVC (extra tooling), larger n (blocked by Token Factory budget + Mac time).
+- **Consequences:** + controllable, reproducible, labels come free; − synthetic speech is easier than real speech (R-06) → mandatory reporting of the synthetic-vs-recorded gap; wider CIs than a 300-call set.
 
 ### ADR-009 — Two-node deployment with an on-demand GPU node; Docker Compose; no Kubernetes
 
-- **Decision:** CPU node always on (site, API, data, review, dashboards); GPU node started on demand (`make demo-up`) and auto-shut-down when idle. Private link between nodes.
+- **Status:** **Superseded by ADR-015** (2026-09-20). Historical context retained.
+- **Decision (original):** CPU node always on; GPU node started on demand (`make demo-up`) and auto-shut-down when idle.
 - **Alternatives:** Single always-on GPU VM (credit burn), Kubernetes (operational overhead).
-- **Consequences:** + credit-safe, simple; − “live” demo requires warm-up (minutes), so availability is by schedule; offline mode compensates (NFR-07).
+- **Consequences (original):** + credit-safe, simple; − live demo requires warm-up; offline mode compensates (NFR-07).
 
 ### ADR-010 — Security posture: consent gate, least-privilege tools, hard caps
 
-- **Decision:** Explicit consent before token issuance; Hermes toolset restricted to plugin tools; confirmation + validation on every mutating tool; session/duration/concurrency caps; captcha; short-lived tokens; retention limits. Detailed in §8.
-- **Consequences:** + defensible for a public endpoint; − some friction for visitors.
+- **Decision (updated 2026-09-20):** Explicit consent before token issuance; Hermes toolset restricted to plugin tools; confirmation + validation on every mutating tool; simple local session cap; short-lived tokens; local retention/`purge`. **Removed for local-only scope:** captcha, per-IP public rate limits, public concurrency marketing caps, Caddy/TLS edge. Detailed in §8.
+- **Consequences:** + still defensible for volunteer/local demos; − not hardened as a public internet endpoint (by design).
 
 ### ADR-011 — Governance as code
 
@@ -766,14 +790,47 @@ Format: Context → Decision → Alternatives → Consequences. Status of all: *
 
 ### ADR-012 — Telephony (SIP) is a stretch goal; 8 kHz realism is delivered by evaluation regardless
 
-- **Decision:** The conditions matrix (C1–C5) provides telephony-realistic evaluation in all cases. Live SIP via `livekit-sip` + a trunk provider is milestone M6 and the first item cut.
-- **Consequences:** + core value does not depend on trunk setup or toll-fraud exposure; − no phone-number demo unless M6 lands.
+- **Status:** **Superseded / dropped** (2026-09-20). SIP moved to Future work; T-M6-04 status=`dropped`; FR-15 dropped.
+- **Decision (updated):** Telephony realism comes **only** from simulated conditions C1–C5. No live SIP in scope.
+- **Consequences:** + no trunk/toll-fraud exposure; − no phone-number demo.
 
 ### ADR-013 — Streamlit for the Call Review console
 
 - **Alternatives:** Label Studio (heavier, audio-timeline tooling but more setup), custom React.
 - **Decision:** Streamlit, because the console is mostly tables, audio playback, and a label form.
 - **Consequences:** + fast to build, Python only; − limited UI polish and concurrency (acceptable: single reviewer).
+
+### ADR-014 — Hybrid models: local ASR/VAD/TTS; hosted open-weight LLM via Token Factory
+
+- **Status:** Accepted (2026-09-20). Supersedes ADR-003 for the agent LLM placement.
+- **Context:** No GPU VM credits; Apple Silicon Mac (unified memory, no CUDA); $25 Nebius Token Factory inference credit; ASR/TTS ownership is what the target role cares about.
+- **Decision:** Run ASR, VAD and TTS **natively on the Mac**. Reach the agent LLM **only** through Hermes / `BrainBackend`, backed by a hosted open-weight model on Token Factory (OpenAI-compatible). Provide an optional local LLM fallback (mlx-lm or llama.cpp OpenAI-compatible server) behind the same config — best-effort, not a gate. Prefer Token Factory / mlx-lm / llama.cpp over Ollama (stream+tools fragility).
+- **Alternatives:** All-local LLM (memory pressure on 16 GB); all-hosted ASR/TTS (weak portfolio story); vLLM on a cloud GPU (unavailable).
+- **Consequences:** + real local speech ML work + affordable LLM; − network TTFT variance; Token Factory budget is a hard constraint (ADR-016).
+
+### ADR-015 — Local-only deployment on Apple Silicon; Compose for data/observability only
+
+- **Status:** Accepted (2026-09-20). Supersedes ADR-009.
+- **Context:** Cannot provision Nebius VMs (Token Factory inference only); Docker Desktop cannot use the Mac GPU/Metal.
+- **Decision:** Environments: **dev** = this Mac (everything); **test** = GitHub Actions with mock providers + LLM cassettes; **demo** = this Mac via `make demo`. Docker Compose keeps Postgres, Prometheus, Grafana (MinIO optional). ASR, TTS, worker, API, Hermes, and `livekit-server` run **natively** (Procfile/honcho or `make demo`). Delete staging/demo GitHub Environments, `deploy.yml`, `scripts/deploy.sh`, and gpu/cpu compose plans.
+- **Alternatives:** Remote GPU VM (unavailable); all-in-Docker (no Metal for ASR/TTS).
+- **Consequences:** + simple, credit-safe; − single-machine concurrency/memory limits (NFR-03).
+
+### ADR-016 — LLM budget guard + record/replay cassettes
+
+- **Status:** Accepted (2026-09-20).
+- **Context:** $25 Token Factory credit is a hard budget; CI must be free and reproducible.
+- **Decision:** Count tokens/cost from usage fields; hard cap in `.env` (default $15, $10 reserve); every eval supports `--estimate`; refuse over-budget live runs; log spend on `eval_runs`. Cache LLM request/response **cassettes** by content hash; CI uses cassettes only; live requires `--live`.
+- **Alternatives:** Unmetered live calls (burns credit); commit raw API keys in fixtures (unsafe).
+- **Consequences:** + reproducible CI and surviving credit; − first live capture must be intentional and budgeted.
+
+### ADR-017 — Showcase deliverable (local demo + video + static site), not a public live demo
+
+- **Status:** Accepted (2026-09-20).
+- **Context:** No public GPU demo node; interview value comes from reproducibility and measured results.
+- **Decision:** Deliver (a) `make demo` for screen-share interviews, (b) a recorded demo video, (c) a static GitHub Pages showcase with sample calls (synthetic/consented), eval report + CIs, RCA, model cards and validation reports. No captcha / public abuse controls.
+- **Alternatives:** Public live demo on a VM (out of scope).
+- **Consequences:** + always-available portfolio surface; − no strangers hitting a live agent.
 
 
 ## 6. API Specifications
@@ -785,7 +842,7 @@ Machine-readable spec for the Session/Review/Eval/Governance API: **`openapi.yam
 | Topic | Rule |
 |---|---|
 | Versioning | URL prefix `/v1`; additive changes only within a version |
-| AuthN/Z | Public: `POST /v1/sessions`, `GET /v1/status` (captcha + rate limit). Internal endpoints: bearer token (service accounts) or OIDC-less static keys held in secrets; review console behind Caddy basic-auth/IP allowlist |
+| AuthN/Z | Local: `POST /v1/sessions`, `GET /v1/status` (consent required). Internal endpoints: bearer/static keys in secrets; review console localhost-only |
 | Errors | RFC 7807 `application/problem+json` (`type`, `title`, `status`, `detail`, `code`) |
 | Idempotency | `Idempotency-Key` on POSTs that create resources (`/appointments`, `/events:batch` uses `event_id` dedupe) |
 | Time | UTC ISO-8601 in payloads; `t_ms` = monotonic ms since call start |
@@ -796,7 +853,7 @@ Machine-readable spec for the Session/Review/Eval/Governance API: **`openapi.yam
 | Group | Method + path | Purpose |
 |---|---|---|
 | Session (public) | `GET /v1/status` | Demo up/down, GPU state, capacity, next warm window |
-| | `POST /v1/sessions` | Body: consent flags + captcha token → LiveKit room + token (TTL 5 min) |
+| | `POST /v1/sessions` | Body: consent flags → LiveKit room + token (TTL 5 min) |
 | | `POST /v1/sessions/{id}/end` | Client-initiated end |
 | Ingest (internal) | `POST /v1/events:batch` | Idempotent batch of events |
 | | `POST /v1/calls/{id}/recording` | Register uploaded audio URIs |
@@ -937,7 +994,7 @@ Trust boundaries: (1) Internet ↔ CPU node edge (Caddy); (2) Internet ↔ LiveK
 | T3 | **Hermes host compromise** via built-in tools (terminal/file/web) | Injection steering the agent to non-plugin tools | Toolset lockdown to plugin tools only + startup self-test failing closed; container runs non-root, read-only FS except a scratch volume, no Docker socket, egress allowlist (only vLLM and Business API); API server on private network with key | Low–Medium (depends on upstream correctness → pinned version + contract test) |
 | T4 | **Malicious/untrusted plugin or dependency** | Supply chain | Only our plugin + pinned, hash-checked dependencies; capability declarations reviewed; `hermes plugins doctor --ci`; Dependabot/`pip-audit` in CI; third-party `hermes-livekit` used only in an isolated spike, never on the public path without code review | Medium |
 | T5 | **Abuse / GPU exhaustion / credit burn** | Bots opening sessions, long calls | Captcha; token TTL 5 min; ≤ 2 concurrent public sessions, 240 s cap, 3 sessions/min/IP, 20/day/IP; silence timeout; GPU idle auto-shutdown; budget alerts | Low |
-| T6 | **Toll fraud / SIP abuse** (stretch) | Public SIP endpoint | Trunk-side allowlists/geo limits, per-number call and minute caps, no outbound dialing, SIP behind provider, off by default | Medium (hence stretch) |
+| T6 | **Toll fraud / SIP abuse** | N/A (SIP dropped) | Future work only | N/A |
 | T7 | **Recording without valid consent** (California is an all-party-consent state) | Session started without notice | Consent modal is mandatory; API refuses tokens without `consent_recording=true`; spoken notice at call start; consent stored with policy version; no consent → no session | Low |
 | T8 | **PII retention/leak** | Audio, transcripts, logs | Fictional-data banner; retention 30 days for raw audio/payloads; PII-scrubbed copies for logs/metrics; recordings never in git; donation to eval set is opt-in and reviewed; deletion endpoint/script by call ID | Medium (real voices are personal data) |
 | T9 | **Token theft/replay** | LiveKit token | Short TTL, room- and identity-scoped, publish-only mic, no subscribe-to-others | Low |
@@ -950,7 +1007,7 @@ Trust boundaries: (1) Internet ↔ CPU node edge (Caddy); (2) Internet ↔ LiveK
 
 ### 8.3 Security requirements (testable)
 
-1. `POST /v1/sessions` without consent or captcha → rejected (test).
+1. `POST /v1/sessions` without consent → rejected (test).
 2. Effective Hermes toolset equals the plugin allowlist; startup test fails otherwise (test).
 3. Adversarial eval suite: 0 successful injections/unauthorised actions at each gate (test).
 4. No secret patterns in the repo history (gitleaks) and no plaintext secrets in compose files (CI check).
@@ -968,120 +1025,144 @@ Trust boundaries: (1) Internet ↔ CPU node edge (Caddy); (2) Internet ↔ LiveK
 Structured JSON logs with request/call IDs; no raw transcripts or args in application logs (scrubbed copies only). Audit log for review-console actions, model transitions and dataset exports. Incident playbook: kill switch (`make demo-down`) stops the GPU node and disables session minting; rotate keys; export and review affected calls; record in the risk register.
 
 
+
+### 8.6 Third-party data flow (local-Mac rescope)
+
+| Destination | What may leave the Mac | What must stay local | Volunteer notice |
+|---|---|---|---|
+| Nebius Token Factory | Fictional receptionist prompts, tool schemas, synthetic/eval transcript text | Raw audio, recordings, real personal voice data | Shown in consent + fictional-data banner |
+| LangSmith (opt-in) | Scrubbed fictional turn/eval text only | Audio, real PII, secrets | Off by default (`CALLSCOPE_LANGSMITH_ENABLED`) |
+| Toloka (opt-in stretch) | TEXT tasks: fictional agent utterances / transcripts for labelling | Audio, real personal data | Manual labelling fallback if terms/spend unfit |
+| Tavily | Not used | — | — |
+
+Public-abuse threats (captcha bypass, internet rate-limit abuse, GPU credit burn): **N/A** — no public demo endpoint (ADR-017). New threat: **third-party text exfiltration** — mitigate with scrub(), allowlists, default-off integrations, and budget guard.
+
 ## 9. Infrastructure Design
 
-### 9.1 Topology
+> **Local runtime design (2026-09-20).** Supersedes the two-node GPU topology. Historical GPU/VRAM language elsewhere is archival unless marked current.
+
+### 9.1 Topology (local Mac)
 
 ```mermaid
 flowchart TB
-  subgraph Internet
-    U["Visitors (browser)"]
-    PH["Phone via SIP trunk (stretch)"]
+  subgraph Browser
+    U["Interviewer / volunteer browser"]
   end
-  subgraph CPU["CPU node (always on)"]
-    CD["Caddy (TLS, auth) + static web"]
-    API["CallScope API"]
-    BIZ["Business API"]
-    RVW["Review console"]
-    PG[("Postgres")]
-    S3[("MinIO")]
-    PRM["Prometheus + Grafana + MLflow"]
-  end
-  subgraph GPU["GPU node (on demand)"]
-    LK["LiveKit server + SIP"]
+  subgraph Native["Native macOS processes"]
+    LK["livekit-server --dev"]
     WK["Voice Worker"]
     HM["Hermes API server"]
-    LLM["vLLM"]
-    ASR["ASR server"]
-    TTS["TTS server"]
+    ASR["ASR server (MLX/native)"]
+    TTS["TTS server (MLX/ONNX/native)"]
+    API["CallScope API"]
+    BIZ["Business API"]
+    RVW["Review console (Streamlit)"]
   end
-  U -->|"HTTPS"| CD
-  U -->|"WebRTC"| LK
-  PH -->|"SIP/RTP"| LK
-  CD --> API
-  CD -->|"auth"| RVW
-  RVW --> API
-  API --> PG
-  API --> S3
-  BIZ --> PG
+  subgraph Compose["Docker Compose (data + observability)"]
+    PG[("Postgres 16")]
+    S3[("MinIO optional / local disk")]
+    PRM["Prometheus + Grafana"]
+  end
+  subgraph Hosted["Hosted (optional network)"]
+    TF["Nebius Token Factory LLM"]
+    LS["LangSmith traces (opt-in)"]
+    TK["Toloka TEXT labels (opt-in stretch)"]
+  end
+  U -->|"WebRTC localhost"| LK
+  U -->|"HTTP localhost"| API
   LK --- WK
   WK --> ASR
   WK --> TTS
   WK --> HM
-  HM --> LLM
-  WK -.->|"private link: events"| API
-  HM -.->|"private link: tools"| BIZ
-  PRM -.->|"scrape"| WK
+  HM -->|"OpenAI-compatible"| TF
+  HM -.->|"optional local fallback"| LLMLocal["mlx-lm / llama.cpp"]
+  WK -.->|"events"| API
+  HM -.->|"tools"| BIZ
+  API --> PG
+  API --> S3
+  RVW --> API
+  PRM -.->|"scrape host.docker.internal"| WK
+  WK -.->|"scrubbed fictional text only"| LS
 ```
 
-### 9.2 Nodes
+### 9.2 Runtime roles
 
-| Node | Purpose | Sizing (starting point; confirm in S-6) |
+| Role | What | Notes |
 |---|---|---|
-| CPU node | Always-on control and data plane | 4 vCPU / 16 GB RAM / 200 GB disk |
-| GPU node | Realtime + model serving + training when paused | One GPU with 24–48 GB VRAM class; 8+ vCPU; 32–64 GB RAM; 200 GB NVMe for model cache. Region chosen for lowest RTT from Los Angeles among regions offering the GPU type (measure in S-6) |
-| Private link | CPU ↔ GPU | WireGuard/Tailscale; only required ports allowed |
+| Apple Silicon Mac | All realtime + ML speech + app processes | Chip/RAM recorded in DECISIONS (S-6); leave ≥4 GB for OS/browser |
+| Docker Compose | Postgres, Prometheus, Grafana; MinIO optional | No ASR/TTS/LLM in containers (no Metal passthrough) |
+| Token Factory | Hosted open-weight LLM (+ embeddings if needed) | OpenAI-compatible; budget-capped |
+| GitHub Actions | test env | Mocks + LLM cassettes only; never live Token Factory |
 
-### 9.3 Service catalogue (Docker Compose)
+### 9.3 Service catalogue (native vs container)
 
-| Service | Node | Ports | Notes |
+| Service | How it runs | Default ports | Notes |
 |---|---|---|---|
-| caddy | CPU | 80/443 public | TLS, reverse proxy, basic-auth for review/Grafana/MLflow |
-| web (static), callscope-api | CPU | internal 8000 | rate limiting via Caddy + app |
-| biz-api | CPU | internal 8100 | own DB role |
-| postgres, minio, mlflow | CPU | internal only | volumes on persistent disk; nightly `pg_dump` + MinIO sync |
-| review (Streamlit) | CPU | internal 8501 | behind auth |
-| prometheus, grafana | CPU | internal; grafana behind auth | scrape GPU node over private link |
-| livekit-server (+ livekit-sip) | GPU | 443/TCP (TURN/TLS), 7881/TCP, 50000–60000/UDP (media range configurable); SIP 5060/UDP + RTP range (stretch) | Public media ports are the only public GPU-node surface |
-| voice-worker | GPU | internal | one process, N concurrent sessions |
-| hermes (API server) | GPU | internal 8642 | private, API key, egress allowlist |
-| vllm | GPU | internal 8000 | model + parser flags per stack |
-| asr-server, tts-server | GPU | internal 8200/8300 | |
-| exporters (node, DCGM/nvidia-smi, cAdvisor) | GPU | internal | scraped by Prometheus |
+| livekit-server | Native (`brew install livekit`, `--dev`) | 7880 | Spike S-6 verifies; fallback = FastAPI WebSocket transport (new ADR if needed) |
+| voice-worker | Native | — | LiveKit Agents |
+| hermes API server | Native | 8642 | Custom provider → Token Factory |
+| asr-server | Native | 8200 | Shortlist from S-5 |
+| tts-server | Native | 8300 | Shortlist from S-5 |
+| callscope-api | Native | 8000 | Consent + session minting |
+| biz-api | Native | 8100 | Fictional Lakeside backend |
+| review (Streamlit) | Native | 8501 | Local only |
+| web (static) | Native / Vite | 5173 or static | Consent + fictional-data banner |
+| postgres | Compose | 5432 | localhost bind |
+| prometheus / grafana | Compose | 9090 / 3000 | scrape native exporters via host.docker.internal |
+| minio | Compose optional | 9000 | Or plain local disk for recordings |
 
-### 9.4 Network and firewall policy
+Process runner: prefer a **Procfile + honcho** (or overmind) invoked by `make demo` / `make demo-stop` — choose the simplest that works on macOS (T-M1-11).
+
+### 9.4 Network policy (local)
 
 | From → To | Allow |
 |---|---|
-| Internet → CPU | TCP 80/443 only |
-| Internet → GPU | LiveKit media/TURN ports only (SIP ports only if M6 enabled) |
-| CPU ↔ GPU | Private link only: ingest API, Business API, metrics scrape, control (start/stop) |
-| Hermes container → outside | Deny all except vLLM, Business API |
-| Everything else | Default deny |
+| Browser → localhost LiveKit / API | Localhost only by default |
+| Hermes → Token Factory | HTTPS with `TOKEN_FACTORY_API_KEY` |
+| Hermes → Business API | localhost |
+| LangSmith / Toloka | Opt-in; fictional scrubbed text only; never audio |
+| Everything else | Default deny for egress from tool execution |
 
-### 9.5 GPU memory budget (estimates to be replaced by S-6 measurements)
+### 9.5 Unified-memory budget (to be filled by S-6 / T-M0-07)
 
-| Item | Approx. VRAM |
-|---|---|
-| LLM 7–9B class, 8-bit/4-bit quantised weights | 5–10 GB |
-| LLM KV cache for ~3 concurrent 4-minute sessions | 4–8 GB |
-| ASR (Whisper-large-v3-turbo-class fp16, or streaming FastConformer) | 2–4 GB |
-| TTS (small model) | 1–3 GB |
-| Headroom + fragmentation | 20% |
+Machine baseline (fact-check 2026-09-20): **Apple M5, 16 GB** unified memory, macOS 26.6.2, arm64. Usable for models ≈ **12 GB** after reserving ≥4 GB for OS/browser.
 
-Training (LoRA on a Whisper-family model) is scheduled with serving paused, or run as a separate short-lived job; never during a public demo window.
+| Item | Measured memory | RTF / notes |
+|---|---|---|
+| ASR (candidate) | *TBD S-5/S-6* | Prefer RTF < 1.0 |
+| TTS (candidate) | *TBD* | First-audio latency |
+| VAD (Silero) | *TBD* | |
+| Hermes + worker + APIs | *TBD* | |
+| Optional local LLM fallback | *TBD* | Best-effort; may be too tight on 16 GB with ASR+TTS |
+| Headroom | ≥4 GB reserved | OS + browser + Compose |
+
+Training (optional E2 LoRA on whisper-small/base) only if S-5 says feasible; never during a live demo.
 
 ### 9.6 Environments and CI/CD
 
 | Environment | What runs | Purpose |
 |---|---|---|
-| `local` | Compose with **mock providers** (no GPU) + Postgres + MinIO | Development, CI integration tests |
-| `gpu-dev` | GPU node, private | Benchmarks, spikes, training, caller-sim |
-| `demo` | CPU node + GPU node (public) | Live demo |
+| `dev` | Mac native + Compose data plane + mocks or cassettes | Daily development |
+| `test` | GitHub Actions + Postgres service + cassettes | PR gates |
+| `demo` | Mac via `make demo` | Interviews / screen-share |
 
-GitHub Actions: lint (ruff), type check, unit + contract + mock-provider integration tests, `hermes plugins doctor --ci`, gitleaks, `pip-audit`, container build. Eval workflow: `fast-eval` on a tiny golden set (CPU, stubbed models) per PR to protect scorers/normalisers; `full-eval` triggered manually on the GPU node, compares against `eval/baselines/*.json`, and fails the job on gate violations. Releases are tagged; each release records the stack version label.
+Workflows: `ci.yml`, `release.yml` only. **No `deploy.yml`.** Eval: cassette/`text_replay` on PRs; rare `--live` evals budgeted.
 
 ### 9.7 Cost controls
 
-- GPU node lifecycle scripts: `make demo-up` (start, health-wait, load models, smoke test), `make demo-down`.
-- Auto-shutdown when there are zero sessions for 30 minutes; hard maximum uptime per window.
-- Prometheus alert on uptime and on credit-budget thresholds; caps in §8.
-- Model cache on persistent disk to keep warm-up to minutes, not tens of minutes (measure in S-6).
+- `CALLSCOPE_LLM_BUDGET_USD` (default 15); `make budget`; refuse over-budget live runs.
+- Cassettes for CI/dev replay; `--estimate` before live eval.
+- No GPU idle shutdown / credit-burn alerts on VMs (N/A).
 
 ### 9.8 Backup, recovery, runbooks
 
-Backups: nightly Postgres dump + MinIO sync of datasets/artifacts (not raw call audio beyond retention). Recovery target: rebuild CPU node from compose + backups in under 2 hours. Runbooks (in `docs/runbooks/`): demo start/stop; GPU node failed health check; ASR/TTS/LLM degraded; Hermes upgrade with contract tests; retention/deletion request; incident kill switch.
+Local Postgres volumes + `make purge` for recordings. Runbooks: `make demo` start/stop; ASR/TTS/Hermes degraded; Token Factory budget exhausted; retention/deletion; showcase publish.
 
+### 9.9 Future work
+
+- Live SIP inbound via `livekit-sip` (former FR-15 / T-M6-04).
+- Public internet demo hardening (captcha, per-IP limits, Caddy/TLS, status page).
+- Dedicated GPU node if credits appear later.
 
 ## 10. Non-Functional Requirements
 
@@ -1089,9 +1170,9 @@ Backups: nightly Postgres dump + MinIO sync of datasets/artifacts (not raw call 
 
 | ID | Category | Requirement | Target | Measurement | Pri |
 |---|---|---|---|---|---|
-| NFR-01 | Latency | End-of-caller-speech → first agent audio | p50 ≤ 1.5 s, p95 ≤ 2.5 s (stretch 1.2 / 2.0) | `caller-sim` and live events; histogram `callscope_response_latency_seconds` | Must |
+| NFR-01 | Latency | End-of-caller-speech → first agent audio | p50 ≤ 1.8 s, p95 ≤ 3.0 s (hypothesis; incl. Token Factory TTFT) (stretch 1.2 / 2.0) | `caller-sim` and live events; histogram `callscope_response_latency_seconds` | Must |
 | NFR-02 | Latency | Barge-in stop time (VAD onset → agent audio stopped at worker) | p95 ≤ 250 ms | `barge_in.applied.stop_latency_ms` | Must |
-| NFR-03 | Capacity | Concurrent calls per GPU node | ≥ 3 without breaching NFR-01 p95 by > 20%; public cap 2 | Load test (N caller-sims) | Must |
+| NFR-03 | Capacity | Concurrent calls on this Mac | 1 required, 2 stretch; simple local session cap | Local caller-sim load test | Must |
 | NFR-04 | Accuracy | See gate thresholds (§10.2) | per table | Eval harness on frozen test | Must |
 | NFR-05 | Security | Controls in §8.3 verified | all tests pass | CI + GPU security suite | Must |
 | NFR-06 | Reproducibility | Any reported metric regenerable | 100% of reports carry run ID, git SHA, dataset + stack version | Report generator check | Must |
@@ -1099,7 +1180,7 @@ Backups: nightly Postgres dump + MinIO sync of datasets/artifacts (not raw call 
 | NFR-08 | Observability | Every call fully reconstructable | ≥ 99% of calls have complete event timeline + audio | Nightly consistency query | Must |
 | NFR-09 | Data quality | No dataset publishes with failing DQ checks | 100% | `dq_passed` enforced in CI/CLI | Must |
 | NFR-10 | Maintainability | Provider swap without touching orchestration code | New ASR/TTS provider ≤ 1 day, no changes outside `providers/` + config | Demonstrated by adding the second ASR candidate | Should |
-| NFR-11 | Cost | Idle GPU spend | GPU node auto-off ≤ 30 min after last session | Alert + shutdown log | Must |
+| NFR-11 | Cost | LLM spend | Stays under CALLSCOPE_LLM_BUDGET_USD (default $15 of $25) | make budget + eval_runs.estimated_usd | Must |
 | NFR-12 | Portability | Full stack runs locally with mock providers | `make local-up` on a laptop, no GPU | CI integration job | Should |
 | NFR-13 | Privacy | Raw audio retention | ≤ 30 days (except reviewed opt-in donations) | Retention job test | Must |
 
@@ -1144,7 +1225,7 @@ These are **hypotheses set before measuring**; if the baseline shows a threshold
 | FR-12 | Observability (§4.10) | Dashboard screenshots; alert tests |
 | FR-13 | Policy hook, skill, KB gaps (§4.4–4.5) | Policy-compliance, hallucination and injection metrics |
 | FR-14 | Caller simulator (§4.6) | Runs all scenarios unattended |
-| FR-15 | LiveKit SIP (ADR-012) | Manual call test at M6 |
+| FR-15 | **Dropped** — Future work only | — |
 
 ### 11.2 JD coverage map
 
@@ -1182,10 +1263,10 @@ Each spike ends with a one-paragraph result appended to the relevant ADR and a g
 |---|---|---|---|
 | S-1 | Can a call/turn ID reach Hermes hook kwargs via the API server? | **Done (D-20260920-04):** no for `user`/headers; yes for user-message `CALL_CONTEXT` + tool-arg `call_id` | `CALL_CONTEXT` in user message + `call_id` tool arg (confirmed) |
 | S-2 | Hermes overhead per turn with a slim profile on the chosen LLM | Measured `brain_ttft` p50/p95 for 50 turns; ≤ 450 ms p50 budget | Trim skills/system prompt, enable prefix caching; last resort: thin FAQ fast-path (R-02) |
-| S-3 | Tool-call reliability of 2–3 candidate LLMs via vLLM + Hermes | ≥ 95% valid tool calls on 60 scripted turns; parser flags recorded | Choose next candidate; tighten schemas |
+| S-3 | Tool-call reliability of 2–3 candidate LLMs via Token Factory + Hermes | ≥ 95% valid tool calls on 60 scripted turns; parser flags recorded | Choose next candidate; tighten schemas |
 | S-4 | LiveKit Agents wiring with custom STT/TTS/LLM adapters; interruption behaviour; compare with `hermes-livekit` | **Done (D-20260920-05):** browser/headless call works with stubs on Agents 1.8.2; §4.2 mapped; own worker confirmed; hermes-livekit not adopted | Pipecat pipeline (same provider interfaces) — fallback only |
-| S-5 | ASR/TTS shortlist: streaming support, licences, VRAM, WER on C0/C1 for a 30-utterance probe | Shortlist of 2 ASR + 2 TTS with numbers and licence check | Widen shortlist; use chunked pseudo-streaming |
-| S-6 | GPU sizing, model load/warm-up time, RTT from Los Angeles | VRAM table and warm-up minutes measured; region picked | Smaller LLM/quantisation |
+| S-5 | ASR/TTS/VAD on Apple Silicon: streaming, licences, unified-memory, RTF, WER on C0/C1 | Shortlist of 2 ASR + 2 TTS + VAD with measured memory | Widen shortlist; VAD-segmented chunking |
+| S-6 | Mac sizing + Token Factory RTT/TTFT (100 probes) | §9.5 memory table; native livekit; TF latency | Smaller ASR/TTS; cassette-first |
 | S-7 (optional, before M6) | SIP trunk path with `livekit-sip` | One inbound test call reaches a stub agent | Drop M6 |
 
 ### 12.3 Milestones, exit criteria, and cut order
@@ -1229,7 +1310,7 @@ Estimated effort: see `backlog/tasks.yaml` (about 460 h total, about 375 h for P
 
 - Exact ASR/TTS/LLM model picks (decided by S-3/S-5, recorded in the model inventory).
 - Real-voice recordings: who records the ~40 calls and how consent is captured.
-- Domain name/hosting for the public site; captcha provider.
+- GitHub Pages for showcase site; no public captcha provider.
 - Whether to publish the eval dataset (synthetic part) as an open benchmark.
 
 *Next document (Phase 4): dev-environment setup guide and the sequenced Cursor prompt library per milestone task.*

@@ -20,7 +20,7 @@ TASKS_FILE = ROOT / "backlog" / "tasks.yaml"
 BACKLOG_MD = ROOT / "docs" / "BACKLOG.md"
 SPRINT_DIR = ROOT / "docs" / "sprints"
 
-STATUSES = ("backlog", "ready", "in_progress", "in_review", "done", "blocked")
+STATUSES = ("backlog", "ready", "in_progress", "in_review", "done", "blocked", "dropped")
 MILESTONES = {
     "M0": "M0 Setup and spikes",
     "M1": "M1 Walking skeleton",
@@ -28,8 +28,9 @@ MILESTONES = {
     "M3": "M3 Eval core",
     "M4": "M4 Review and caller-sim",
     "M5": "M5 Improvement and governance",
-    "M6": "M6 Hardening and telephony",
+    "M6": "M6 Hardening and showcase",
 }
+# Dropped tasks stay in tasks.yaml for history but are excluded from progress/hour totals.
 REQUIRED = (
     "id",
     "title",
@@ -63,6 +64,7 @@ def validate(tasks: list[Task]) -> list[str]:
     for dup in {i for i in ids if ids.count(i) > 1}:
         errors.append(f"duplicate id {dup}")
     known = set(ids)
+    by_id = {x["id"]: x for x in tasks if x.get("id")}
     for t in tasks:
         tid = t.get("id", "<missing id>")
         for key in REQUIRED:
@@ -77,6 +79,8 @@ def validate(tasks: list[Task]) -> list[str]:
         for dep in t.get("dependencies") or []:
             if dep not in known:
                 errors.append(f"{tid}: unknown dependency {dep}")
+            elif by_id.get(dep, {}).get("status") == "dropped" and t.get("status") != "dropped":
+                errors.append(f"{tid}: depends on dropped task {dep}")
         for req in t.get("requirements") or []:
             if not REQ_RE.match(str(req)):
                 errors.append(f"{tid}: bad requirement id {req}")
@@ -120,11 +124,13 @@ def render_markdown(tasks: list[Task]) -> str:
         "|---|---|---|---|---|",
     ]
     for ms, name in MILESTONES.items():
-        ts = [t for t in tasks if t["milestone"] == ms]
+        ts = [t for t in tasks if t["milestone"] == ms and t["status"] != "dropped"]
+        dropped_n = sum(1 for t in tasks if t["milestone"] == ms and t["status"] == "dropped")
         done = sum(t["status"] == "done" for t in ts)
         live = sum(t["status"] in ("in_progress", "in_review") for t in ts)
         remaining = sum(t["estimate_h"] for t in ts if t["status"] != "done")
-        lines.append(f"| {name} | {done} | {live} | {len(ts)} | {remaining} |")
+        total_label = f"{len(ts)}" + (f" (+{dropped_n} dropped)" if dropped_n else "")
+        lines.append(f"| {name} | {done} | {live} | {total_label} | {remaining} |")
     sprints = sorted({str(t["sprint"]) for t in tasks if t.get("sprint")})
     if sprints:
         lines += ["", "## Sprint backlog", ""]
@@ -133,7 +139,7 @@ def render_markdown(tasks: list[Task]) -> str:
             lines += [
                 f"| {t['id']} | {t['title']} | {t['estimate_h']} | {t['status']} |"
                 for t in tasks
-                if t.get("sprint") == sp
+                if t.get("sprint") == sp and t["status"] != "dropped"
             ]
             lines.append("")
     for ms, name in MILESTONES.items():
@@ -172,8 +178,10 @@ def issue_body(t: Task) -> str:
 
 def report_markdown(tasks: list[Task], title: str, git_log: dict[str, str] | None = None) -> str:
     git_log = git_log or {}
-    done = [t for t in tasks if t["status"] == "done"]
-    open_ = [t for t in tasks if t["status"] != "done"]
+    active = [t for t in tasks if t["status"] != "dropped"]
+    done = [t for t in active if t["status"] == "done"]
+    open_ = [t for t in active if t["status"] != "done"]
+    dropped = [t for t in tasks if t["status"] == "dropped"]
     est_done = sum(t["estimate_h"] for t in done)
     lines = [
         f"# {title}",
@@ -182,7 +190,8 @@ def report_markdown(tasks: list[Task], title: str, git_log: dict[str, str] | Non
         "",
         "## Summary",
         "",
-        f"- Tasks done: {len(done)} of {len(tasks)}  |  Estimated hours delivered: {est_done}",
+        f"- Tasks done: {len(done)} of {len(active)} active"
+        f" ({len(dropped)} dropped)  |  Estimated hours delivered: {est_done}",
         "- TODO: 2-3 sentence narrative of what shipped and what did not.",
         "",
         "## Delivered",
@@ -199,6 +208,15 @@ def report_markdown(tasks: list[Task], title: str, git_log: dict[str, str] | Non
         "|---|---|---|",
     ]
     lines += [f"| {t['id']} | {t['title']} | {t['status']} |" for t in open_]
+    if dropped:
+        lines += [
+            "",
+            "## Dropped",
+            "",
+            "| Task | Title |",
+            "|---|---|",
+        ]
+        lines += [f"| {t['id']} | {t['title']} |" for t in dropped]
     lines += [
         "",
         "## Metrics (TODO: paste real numbers, link run IDs)",

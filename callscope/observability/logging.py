@@ -21,12 +21,18 @@ turn_id_var: contextvars.ContextVar[str | None] = contextvars.ContextVar("turn_i
 
 _PHONE = re.compile(r"(?<!\d)(?:\+?1[\s.-]?)?\(?\d{3}\)?[\s.-]?\d{3}[\s.-]?\d{4}(?!\d)")
 _EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
+# Common secret assignment shapes (Token Factory / LangSmith / Toloka / Hermes).
+_SECRET = re.compile(
+    r"(?i)((?:TOKEN_FACTORY_API_KEY|NEBIUS_API_KEY|LANGSMITH_API_KEY|TOLOKA_API_KEY|"
+    r"CALLSCOPE_HERMES_API_KEY|api[_-]?key)\s*[=:]\s*)(\S+)"
+)
 _RESERVED = set(logging.LogRecord("", 0, "", 0, "", (), None).__dict__) | {"message", "asctime"}
 
 
 def scrub(text: str) -> str:
-    """Mask phone numbers and email addresses."""
-    return _EMAIL.sub("[email]", _PHONE.sub("[phone]", text))
+    """Mask phone numbers, emails, and common API-key assignments."""
+    out = _EMAIL.sub("[email]", _PHONE.sub("[phone]", text))
+    return _SECRET.sub(r"\1[redacted]", out)
 
 
 class JsonFormatter(logging.Formatter):
