@@ -1,0 +1,56 @@
+{
+  "task": "T-M0-03",
+  "spike": "S-2",
+  "model": "nvidia/Nemotron-3_5-Lightning",
+  "base_url": "https://api.tokenfactory.nebius.com/v1/",
+  "total_estimated_usd": 0.006341,
+  "direct": {
+    "path": "direct_tf",
+    "n": 50,
+    "n_ok": 50,
+    "ttft_p50_ms": 884.25,
+    "ttft_p95_ms": 988.65,
+    "ttft_mean_ms": 898.94,
+    "prompt_tokens_total": 2357,
+    "completion_tokens_total": 3200,
+    "prompt_tokens_mean": 47.1,
+    "estimated_usd": 0.000909
+  },
+  "hermes": {
+    "path": "hermes_tf",
+    "n": 50,
+    "n_ok": 50,
+    "ttft_p50_ms": 2286.88,
+    "ttft_p95_ms": 3778.7,
+    "ttft_mean_ms": 2496.16,
+    "prompt_tokens_total": 25357,
+    "completion_tokens_total": 16291,
+    "prompt_tokens_mean": 507.1,
+    "estimated_usd": 0.005431
+  },
+  "overhead_ms": {
+    "n_paired": 50,
+    "p50": 1384.81,
+    "p95": 2907.17,
+    "mean": 1597.22
+  },
+  "verdict": {
+    "hermes_overhead_p50_le_450ms": false,
+    "direct_ttft_p50_ms": 884.25,
+    "hermes_ttft_p50_ms": 2286.88,
+    "overhead_p50_ms": 1384.81,
+    "design_3_6_note": "Hermes absolute TTFT includes Token Factory network; compare overhead (Hermes\u2212direct) to 450 ms Hermes-own budget.",
+    "nfr01_context": "NFR-01 p50\u22641.8s is end-to-end incl. ASR/TTS; brain+network TTFT must leave room for endpointing/ASR/TTS (~0.8\u20131.0s local)."
+  },
+  "run_id": "6a3855de-f0f2-45e4-906a-5af9defb2c49",
+  "ts_utc": "2026-09-20T23:04:12Z",
+  "evidence_note": "Per-turn arrays truncated in log extract; n=50 both paths all ok. Re-run script to regenerate full arrays.",
+  "mitigation_slim_memory_off": {
+    "n": 20,
+    "direct_ttft_p50_ms": 910.54,
+    "hermes_ttft_p50_ms": 2761.9,
+    "overhead_p50_ms": 1802.03,
+    "hermes_prompt_tokens_mean": 507.3,
+    "gate_pass": false
+  }
+}

@@ -28,6 +28,21 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-20 - S-2: Hermes TTFT overhead fails 450 ms gate; adopt thin FAQ fast-path (R-02)
+- Date / Task: 2026-09-20 / T-M0-03
+- Context: Spike S-2 (U2). hermes-agent 0.19.0 API server → Token Factory custom provider vs OpenAI-compatible client → TF direct. Model `nvidia/Nemotron-3_5-Lightning`. 50 streamed turns, empty toolset, slim spoken system string. Run `6a3855de-f0f2-45e4-906a-5af9defb2c49`; ~$0.006 spend. Raw: `spikes/T-M0-03/results/ttft_overhead.json`.
+  | Path | TTFT p50 | TTFT p95 | Mean prompt tokens |
+  |---|---:|---:|---:|
+  | TF direct | 884 ms | 989 ms | ~47 |
+  | Hermes→TF | 2287 ms | 3779 ms | ~507 |
+  | Overhead (H−D) | **1385 ms** | 2907 ms | +~460 |
+  Mitigation attempt `memory_enabled: false` (20 turns) did not reduce prompt tokens (~507) or pass the gate (overhead p50 ~1.8 s).
+- Decision: **S-2 gate FAIL** vs Hermes-own ≤450 ms p50. Activate **R-02**: voice worker uses a **thin FAQ/chitchat fast-path** (direct TF or local canned) for no-tool turns; **Hermes only for tool/plan turns**. Re-measure after T-M1-09 receptionist profile lockdown. Update §3.6 notes for hosted-TF reality.
+- Alternatives considered: accept 1.4 s Hermes tax on every turn (rejected — breaks NFR-01 headroom); fork Hermes to strip system prompt (rejected — black-box constraint); local vLLM (out of Mac scope).
+- Consequences: T-M1-08/09 worker routing; design §3.6 + U2/S-2 resolved with mitigation; do not treat 350–450 ms Hermes→token row as achievable on TF without the split.
+- Design doc impact: U2, S-2, §3.6 rows annotated; R-02 selected.
+- Status: accepted
+
 ### D-20260920-19 - S-5: ASR/TTS/VAD shortlist on Apple Silicon
 - Date / Task: 2026-09-20 / T-M0-06
 - Context: Native Mac probe (no Docker Metal). 30 synthetic utterances under `eval/probe/` (macOS `say` Albert; C0 + C1 telephony). Measured RTF, ΔRSS, WER (orthography-sensitive on spoken digits), TTS first-audio, Silero VAD. Parakeet BF16 ~2.5 GB skipped (size gate). Raw: `spikes/T-M0-06/results/benchmark.json`.

@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Spike S-2 (T-M0-03): Hermes vs Token Factory TTFT overhead; R-02 thin FAQ fast-path (D-20260920-20)
 - Spike S-5 (T-M0-06): Apple Silicon ASR/TTS/VAD shortlist + `eval/probe/` assets (D-20260920-19)
 - Spike S-3 (T-M0-04): Hermes→Token Factory tool-call reliability harness under `spikes/T-M0-04/`; choose Nemotron-3.5-Lightning (D-20260920-18)
 - Spike S-6 (T-M0-07): Mac baseline, native livekit-server 1.13.7 verification, Token Factory regional RTT harness under `spikes/T-M0-07/` (D-20260920-17)
@@ -16,6 +17,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 - Scrubber coverage for TOKEN_FACTORY / LangSmith / Toloka / api_key assignments
 
 ### Changed
+- Design §3.6: measured TF TTFT + Hermes overhead; FAQ fast-path for NFR-01 headroom (D-20260920-20)
 - Design §9.5 filled with S-5 measured ASR/TTS/VAD memory/RTF (D-20260920-19)
 - Default `TOKEN_FACTORY_MODEL` → `nvidia/Nemotron-3_5-Lightning` (D-20260920-18)
 - Scope: public Nebius GPU VM demo → local Apple Silicon demo + Token Factory LLM (D-20260920-10..16)
