@@ -18,6 +18,18 @@ dev-up: ## Start local services (Postgres, MinIO, Prometheus, Grafana)
 dev-down: ## Stop local services
 	docker compose -f docker-compose.local.yml down
 
+demo: ## Start full local demo stack (Compose data plane + native processes; T-M1-11)
+	@echo "T-M1-11 will implement make demo (Procfile/honcho + livekit-server --dev)."
+	@echo "For now: make dev-up, then start native processes per docs/DEV_GUIDE.md."
+	@$(MAKE) dev-up
+
+demo-stop: ## Stop demo stack
+	@$(MAKE) dev-down
+
+budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
+	@echo "T-M1-12 will implement spend tracking. Current .env defaults:"
+	@grep -E '^CALLSCOPE_LLM_|^TOKEN_FACTORY_' .env 2>/dev/null || grep -E '^CALLSCOPE_LLM_|^TOKEN_FACTORY_' .env.example
+
 lint: ## Ruff lint + format check
 	uv run ruff check .
 	uv run ruff format --check .

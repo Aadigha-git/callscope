@@ -1,3 +1,5 @@
+> Local-Mac scope: native ASR/TTS; Token Factory LLM; cassettes in CI; budget guard before `--live`. Verify APIs against installed source.
+
 # M5 - Improvement loop and governance (protected milestone)
 Exit criterion: one measured improvement on the frozen test; promoted model has card + report.
 Rules: hypothesis and success criterion are written BEFORE running; train on train, tune on dev,
@@ -65,4 +67,13 @@ Files: callscope/governance/{cards.py,reports.py,risk.py,lifecycle.py}, template
   the frozen test; validated->production requires card complete, monitoring on, rollback stack
   recorded; failing gates return 409 problem+json with the unmet gate list.
 - Tests: gate matrix, card completeness, report reproducibility (same inputs -> same output).
+```
+
+
+## T-M5-05
+```text
+OPTIONAL Experiment E2 (T-M5-05): LoRA ASR on Mac only if T-M0-06 says feasible.
+- Estimate memory/time for whisper-small/base via MPS or MLX before any download >2 GB.
+- If not feasible: DECISIONS.md deferred entry and stop. If feasible: train on train split only,
+  one frozen-test eval, MLflow record. Do not run during a live demo.
 ```

@@ -1,3 +1,5 @@
+> Local-Mac scope: native ASR/TTS; Token Factory LLM; cassettes in CI; budget guard before `--live`. Verify APIs against installed source.
+
 # M3 - Eval core (protected milestone: this is the centre of the portfolio value)
 Exit criterion: baseline metrics with CIs across C0-C5; synthetic-vs-recorded gap reported.
 Wrap with P01 workflow. Design refs: 4.6, 10.2. Pre-declare thresholds BEFORE seeing results.
@@ -81,7 +83,7 @@ Files: callscope/eval/{runner.py,replay.py,persist.py}, tests/eval/.
   dataset_id), eval_item_results, aggregated eval_metrics by slice (condition, voice, scenario,
   entity type). Resumable (skip finished items), concurrency-limited, seeded.
 - CI: run against MockSTT/MockBrain/MockTTS on a 20-item golden dataset stored in tests/golden/.
-- GPU/manual: real providers on the staging node, same code path.
+- GPU/manual: real providers on the local Mac, same code path.
 Do not fork the code path between live and eval; reuse providers and instrumentation.
 ```
 

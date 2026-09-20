@@ -338,12 +338,12 @@ components:
         next_window: { type: [string, 'null'], format: date-time }
     SessionRequest:
       type: object
-      required: [consent_recording, captcha_token, policy_version]
+      required: [consent_recording, policy_version]
       properties:
         consent_recording: { type: boolean, const: true }
         consent_donate: { type: boolean, default: false }
-        captcha_token: { type: string }
         policy_version: { type: string }
+        # captcha_token removed (local-Mac scope; no public abuse controls)
     SessionResponse:
       type: object
       properties:

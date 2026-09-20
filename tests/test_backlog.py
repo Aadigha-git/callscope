@@ -62,6 +62,37 @@ def test_report_and_issue_body() -> None:
     assert "Acceptance criteria" in body and "- [ ]" in body
 
 
+def test_dropped_excluded_from_progress_and_hours() -> None:
+    tasks = backlog.load_tasks()
+    md = backlog.render_markdown(tasks)
+    assert "dropped" in md.lower() or "T-M6-04" in md
+    assert backlog.validate(tasks) == []
+    extra = {
+        "id": "T-M6-99",
+        "title": "x",
+        "milestone": "M6",
+        "type": "feature",
+        "requirements": ["FR-01"],
+        "description": "x",
+        "technical_approach": "x",
+        "dependencies": ["T-M6-04"],
+        "acceptance_criteria": ["x"],
+        "owner": "BAG",
+        "estimate_h": 1,
+        "priority": "P0",
+        "status": "backlog",
+    }
+    errs = backlog.validate([*tasks, extra])
+    assert any("dropped task T-M6-04" in e for e in errs)
+
+
+def test_report_excludes_dropped_from_active_count() -> None:
+    tasks = backlog.load_tasks()
+    rep = backlog.report_markdown(tasks, "Report: test")
+    assert "dropped" in rep.lower()
+    assert "T-M6-04" in rep
+
+
 def test_cli_validate_and_render(tmp_path: Path, monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(backlog, "BACKLOG_MD", tmp_path / "BACKLOG.md")
     assert backlog.main(["validate"]) == 0

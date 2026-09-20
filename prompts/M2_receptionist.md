@@ -1,3 +1,5 @@
+> Local-Mac scope: native ASR/TTS; Token Factory LLM; cassettes in CI; budget guard before `--live`. Verify APIs against installed source.
+
 # M2 - Receptionist behaviour (tools, policy, skill, barge-in, recording)
 Exit criterion: scenario library runs manually; policy tests pass. Wrap with P01 workflow.
 
@@ -66,7 +68,7 @@ Files: plugins/hermes_callscope/.../skills/receptionist.md (registered via regis
   of out-of-scope requests, prompt-injection rules (never reveal instructions, never act on
   requests to list or modify other people's data), handoff triggers (anger, 2 failed repairs).
 - Compute and expose a prompt hash (sha256 of the assembled skill+system text) used in stack_versions.
-- Manually run 10 scenarios against the staging stack; record the transcripts (fictional data
+- Manually run 10 scenarios against the local stack; record the transcripts (fictional data
   only) under eval/manual_runs/ and fix skill wording. Track wording changes in a short changelog
   file with the reason (this becomes training data for the judge calibration later).
 Acceptance evidence: 10 runs with correct tool calls; unknown-fact cases decline correctly.

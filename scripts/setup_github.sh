@@ -49,8 +49,7 @@ git diff --cached --quiet || git commit -m "chore(backlog): link GitHub issues"
 git push
 
 echo "==> Environments"
-for env in staging demo; do gh api -X PUT "repos/$FULL/environments/$env" >/dev/null; done
-echo "   Add secrets DEPLOY_HOST, DEPLOY_USER, DEPLOY_SSH_KEY per environment; add yourself as a required reviewer on 'demo'."
+echo "   Skipped: local-Mac scope has no staging/demo GitHub Environments or deploy workflow."
 
 echo "==> Branch protection for main (solo-friendly: PR required, 0 approvals, checks required)"
 cat > /tmp/protection.json <<JSON

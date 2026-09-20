@@ -8,11 +8,21 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / chore/rescope-local-mac
+- Done: Documentation/backlog rescope from public Nebius GPU VM demo → local Apple Silicon Mac +
+  Token Factory LLM. Facts in DECISIONS D-20260920-10..16; design v1.1; backlog rewrite (+dropped);
+  removed deploy.yml/deploy.sh; DEV_GUIDE/README/prompts/rules/.env.example updated; scrubber +
+  gitleaks extended. T-M0-01 left as done (not re-marked). No API credit spent.
+- Next: Open PR for this branch. Then start **T-M0-07** (Mac sizing + TF latency / native livekit).
+- Open questions: native `livekit-server --dev` not yet executed on this Mac; TF verbose rate limits
+  not queried without a key; ASR/TTS not yet benchmarked (T-M0-06).
+- Commands to resume: `git switch chore/rescope-local-mac && make ci`
+
 ## 2026-09-20 / T-M0-05
 - Done: Spike S-4 — LiveKit Agents 1.8.2 stub worker (EchoSTT/CannedLLM/SineTTS), docker livekit-server v1.9.1, headless `SMOKE_OK`, §4.2 mapping, hermes-livekit 0.4.0 review; D-20260920-05; ADR-002 confirmed (own worker). Also marked T-M0-01/T-M0-02 done after #52 merge.
-- Next: PR in_review; after merge mark done. Next S1 tasks: T-M0-07 or T-M1-01 (T-M0-05 deps satisfied for later worker).
+- Next: After rescope merge: T-M0-07.
 - Open questions / blockers: none for S-4. Tokens need `RoomAgentDispatch` or workers are not dispatched.
-- Commands to resume: `git switch spike/T-M0-05-livekit-agents && gh pr view`
+- Commands to resume: `git switch main && git pull`
 
 ## 2026-09-20 / T-M0-02
 - Done: Spike S-1 against hermes-agent 0.19.0; correlation matrix + SSE source analysis; D-20260920-04; design §4.4/ADR-006/U1 notes; scrubbed evidence under `spikes/T-M0-02/results/`. Merged #52.

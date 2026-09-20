@@ -1,3 +1,5 @@
+> Local-Mac scope: native ASR/TTS; Token Factory LLM; cassettes in CI; budget guard before `--live`. Verify APIs against installed source.
+
 # M4 - Call review, caller simulator, dashboards (protected milestone)
 Exit criterion: 30+ calls reviewed and labelled; root-cause distribution produced. Wrap with P01.
 
@@ -39,7 +41,7 @@ Implement T-M4-03: Call Review console (Streamlit, apps/review).
   transcript with reference diff when a scenario exists, tool calls with scrubbed args), Label form
   (RC code from the taxonomy, severity 1-4, notes, "add to dataset: train/dev"), Dataset export
   (labelled failures -> new dataset version draft), Compare eval runs (metrics table with deltas).
-- Escape all transcript text; never use unsafe_allow_html with call content. Behind Caddy auth.
+- Escape all transcript text; never use unsafe_allow_html with call content. Behind localhost reverse-proxy (N/A) auth.
 - Add a `callscope review seed-demo` command creating 40 synthetic calls with planted failures so I
   can practise labelling before real traffic, and a page showing root-cause distribution + human vs
   auto attribution agreement.
@@ -58,7 +60,7 @@ Files: callscope/sim/{caller.py,oracle.py}, callscope/eval/runner_sim.py, tests/
   endpoint, late endpoint (dead air > 2 s), missed/false barge-in, barge-in stop latency, and
   end-to-end response latency from events (worker clock).
 - Runner: `callscope eval run --mode caller_sim` runs all scenarios unattended against the
-  staging node, writes results to eval tables; failures produce reviewable calls (channel=sim).
+  local Mac, writes results to eval tables; failures produce reviewable calls (channel=sim).
 - Tests: oracle logic with synthetic timelines; smoke test with mocks in CI; real run under marker gpu.
 ```
 
@@ -71,4 +73,13 @@ Implement T-M4-05: quality/drift dashboards + alerts.
 - Prometheus alert rules: p95 response latency > NFR-01 for 10 min, provider error rate > 5%, GPU
   node up with 0 sessions for 30 min, monthly credit budget threshold (documented manual metric).
 - CI: `promtool check rules` and dashboard JSON lint; unit test the exporter query logic.
+```
+
+
+## T-M4-06
+```text
+Implement T-M4-06: optional LangSmith tracing (default off).
+- Behind CALLSCOPE_LANGSMITH_ENABLED; use langsmith SDK and/or OTEL exporter.
+- scrub() fictional text only; never audio; never real PII. Postgres remains SoT (ADR-006).
+- Decide whether LangSmith datasets/experiments earn a place for judge eval; record in DECISIONS.md.
 ```
