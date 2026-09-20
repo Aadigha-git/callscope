@@ -26,7 +26,7 @@ tasks:
   priority: P0
   status: ready
   sprint: S1
-  issue: null
+  issue: 1
   prompt: prompts/P00_bootstrap.md
 - id: T-M0-02
   title: "Spike S-1: can a call/turn ID reach Hermes hooks via the API server?"
@@ -49,7 +49,7 @@ tasks:
   priority: P0
   status: ready
   sprint: S1
-  issue: null
+  issue: 2
   prompt: prompts/M0_spikes.md#t-m0-02
 - id: T-M0-03
   title: "Spike S-2: Hermes per-turn overhead with a slim profile"
@@ -71,7 +71,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 3
   prompt: prompts/M0_spikes.md#t-m0-03
 - id: T-M0-04
   title: "Spike S-3: LLM shortlist tool-call reliability via vLLM + Hermes"
@@ -94,7 +94,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 4
   prompt: prompts/M0_spikes.md#t-m0-04
 - id: T-M0-05
   title: "Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison"
@@ -117,7 +117,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: S1
-  issue: null
+  issue: 5
   prompt: prompts/M0_spikes.md#t-m0-05
 - id: T-M0-06
   title: "Spike S-5: ASR/TTS shortlist probe on clean and 8 kHz audio"
@@ -139,7 +139,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 6
   prompt: prompts/M0_spikes.md#t-m0-06
 - id: T-M0-07
   title: "Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles"
@@ -162,7 +162,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: S1
-  issue: null
+  issue: 7
   prompt: prompts/M0_spikes.md#t-m0-07
 # ===================== M1 Walking skeleton =====================
 - id: T-M1-01
@@ -186,7 +186,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: S1
-  issue: null
+  issue: 8
   prompt: prompts/M1_walking_skeleton.md#t-m1-01
 - id: T-M1-02
   title: Database migrations from schema.sql (Alembic) and repository layer
@@ -209,7 +209,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 9
   prompt: prompts/M1_walking_skeleton.md#t-m1-02
 - id: T-M1-03
   title: Provider interfaces (STT/TTS/Brain) and deterministic mock providers
@@ -231,7 +231,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 10
   prompt: prompts/M1_walking_skeleton.md#t-m1-03
 - id: T-M1-04
   title: Sentence chunker and TTS text normaliser
@@ -253,7 +253,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 11
   prompt: prompts/M1_walking_skeleton.md#t-m1-04
 - id: T-M1-05
   title: ASR server (WebSocket streaming + HTTP batch)
@@ -276,7 +276,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 12
   prompt: prompts/M1_walking_skeleton.md#t-m1-05
 - id: T-M1-06
   title: TTS server (chunked PCM streaming)
@@ -298,7 +298,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 13
   prompt: prompts/M1_walking_skeleton.md#t-m1-06
 - id: T-M1-07
   title: CallScope API - status, sessions (consent + captcha + token), ingest
@@ -321,7 +321,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 14
   prompt: prompts/M1_walking_skeleton.md#t-m1-07
 - id: T-M1-08
   title: Web client (consent modal, call UI, live transcript)
@@ -342,7 +342,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 15
   prompt: prompts/M1_walking_skeleton.md#t-m1-08
 - id: T-M1-09
   title: Hermes receptionist profile and BrainBackend (SSE client with cancel)
@@ -364,7 +364,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 16
   prompt: prompts/M1_walking_skeleton.md#t-m1-09
 - id: T-M1-10
   title: Voice worker (state machine, LiveKit integration, events)
@@ -385,7 +385,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 17
   prompt: prompts/M1_walking_skeleton.md#t-m1-10
 - id: T-M1-11
   title: Compose stacks (cpu/gpu), LiveKit config, metrics wiring, Live-ops dashboard v1
@@ -406,7 +406,7 @@ tasks:
   priority: P1
   status: backlog
   sprint: null
-  issue: null
+  issue: 18
   prompt: prompts/M1_walking_skeleton.md#t-m1-11
 # ===================== M2 Receptionist behaviour =====================
 - id: T-M2-01
@@ -430,7 +430,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 19
   prompt: prompts/M2_receptionist.md#t-m2-01
 - id: T-M2-02
   title: Hermes plugin skeleton and receptionist tools
@@ -452,7 +452,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 20
   prompt: prompts/M2_receptionist.md#t-m2-02
 - id: T-M2-03
   title: Policy hook and toolset lockdown self-test
@@ -473,7 +473,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 21
   prompt: prompts/M2_receptionist.md#t-m2-03
 - id: T-M2-04
   title: Receptionist skill, persona and confirmation protocol
@@ -495,7 +495,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 22
   prompt: prompts/M2_receptionist.md#t-m2-04
 - id: T-M2-05
   title: Barge-in, interruption note, filler and degradation paths
@@ -517,7 +517,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 23
   prompt: prompts/M2_receptionist.md#t-m2-05
 - id: T-M2-06
   title: Recording pipeline, consent record and retention job
@@ -538,7 +538,7 @@ tasks:
   priority: P1
   status: backlog
   sprint: null
-  issue: null
+  issue: 24
   prompt: prompts/M2_receptionist.md#t-m2-06
 # ===================== M3 Eval core =====================
 - id: T-M3-01
@@ -559,7 +559,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 25
   prompt: prompts/M3_eval_core.md#t-m3-01
 - id: T-M3-02
   title: Text normaliser and scorers (WER, entities, intent/slot, tools, task success)
@@ -580,7 +580,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 27
   prompt: prompts/M3_eval_core.md#t-m3-02
 - id: T-M3-03
   title: Dataset builder - synthetic caller audio and augmentation matrix
@@ -602,7 +602,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 28
   prompt: prompts/M3_eval_core.md#t-m3-03
 - id: T-M3-04
   title: Data-quality checks, manifests, splits and dataset registry
@@ -623,7 +623,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 29
   prompt: prompts/M3_eval_core.md#t-m3-04
 - id: T-M3-05
   title: Eval runner (stage-replay and text-replay) with DB persistence
@@ -645,7 +645,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 31
   prompt: prompts/M3_eval_core.md#t-m3-05
 - id: T-M3-06
   title: Statistics, compare, thresholds.yaml and regression gate
@@ -666,7 +666,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 32
   prompt: prompts/M3_eval_core.md#t-m3-06
 - id: T-M3-07
   title: Recorded human set protocol and baseline report
@@ -688,7 +688,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 33
   prompt: prompts/M3_eval_core.md#t-m3-07
 - id: T-M3-08
   title: Hallucination and prompt-injection scoring
@@ -710,7 +710,7 @@ tasks:
   priority: P1
   status: backlog
   sprint: null
-  issue: null
+  issue: 35
   prompt: prompts/M3_eval_core.md#t-m3-08
 # ===================== M4 Review and caller-sim =====================
 - id: T-M4-01
@@ -733,7 +733,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 36
   prompt: prompts/M4_review_and_sim.md#t-m4-01
 - id: T-M4-02
   title: Review, eval and governance-read API endpoints
@@ -754,7 +754,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 38
   prompt: prompts/M4_review_and_sim.md#t-m4-02
 - id: T-M4-03
   title: Call Review console (Streamlit)
@@ -776,7 +776,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 39
   prompt: prompts/M4_review_and_sim.md#t-m4-03
 - id: T-M4-04
   title: Caller simulator and caller-sim eval mode
@@ -798,7 +798,7 @@ tasks:
   priority: P1
   status: backlog
   sprint: null
-  issue: null
+  issue: 40
   prompt: prompts/M4_review_and_sim.md#t-m4-04
 - id: T-M4-05
   title: Quality and drift dashboards and alert rules
@@ -820,7 +820,7 @@ tasks:
   priority: P2
   status: backlog
   sprint: null
-  issue: null
+  issue: 41
   prompt: prompts/M4_review_and_sim.md#t-m4-05
 # ===================== M5 Improvement and governance =====================
 - id: T-M5-01
@@ -842,7 +842,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 42
   prompt: prompts/M5_improvement_governance.md#t-m5-01
 - id: T-M5-02
   title: "Experiment E1: ASR hotword / prompt biasing"
@@ -863,7 +863,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 43
   prompt: prompts/M5_improvement_governance.md#t-m5-02
 - id: T-M5-03
   title: "Experiment E2/E3: LoRA ASR adaptation or endpointing tuning"
@@ -885,7 +885,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 44
   prompt: prompts/M5_improvement_governance.md#t-m5-03
 - id: T-M5-04
   title: Governance generator - model cards, validation reports, risk register, gates
@@ -907,7 +907,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 45
   prompt: prompts/M5_improvement_governance.md#t-m5-04
 # ===================== M6 Hardening and telephony =====================
 - id: T-M6-01
@@ -928,7 +928,7 @@ tasks:
   priority: P1
   status: backlog
   sprint: null
-  issue: null
+  issue: 46
   prompt: prompts/M6_hardening.md#t-m6-01
 - id: T-M6-02
   title: Security test suite and abuse controls
@@ -949,7 +949,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 47
   prompt: prompts/M6_hardening.md#t-m6-02
 - id: T-M6-03
   title: GPU lifecycle scripts, auto-shutdown and offline mode
@@ -970,7 +970,7 @@ tasks:
   priority: P0
   status: backlog
   sprint: null
-  issue: null
+  issue: 48
   prompt: prompts/M6_hardening.md#t-m6-03
 - id: T-M6-04
   title: SIP inbound via livekit-sip (stretch)
@@ -991,7 +991,7 @@ tasks:
   priority: P3
   status: backlog
   sprint: null
-  issue: null
+  issue: 49
   prompt: prompts/M6_hardening.md#t-m6-04
 - id: T-M6-05
   title: Demo polish, README and write-up, release v1.0.0
@@ -1012,5 +1012,5 @@ tasks:
   priority: P1
   status: backlog
   sprint: null
-  issue: null
+  issue: 50
   prompt: prompts/M6_hardening.md#t-m6-05

@@ -31,79 +31,79 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M0-01 | Engineering environment and repository bootstrap | NFR-05, NFR-12 |  | 4 | BAG | ready | S1 |  |
-| T-M0-02 | Spike S-1: can a call/turn ID reach Hermes hooks via the API server? | FR-02, NFR-08 | T-M0-01 | 4 | BAG | ready | S1 |  |
-| T-M0-03 | Spike S-2: Hermes per-turn overhead with a slim profile | NFR-01 | T-M0-01, T-M0-04 | 5 | BAG | backlog |  |  |
-| T-M0-04 | Spike S-3: LLM shortlist tool-call reliability via vLLM + Hermes | FR-02, FR-05 | T-M0-01, T-M0-07 | 8 | BAG | backlog |  |  |
-| T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | FR-01, FR-03, FR-04 | T-M0-01 | 8 | BAG | backlog | S1 |  |
-| T-M0-06 | Spike S-5: ASR/TTS shortlist probe on clean and 8 kHz audio | FR-05, FR-07 | T-M0-01, T-M0-07 | 8 | BAG | backlog |  |  |
-| T-M0-07 | Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles | NFR-01, NFR-03, NFR-11 | T-M0-01 | 6 | BAG | backlog | S1 |  |
+| T-M0-01 | Engineering environment and repository bootstrap | NFR-05, NFR-12 |  | 4 | BAG | ready | S1 | #1 |
+| T-M0-02 | Spike S-1: can a call/turn ID reach Hermes hooks via the API server? | FR-02, NFR-08 | T-M0-01 | 4 | BAG | ready | S1 | #2 |
+| T-M0-03 | Spike S-2: Hermes per-turn overhead with a slim profile | NFR-01 | T-M0-01, T-M0-04 | 5 | BAG | backlog |  | #3 |
+| T-M0-04 | Spike S-3: LLM shortlist tool-call reliability via vLLM + Hermes | FR-02, FR-05 | T-M0-01, T-M0-07 | 8 | BAG | backlog |  | #4 |
+| T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | FR-01, FR-03, FR-04 | T-M0-01 | 8 | BAG | backlog | S1 | #5 |
+| T-M0-06 | Spike S-5: ASR/TTS shortlist probe on clean and 8 kHz audio | FR-05, FR-07 | T-M0-01, T-M0-07 | 8 | BAG | backlog |  | #6 |
+| T-M0-07 | Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles | NFR-01, NFR-03, NFR-11 | T-M0-01 | 6 | BAG | backlog | S1 | #7 |
 
 ## M1 Walking skeleton
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M1-01 | Event envelope, async batching writer, provider-call instrumentation | FR-06, NFR-08 | T-M0-01 | 8 | BAG | backlog | S1 |  |
-| T-M1-02 | Database migrations from schema.sql (Alembic) and repository layer | FR-06, NFR-06 | T-M0-01 | 8 | BAG | backlog |  |  |
-| T-M1-03 | Provider interfaces (STT/TTS/Brain) and deterministic mock providers | FR-05, FR-03, NFR-10, NFR-12 | T-M1-01 | 6 | BAG | backlog |  |  |
-| T-M1-04 | Sentence chunker and TTS text normaliser | FR-03, NFR-01 | T-M1-03 | 6 | BAG | backlog |  |  |
-| T-M1-05 | ASR server (WebSocket streaming + HTTP batch) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 12 | BAG | backlog |  |  |
-| T-M1-06 | TTS server (chunked PCM streaming) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 8 | BAG | backlog |  |  |
-| T-M1-07 | CallScope API - status, sessions (consent + captcha + token), ingest | FR-01, FR-06, NFR-05 | T-M1-02 | 12 | BAG | backlog |  |  |
-| T-M1-08 | Web client (consent modal, call UI, live transcript) | FR-01, NFR-05 | T-M1-07 | 10 | BAG | backlog |  |  |
-| T-M1-09 | Hermes receptionist profile and BrainBackend (SSE client with cancel) | FR-02, FR-03, NFR-05 | T-M0-02, T-M0-03, T-M0-04, T-M1-03 | 10 | BAG | backlog |  |  |
-| T-M1-10 | Voice worker (state machine, LiveKit integration, events) | FR-03, FR-04, FR-06, NFR-01 | T-M0-05, T-M1-01, T-M1-03, T-M1-04, T-M1-05, T-M1-06, T-M1-09 | 16 | BAG | backlog |  |  |
-| T-M1-11 | Compose stacks (cpu/gpu), LiveKit config, metrics wiring, Live-ops dashboard v1 | FR-12, NFR-12, NFR-07 | T-M1-07, T-M1-10 | 10 | BAG | backlog |  |  |
+| T-M1-01 | Event envelope, async batching writer, provider-call instrumentation | FR-06, NFR-08 | T-M0-01 | 8 | BAG | backlog | S1 | #8 |
+| T-M1-02 | Database migrations from schema.sql (Alembic) and repository layer | FR-06, NFR-06 | T-M0-01 | 8 | BAG | backlog |  | #9 |
+| T-M1-03 | Provider interfaces (STT/TTS/Brain) and deterministic mock providers | FR-05, FR-03, NFR-10, NFR-12 | T-M1-01 | 6 | BAG | backlog |  | #10 |
+| T-M1-04 | Sentence chunker and TTS text normaliser | FR-03, NFR-01 | T-M1-03 | 6 | BAG | backlog |  | #11 |
+| T-M1-05 | ASR server (WebSocket streaming + HTTP batch) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 12 | BAG | backlog |  | #12 |
+| T-M1-06 | TTS server (chunked PCM streaming) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 8 | BAG | backlog |  | #13 |
+| T-M1-07 | CallScope API - status, sessions (consent + captcha + token), ingest | FR-01, FR-06, NFR-05 | T-M1-02 | 12 | BAG | backlog |  | #14 |
+| T-M1-08 | Web client (consent modal, call UI, live transcript) | FR-01, NFR-05 | T-M1-07 | 10 | BAG | backlog |  | #15 |
+| T-M1-09 | Hermes receptionist profile and BrainBackend (SSE client with cancel) | FR-02, FR-03, NFR-05 | T-M0-02, T-M0-03, T-M0-04, T-M1-03 | 10 | BAG | backlog |  | #16 |
+| T-M1-10 | Voice worker (state machine, LiveKit integration, events) | FR-03, FR-04, FR-06, NFR-01 | T-M0-05, T-M1-01, T-M1-03, T-M1-04, T-M1-05, T-M1-06, T-M1-09 | 16 | BAG | backlog |  | #17 |
+| T-M1-11 | Compose stacks (cpu/gpu), LiveKit config, metrics wiring, Live-ops dashboard v1 | FR-12, NFR-12, NFR-07 | T-M1-07, T-M1-10 | 10 | BAG | backlog |  | #18 |
 
 ## M2 Receptionist behaviour
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M2-01 | Business API, deterministic seed data and knowledge base with gaps | FR-02 | T-M1-02 | 10 | BAG | backlog |  |  |
-| T-M2-02 | Hermes plugin skeleton and receptionist tools | FR-02, FR-13 | T-M0-02, T-M2-01 | 12 | BAG | backlog |  |  |
-| T-M2-03 | Policy hook and toolset lockdown self-test | FR-13, NFR-05 | T-M2-02 | 8 | BAG | backlog |  |  |
-| T-M2-04 | Receptionist skill, persona and confirmation protocol | FR-02, FR-13 | T-M2-02 | 8 | BAG | backlog |  |  |
-| T-M2-05 | Barge-in, interruption note, filler and degradation paths | FR-04, NFR-02, FR-03 | T-M1-10 | 12 | BAG | backlog |  |  |
-| T-M2-06 | Recording pipeline, consent record and retention job | FR-06, NFR-13, NFR-05 | T-M1-07, T-M1-10 | 8 | BAG | backlog |  |  |
+| T-M2-01 | Business API, deterministic seed data and knowledge base with gaps | FR-02 | T-M1-02 | 10 | BAG | backlog |  | #19 |
+| T-M2-02 | Hermes plugin skeleton and receptionist tools | FR-02, FR-13 | T-M0-02, T-M2-01 | 12 | BAG | backlog |  | #20 |
+| T-M2-03 | Policy hook and toolset lockdown self-test | FR-13, NFR-05 | T-M2-02 | 8 | BAG | backlog |  | #21 |
+| T-M2-04 | Receptionist skill, persona and confirmation protocol | FR-02, FR-13 | T-M2-02 | 8 | BAG | backlog |  | #22 |
+| T-M2-05 | Barge-in, interruption note, filler and degradation paths | FR-04, NFR-02, FR-03 | T-M1-10 | 12 | BAG | backlog |  | #23 |
+| T-M2-06 | Recording pipeline, consent record and retention job | FR-06, NFR-13, NFR-05 | T-M1-07, T-M1-10 | 8 | BAG | backlog |  | #24 |
 
 ## M3 Eval core
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M3-01 | Scenario spec schema and scenario library (12 + 4 adversarial) | FR-07, FR-08, FR-13 | T-M2-01 | 8 | BAG | backlog |  |  |
-| T-M3-02 | Text normaliser and scorers (WER, entities, intent/slot, tools, task success) | FR-08 | T-M3-01 | 12 | BAG | backlog |  |  |
-| T-M3-03 | Dataset builder - synthetic caller audio and augmentation matrix | FR-07 | T-M3-01, T-M0-06 | 14 | BAG | backlog |  |  |
-| T-M3-04 | Data-quality checks, manifests, splits and dataset registry | FR-07, NFR-09, NFR-06 | T-M3-03, T-M1-02 | 10 | BAG | backlog |  |  |
-| T-M3-05 | Eval runner (stage-replay and text-replay) with DB persistence | FR-08, NFR-06 | T-M3-02, T-M3-04, T-M2-04 | 14 | BAG | backlog |  |  |
-| T-M3-06 | Statistics, compare, thresholds.yaml and regression gate | FR-08, NFR-06, NFR-04 | T-M3-05 | 8 | BAG | backlog |  |  |
-| T-M3-07 | Recorded human set protocol and baseline report | FR-07, FR-08 | T-M3-05, T-M3-06 | 14 | BAG | backlog |  |  |
-| T-M3-08 | Hallucination and prompt-injection scoring | FR-08, FR-13, NFR-04 | T-M3-05 | 12 | BAG | backlog |  |  |
+| T-M3-01 | Scenario spec schema and scenario library (12 + 4 adversarial) | FR-07, FR-08, FR-13 | T-M2-01 | 8 | BAG | backlog |  | #25 |
+| T-M3-02 | Text normaliser and scorers (WER, entities, intent/slot, tools, task success) | FR-08 | T-M3-01 | 12 | BAG | backlog |  | #27 |
+| T-M3-03 | Dataset builder - synthetic caller audio and augmentation matrix | FR-07 | T-M3-01, T-M0-06 | 14 | BAG | backlog |  | #28 |
+| T-M3-04 | Data-quality checks, manifests, splits and dataset registry | FR-07, NFR-09, NFR-06 | T-M3-03, T-M1-02 | 10 | BAG | backlog |  | #29 |
+| T-M3-05 | Eval runner (stage-replay and text-replay) with DB persistence | FR-08, NFR-06 | T-M3-02, T-M3-04, T-M2-04 | 14 | BAG | backlog |  | #31 |
+| T-M3-06 | Statistics, compare, thresholds.yaml and regression gate | FR-08, NFR-06, NFR-04 | T-M3-05 | 8 | BAG | backlog |  | #32 |
+| T-M3-07 | Recorded human set protocol and baseline report | FR-07, FR-08 | T-M3-05, T-M3-06 | 14 | BAG | backlog |  | #33 |
+| T-M3-08 | Hallucination and prompt-injection scoring | FR-08, FR-13, NFR-04 | T-M3-05 | 12 | BAG | backlog |  | #35 |
 
 ## M4 Review and caller-sim
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M4-01 | Auto-flag rules and root-cause attribution heuristics | FR-09 | T-M1-02, T-M3-05 | 10 | BAG | backlog |  |  |
-| T-M4-02 | Review, eval and governance-read API endpoints | FR-09, FR-11 | T-M4-01, T-M1-07 | 10 | BAG | backlog |  |  |
-| T-M4-03 | Call Review console (Streamlit) | FR-09 | T-M4-02 | 16 | BAG | backlog |  |  |
-| T-M4-04 | Caller simulator and caller-sim eval mode | FR-14, NFR-01, NFR-02 | T-M3-05, T-M1-10 | 16 | BAG | backlog |  |  |
-| T-M4-05 | Quality and drift dashboards and alert rules | FR-12, NFR-11 | T-M1-11, T-M4-01 | 8 | BAG | backlog |  |  |
+| T-M4-01 | Auto-flag rules and root-cause attribution heuristics | FR-09 | T-M1-02, T-M3-05 | 10 | BAG | backlog |  | #36 |
+| T-M4-02 | Review, eval and governance-read API endpoints | FR-09, FR-11 | T-M4-01, T-M1-07 | 10 | BAG | backlog |  | #38 |
+| T-M4-03 | Call Review console (Streamlit) | FR-09 | T-M4-02 | 16 | BAG | backlog |  | #39 |
+| T-M4-04 | Caller simulator and caller-sim eval mode | FR-14, NFR-01, NFR-02 | T-M3-05, T-M1-10 | 16 | BAG | backlog |  | #40 |
+| T-M4-05 | Quality and drift dashboards and alert rules | FR-12, NFR-11 | T-M1-11, T-M4-01 | 8 | BAG | backlog |  | #41 |
 
 ## M5 Improvement and governance
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M5-01 | MLflow tracking, model inventory and stack version registry | FR-11, NFR-06 | T-M4-02 | 8 | BAG | backlog |  |  |
-| T-M5-02 | Experiment E1: ASR hotword / prompt biasing | FR-10 | T-M3-07, T-M5-01 | 8 | BAG | backlog |  |  |
-| T-M5-03 | Experiment E2/E3: LoRA ASR adaptation or endpointing tuning | FR-10 | T-M5-02, T-M4-03 | 20 | BAG | backlog |  |  |
-| T-M5-04 | Governance generator - model cards, validation reports, risk register, gates | FR-11, NFR-06 | T-M5-01, T-M3-06 | 14 | BAG | backlog |  |  |
+| T-M5-01 | MLflow tracking, model inventory and stack version registry | FR-11, NFR-06 | T-M4-02 | 8 | BAG | backlog |  | #42 |
+| T-M5-02 | Experiment E1: ASR hotword / prompt biasing | FR-10 | T-M3-07, T-M5-01 | 8 | BAG | backlog |  | #43 |
+| T-M5-03 | Experiment E2/E3: LoRA ASR adaptation or endpointing tuning | FR-10 | T-M5-02, T-M4-03 | 20 | BAG | backlog |  | #44 |
+| T-M5-04 | Governance generator - model cards, validation reports, risk register, gates | FR-11, NFR-06 | T-M5-01, T-M3-06 | 14 | BAG | backlog |  | #45 |
 
 ## M6 Hardening and telephony
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M6-01 | Load test and concurrency limits | NFR-03, NFR-01 | T-M4-04 | 8 | BAG | backlog |  |  |
-| T-M6-02 | Security test suite and abuse controls | NFR-05, NFR-13 | T-M2-03, T-M2-06, T-M1-07 | 10 | BAG | backlog |  |  |
-| T-M6-03 | GPU lifecycle scripts, auto-shutdown and offline mode | NFR-07, NFR-11 | T-M0-07, T-M1-11 | 10 | BAG | backlog |  |  |
-| T-M6-04 | SIP inbound via livekit-sip (stretch) | FR-15 | T-M6-02 | 12 | BAG | backlog |  |  |
-| T-M6-05 | Demo polish, README and write-up, release v1.0.0 | FR-01, FR-11, NFR-06 | T-M5-04, T-M6-03 | 10 | BAG | backlog |  |  |
+| T-M6-01 | Load test and concurrency limits | NFR-03, NFR-01 | T-M4-04 | 8 | BAG | backlog |  | #46 |
+| T-M6-02 | Security test suite and abuse controls | NFR-05, NFR-13 | T-M2-03, T-M2-06, T-M1-07 | 10 | BAG | backlog |  | #47 |
+| T-M6-03 | GPU lifecycle scripts, auto-shutdown and offline mode | NFR-07, NFR-11 | T-M0-07, T-M1-11 | 10 | BAG | backlog |  | #48 |
+| T-M6-04 | SIP inbound via livekit-sip (stretch) | FR-15 | T-M6-02 | 12 | BAG | backlog |  | #49 |
+| T-M6-05 | Demo polish, README and write-up, release v1.0.0 | FR-01, FR-11, NFR-06 | T-M5-04, T-M6-03 | 10 | BAG | backlog |  | #50 |
