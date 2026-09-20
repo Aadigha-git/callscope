@@ -115,7 +115,7 @@ tasks:
   owner: BAG
   estimate_h: 8
   priority: P0
-  status: in_review
+  status: done
   sprint: S1
   issue: 5
   prompt: prompts/M0_spikes.md#t-m0-05
@@ -160,7 +160,7 @@ tasks:
   owner: BAG
   estimate_h: 6
   priority: P0
-  status: backlog
+  status: blocked
   sprint: S1
   issue: 7
   prompt: prompts/M0_spikes.md#t-m0-07

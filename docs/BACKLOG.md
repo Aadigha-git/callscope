@@ -6,7 +6,7 @@
 
 | Milestone | Done | In flight | Total | Est. hours (remaining) |
 |---|---|---|---|---|
-| M0 Setup and spikes | 2 | 1 | 7 | 35 |
+| M0 Setup and spikes | 3 | 0 | 7 | 27 |
 | M1 Walking skeleton | 0 | 0 | 11 | 106 |
 | M2 Receptionist behaviour | 0 | 0 | 6 | 58 |
 | M3 Eval core | 0 | 0 | 8 | 92 |
@@ -22,8 +22,8 @@
 |---|---|---|---|
 | T-M0-01 | Engineering environment and repository bootstrap | 4 | done |
 | T-M0-02 | Spike S-1: can a call/turn ID reach Hermes hooks via the API server? | 4 | done |
-| T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | 8 | in_review |
-| T-M0-07 | Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles | 6 | backlog |
+| T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | 8 | done |
+| T-M0-07 | Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles | 6 | blocked |
 | T-M1-01 | Event envelope, async batching writer, provider-call instrumentation | 8 | backlog |
 
 
@@ -35,9 +35,9 @@
 | T-M0-02 | Spike S-1: can a call/turn ID reach Hermes hooks via the API server? | FR-02, NFR-08 | T-M0-01 | 4 | BAG | done | S1 | #2 |
 | T-M0-03 | Spike S-2: Hermes per-turn overhead with a slim profile | NFR-01 | T-M0-01, T-M0-04 | 5 | BAG | backlog |  | #3 |
 | T-M0-04 | Spike S-3: LLM shortlist tool-call reliability via vLLM + Hermes | FR-02, FR-05 | T-M0-01, T-M0-07 | 8 | BAG | backlog |  | #4 |
-| T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | FR-01, FR-03, FR-04 | T-M0-01 | 8 | BAG | in_review | S1 | #5 |
+| T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | FR-01, FR-03, FR-04 | T-M0-01 | 8 | BAG | done | S1 | #5 |
 | T-M0-06 | Spike S-5: ASR/TTS shortlist probe on clean and 8 kHz audio | FR-05, FR-07 | T-M0-01, T-M0-07 | 8 | BAG | backlog |  | #6 |
-| T-M0-07 | Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles | NFR-01, NFR-03, NFR-11 | T-M0-01 | 6 | BAG | backlog | S1 | #7 |
+| T-M0-07 | Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles | NFR-01, NFR-03, NFR-11 | T-M0-01 | 6 | BAG | blocked | S1 | #7 |
 
 ## M1 Walking skeleton
 

@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M0-07
+- Done: Spike S-6 harness under `spikes/T-M0-07/` (bootstrap, measure_vram, probe_rtt, START_STOP). RTT n=100 from laptop: us-central1 TCP p50≈49ms (best); eu-west1≈151ms; eu-north1≈190ms. T-M0-05 marked done after #53.
+- Next: **blocked on human** — provision Nebius GPU VM in us-central1 + persistent model disk; share SSH host (no secrets in chat logs). Then run bootstrap + measure_vram; fill §9.5 / DECISIONS.
+- Open questions / blockers: no local CUDA; no Nebius CLI; VRAM/warm-up cannot be completed until node exists.
+- Commands to resume: `git switch spike/T-M0-07-gpu-sizing` · on node: `bash scripts/bootstrap_gpu_node.sh`
+
 ## 2026-09-20 / T-M0-05
 - Done: Spike S-4 — LiveKit Agents 1.8.2 stub worker (EchoSTT/CannedLLM/SineTTS), docker livekit-server v1.9.1, headless `SMOKE_OK`, §4.2 mapping, hermes-livekit 0.4.0 review; D-20260920-05; ADR-002 confirmed (own worker). Also marked T-M0-01/T-M0-02 done after #52 merge.
 - Next: PR in_review; after merge mark done. Next S1 tasks: T-M0-07 or T-M1-01 (T-M0-05 deps satisfied for later worker).

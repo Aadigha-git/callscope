@@ -1,0 +1,82 @@
+{
+  "spike": "T-M0-07",
+  "started_utc": "2026-09-20T19:00:25Z",
+  "client_note": "Run from laptop near Los Angeles / Irvine (design S-6).",
+  "samples": 100,
+  "icmp_note": "ICMP often blocked; TCP/HTTPS used as primary RTT proxy.",
+  "targets": [
+    {
+      "host": "api.tokenfactory.nebius.com",
+      "port": 443,
+      "kind": "https",
+      "tcp_connect": {
+        "n": 100,
+        "p50_ms": 190.46,
+        "p95_ms": 220.17,
+        "mean_ms": 195.16,
+        "min_ms": 184.32,
+        "max_ms": 350.71,
+        "errors": 0
+      },
+      "https_ttfb": {
+        "n": 100,
+        "p50_ms": 764.34,
+        "p95_ms": 875.89,
+        "mean_ms": 777.37,
+        "min_ms": 737.97,
+        "max_ms": 926.02,
+        "errors": 0
+      },
+      "region": "eu-north1"
+    },
+    {
+      "host": "api.tokenfactory.eu-west1.nebius.com",
+      "port": 443,
+      "kind": "https",
+      "tcp_connect": {
+        "n": 100,
+        "p50_ms": 151.38,
+        "p95_ms": 163.49,
+        "mean_ms": 153.41,
+        "min_ms": 141.93,
+        "max_ms": 253.15,
+        "errors": 0
+      },
+      "https_ttfb": {
+        "n": 100,
+        "p50_ms": 608.08,
+        "p95_ms": 691.76,
+        "mean_ms": 620.26,
+        "min_ms": 584.85,
+        "max_ms": 786.93,
+        "errors": 0
+      },
+      "region": "eu-west1"
+    },
+    {
+      "host": "api.tokenfactory.us-central1.nebius.com",
+      "port": 443,
+      "kind": "https",
+      "tcp_connect": {
+        "n": 100,
+        "p50_ms": 48.86,
+        "p95_ms": 57.06,
+        "mean_ms": 49.91,
+        "min_ms": 45.53,
+        "max_ms": 66.58,
+        "errors": 0
+      },
+      "https_ttfb": {
+        "n": 100,
+        "p50_ms": 200.51,
+        "p95_ms": 238.26,
+        "mean_ms": 206.48,
+        "min_ms": 187.87,
+        "max_ms": 398.22,
+        "errors": 0
+      },
+      "region": "us-central1"
+    }
+  ],
+  "recommended_region_by_tcp_p50": "us-central1"
+}
