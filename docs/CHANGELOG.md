@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Spike S-3 (T-M0-04): Hermes→Token Factory tool-call reliability harness under `spikes/T-M0-04/`; choose Nemotron-3.5-Lightning (D-20260920-18)
 - Spike S-6 (T-M0-07): Mac baseline, native livekit-server 1.13.7 verification, Token Factory regional RTT harness under `spikes/T-M0-07/` (D-20260920-17)
 - Local-Mac rescope: ADR-014..017, budget/cassette tasks (T-M1-12/13), LangSmith task (T-M4-06),
   optional E2 task (T-M5-05); `dropped` backlog status; `make demo`/`budget` stubs; `.gitleaks.toml`
@@ -14,6 +15,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 - Scrubber coverage for TOKEN_FACTORY / LangSmith / Toloka / api_key assignments
 
 ### Changed
+- Default `TOKEN_FACTORY_MODEL` → `nvidia/Nemotron-3_5-Lightning` (D-20260920-18)
 - Scope: public Nebius GPU VM demo → local Apple Silicon demo + Token Factory LLM (D-20260920-10..16)
 - Design doc v1.1: NFRs, infra §9, security §8.6, ADR statuses; Markdown supersedes `.docx`
 - Backlog rewrite; T-M6-04 dropped; sprint plan regenerated in DEV_GUIDE §5

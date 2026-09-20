@@ -28,6 +28,21 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-18 - S-3: Choose Nemotron-3.5-Lightning on Token Factory via Hermes
+- Date / Task: 2026-09-20 / T-M0-04
+- Context: Spike S-3 (U3). hermes-agent 0.19.0 API server with custom provider → Token Factory (`https://api.tokenfactory.nebius.com/v1/`). Stub receptionist toolset locked to `callscope-s3` (no terminal/browser). 60 scripted turns × 3 function_calling candidates. Run ID `394d90d9-702a-44db-b081-be6ee0879428`; raw `spikes/T-M0-04/results/tool_reliability.json`. Total est. spend ~$0.080.
+  | Model | Valid tool-call rate | p50 turn (Hermes) | Est. USD |
+  |---|---:|---:|---:|
+  | nvidia/Nemotron-3_5-Lightning | 100% (60/60) | ~2.7 s | ~0.024 |
+  | Qwen/Qwen3-30B-A3B-Instruct-2507 | 100% (60/60) | ~4.8 s | ~0.026 |
+  | nvidia/NVIDIA-Nemotron-3-Nano-30B-A3B | 98.3% (59/60) | ~10.8 s | ~0.031 |
+  Licences/prices per D-20260920-12. Nano miss: one booking turn with no tool call. Injection turns: 0 forbidden tools for all three.
+- Decision: **Demo agent LLM = `nvidia/Nemotron-3_5-Lightning`** on Token Factory through Hermes. Alternate: `Qwen/Qwen3-30B-A3B-Instruct-2507`. Optional local mlx-lm/llama.cpp fallback sketched only (`spikes/T-M0-04/docs/local_fallback.md`); not a gate. Avoid Ollama primary (D-20260920-13).
+- Alternatives considered: Nano as default (rejected: slower + one miss); Qwen as default (acceptable alternate, slightly higher cost/latency); local-only LLM (deferred — memory budget with ASR/TTS).
+- Consequences: set `TOKEN_FACTORY_MODEL` default; T-M0-03 overhead spike uses this model; production plugin must return JSON **strings** from tool handlers (Hermes 0.19 contract).
+- Design doc impact: U3 / S-3 resolved; `.env.example` model default updated.
+- Status: accepted
+
 ### D-20260920-17 - S-6: Mac baseline, native livekit-server, Token Factory regional RTT
 - Date / Task: 2026-09-20 / T-M0-07
 - Context: Spike S-6 under local-Mac scope. Measured on Apple M5 / 16 GB / macOS 26.6.2 arm64. Installed Homebrew `livekit` 1.13.7 (arm64 bottle). Ran `livekit-server --dev --config-body "port: 17880"` → HTTP 200 (port 7880 was held by Docker Desktop publishing an older LiveKit). Probed Token Factory edges with 100 TCP + 20 HTTPS samples/region (no API key; no chat spend). Raw: `spikes/T-M0-07/results/`.

@@ -8,11 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M0-04
+- Done: Spike S-3 — Hermes 0.19.0 → Token Factory; 60 turns × 3 models; winner **Nemotron-3_5-Lightning** 100% (run `394d90d9-702a-44db-b081-be6ee0879428`); Qwen 100%; Nano 98.3%; ~$0.08 spend; D-20260920-18; U3 resolved.
+- Next: After merge mark T-M0-04 done; start **T-M0-06** (ASR/TTS/VAD) per DEV_GUIDE S1.
+- Open questions: Lightning region vs us-central1 preference (worked on default TF edge); OpenMDW licence wording for showcase.
+- Commands to resume: `git switch spike/T-M0-04-tf-tool-call && make ci`
+
 ## 2026-09-20 / T-M0-07
-- Done: Mac baseline; native livekit 1.13.7; TF regional RTT (us-central1); chat probe 100× Nemotron-3-Nano p50 **699 ms** / p95 **824 ms**, spend ~$0.00022; D-20260920-17 complete.
-- Next: `make status T=T-M0-07 S=in_review`, open PR, then T-M0-04 or T-M0-06.
-- Open questions / blockers: Docker still holds :7880; prefer us-central1-hosted models in T-M0-04 when possible.
-- Commands to resume: `git switch spike/T-M0-07-mac-sizing-tf && make ci`
+- Done: Mac baseline; native livekit 1.13.7; TF regional RTT (us-central1); chat probe 100× Nemotron-3-Nano p50 **699 ms** / p95 **824 ms**, spend ~$0.00022; D-20260920-17; merged #55; status done.
+- Next: T-M0-04 (started / in progress on this session).
+- Open questions / blockers: Docker still holds :7880.
+- Commands to resume: `git switch main && git pull`
 
 ## 2026-09-20 / chore/rescope-local-mac
 - Done: Documentation/backlog rescope from public Nebius GPU VM demo → local Apple Silicon Mac +

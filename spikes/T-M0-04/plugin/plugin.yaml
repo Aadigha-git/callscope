@@ -1,0 +1,9 @@
+name: callscope-s3-tools
+version: 0.0.1
+description: "T-M0-04 spike — stub Lakeside Home Services receptionist tools"
+author: CallScope spike
+hooks:
+  - pre_tool_call
+  - post_tool_call
+  - on_session_start
+  - on_session_end
