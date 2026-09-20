@@ -43,7 +43,7 @@ The earlier recommendation was to build streaming TTS and barge-in as the projec
 
 | # | Unknown | Spike |
 |---|---|---|
-| U1 | How a per-call correlation ID reaches Hermes hook kwargs when called through the API server | S-1 |
+| U1 | How a per-call correlation ID reaches Hermes hook kwargs when called through the API server | S-1 — **resolved (D-20260920-04):** metadata/`user`/headers do not reach hooks; use user-message `CALL_CONTEXT` + tool-arg `call_id` |
 | U2 | Per-turn overhead Hermes adds (system prompt size, memory/skills load) on time-to-first-token with a slim profile | S-2 |
 | U3 | Tool-calling reliability of the chosen open-weight LLM through vLLM + Hermes | S-3 |
 | U4 | LiveKit Agents: custom STT/TTS plugin wiring, interruption behaviour, exact parameter names in the installed version | S-4 |
@@ -496,7 +496,7 @@ interrupt():
 
 **`pre_tool_call` policy rules:** (1) mutating tools require `confirmed=true`; (2) argument schema/regex validation (phone digits, ISO dates, slot exists and is open); (3) `call_id` must be an active call; (4) per-call tool budget (max 12 calls) and per-tool rate limit; (5) block and return a structured error the model can recover from (“missing confirmation”). Policy denials emit `policy.denied` events (they are valuable review data).
 
-**Correlation (U1).** Preferred: read call/turn IDs from hook kwargs or request metadata if the API server exposes them (S-1). Fallback (works regardless): the worker's first message carries `CALL_CONTEXT call_id=<uuid>`, every tool schema requires `call_id`, and the policy hook validates it against active calls. The worker remains the source of truth for latency; the plugin adds tool timings and policy events.
+**Correlation (U1 / S-1, D-20260920-04).** Hermes Agent 0.19.0 API server does **not** expose OpenAI `user` or `X-Call-Id`/`X-Turn-Id` to plugin hook kwargs. System-role text is also absent from `pre_llm_call` history. **Required path:** the worker includes `CALL_CONTEXT call_id=<uuid>` in the **user** message content each turn; every tool schema requires `call_id`; `pre_tool_call` validates it against active calls. The worker remains the source of truth for latency; the plugin adds tool timings and policy events.
 
 ### 4.5 Business API and knowledge base
 
@@ -728,9 +728,10 @@ Format: Context → Decision → Alternatives → Consequences. Status of all: *
 
 ### ADR-006 — The worker is the latency source of truth; the Hermes plugin is an observer/policy layer
 
+- **Status:** Accepted (2026-09-19); U1 correlation resolved by S-1 / D-20260920-04 (2026-09-20) — no change to this decision.
 - **Context:** Hook kwargs and correlation IDs are uncertain (U1); latency must be comparable across stacks including non-Hermes baselines.
 - **Decision:** All latency/turn-taking measurements come from worker events with a monotonic clock; the plugin contributes tool timings, policy denials, and LLM call metadata.
-- **Consequences:** + consistent metrics across backends; − Hermes-internal time is visible only as a lump (`brain_ttft`) unless hook data is available.
+- **Consequences:** + consistent metrics across backends; − Hermes-internal time is visible only as a lump (`brain_ttft`) unless hook data is available. Correlation uses user-message `CALL_CONTEXT` + tool-arg `call_id`, not API-server metadata.
 
 ### ADR-007 — Two eval modes: stage-replay (deterministic) and caller-sim (end-to-end)
 
@@ -1176,7 +1177,7 @@ Each spike ends with a one-paragraph result appended to the relevant ADR and a g
 
 | Spike | Question | Exit criterion | Fallback |
 |---|---|---|---|
-| S-1 | Can a call/turn ID reach Hermes hook kwargs via the API server? | Documented yes/no with a minimal plugin printing kwargs | `CALL_CONTEXT` message + `call_id` tool arg (already designed) |
+| S-1 | Can a call/turn ID reach Hermes hook kwargs via the API server? | **Done (D-20260920-04):** no for `user`/headers; yes for user-message `CALL_CONTEXT` + tool-arg `call_id` | `CALL_CONTEXT` in user message + `call_id` tool arg (confirmed) |
 | S-2 | Hermes overhead per turn with a slim profile on the chosen LLM | Measured `brain_ttft` p50/p95 for 50 turns; ≤ 450 ms p50 budget | Trim skills/system prompt, enable prefix caching; last resort: thin FAQ fast-path (R-02) |
 | S-3 | Tool-call reliability of 2–3 candidate LLMs via vLLM + Hermes | ≥ 95% valid tool calls on 60 scripted turns; parser flags recorded | Choose next candidate; tighten schemas |
 | S-4 | LiveKit Agents wiring with custom STT/TTS/LLM adapters; interruption behaviour; compare with `hermes-livekit` | Browser call works end to end with stub providers; parameter names mapped; decision recorded (ADR-002 update) | Pipecat pipeline (same provider interfaces) |
