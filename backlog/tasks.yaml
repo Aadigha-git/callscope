@@ -47,7 +47,7 @@ tasks:
   owner: BAG
   estimate_h: 4
   priority: P0
-  status: ready
+  status: in_review
   sprint: S1
   issue: 2
   prompt: prompts/M0_spikes.md#t-m0-02

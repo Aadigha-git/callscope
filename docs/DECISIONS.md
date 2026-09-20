@@ -24,6 +24,15 @@ ADR-009 Two-node, on-demand GPU, Compose | ADR-010 Security posture | ADR-011 Go
 ADR-012 SIP is a stretch | ADR-013 Streamlit review console
 
 ## Entries
+### D-20260920-04 - S-1: API-server metadata does not reach Hermes hooks; keep CALL_CONTEXT fallback
+- Date / Task: 2026-09-20 / T-M0-02
+- Context: Spike S-1 (U1). Installed `hermes-agent==0.19.0` (latest on PyPI; design cited 0.20.0 — not published). Python 3.12.13 scratch venv under `spikes/T-M0-02/`. Verified APIs from installed source (`hermes_cli.plugins.PluginContext.register_hook`, `agent.turn_context` `pre_llm_call` kwargs, `gateway.platforms.api_server._handle_chat_completions` / `_write_sse_chat_completion`). Ran correlation matrix + SSE close probe with a mock OpenAI stub; scrubbed evidence in `spikes/T-M0-02/results/`.
+- Decision: **No** — OpenAI body `user` and headers `X-Call-Id`/`X-Turn-Id` do **not** appear in plugin hook kwargs. System-role `CALL_CONTEXT` also does **not** appear in `pre_llm_call` (`user_message` / `conversation_history`) because system text becomes `ephemeral_system_prompt`. **Keep** the §4.4 fallback, refined: put `CALL_CONTEXT call_id=<uuid>` in the **user** message content (not system), and require `call_id` on every tool schema (visible to `pre_tool_call.args`). ADR-006 (worker = latency SoT) stays. SSE client disconnect is handled in source via `agent.interrupt` + task cancel.
+- Alternatives considered: rely on Hermes-internal `session_id`/`turn_id` (rejected: not CallScope UUIDs); put CALL_CONTEXT only in system (rejected: invisible to hooks); invent header plumbing in a Hermes fork (rejected: black-box constraint).
+- Consequences: BrainBackend / worker (T-M1-09+) must send CALL_CONTEXT on user turns; plugin policy continues to validate tool `call_id`. Estimates unchanged.
+- Design doc impact: §4.4 Correlation paragraph updated; ADR-006 status note (U1 resolved); U1 row marked resolved by S-1.
+- Status: accepted
+
 ### D-20260920-02 - Align pre-commit ruff with project ruff 0.16.8
 - Date / Task: 2026-09-20 / T-M0-01
 - Context: Hook pin `astral-sh/ruff-pre-commit@v0.5.7` auto-fixed `@pytest.mark.integration` to `@pytest.mark.integration()`, which fails PT023 under project `ruff==0.16.8` used by CI (`uv run ruff`).

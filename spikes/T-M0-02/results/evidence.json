@@ -1,0 +1,792 @@
+{
+  "hermes_agent_version": "0.19.0",
+  "python": "3.12.13 (main, May 10 2026, 19:20:41) [Clang 22.1.3 ]",
+  "call_id": "11111111-2222-4333-8444-555555555555",
+  "turn_id": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+  "matrix": [
+    {
+      "case": "A_user_field",
+      "http_status": 200,
+      "response_snippet": "{\"id\": \"chatcmpl-96f8523e49354a8793ba8a8c60dbe\", \"object\": \"chat.completion\", \"created\": 1789868901, \"model\": \"spike-stub\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"spike-stub-ok: correlation probe reply\"}, \"finish_reason\": \"stop\"}], \"usage\": {\"prompt_tokens\": 0, \"completion_tokens\": 0, \"total_tokens\": 0}}",
+      "hooks_delta": [
+        {
+          "ts": 1789868902.033932,
+          "hook": "on_session_start",
+          "keys": [
+            "model",
+            "platform",
+            "session_id",
+            "telemetry_schema_version"
+          ],
+          "kwargs": {
+            "session_id": "api-94fb3be04b1693bb",
+            "model": "spike-stub",
+            "platform": "api_server",
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868902.035688,
+          "hook": "pre_llm_call",
+          "keys": [
+            "conversation_history",
+            "is_first_turn",
+            "model",
+            "platform",
+            "sender_id",
+            "session_id",
+            "task_id",
+            "telemetry_schema_version",
+            "turn_id",
+            "user_message"
+          ],
+          "kwargs": {
+            "session_id": "api-94fb3be04b1693bb",
+            "task_id": "api-94fb3be04b1693bb",
+            "turn_id": "api-94fb3be04b1693bb:api-94fb3be04b1693bb:a4952ba8",
+            "user_message": "Say ok. correlation case A user-field-only.",
+            "conversation_history": [
+              {
+                "role": "user",
+                "content": "Say ok. correlation case A user-field-only."
+              }
+            ],
+            "is_first_turn": true,
+            "model": "spike-stub",
+            "platform": "api_server",
+            "sender_id": "",
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868902.152673,
+          "hook": "post_llm_call",
+          "keys": [
+            "assistant_response",
+            "conversation_history",
+            "model",
+            "platform",
+            "session_id",
+            "task_id",
+            "telemetry_schema_version",
+            "turn_id",
+            "user_message"
+          ],
+          "kwargs": {
+            "session_id": "api-94fb3be04b1693bb",
+            "task_id": "api-94fb3be04b1693bb",
+            "turn_id": "api-94fb3be04b1693bb:api-94fb3be04b1693bb:a4952ba8",
+            "user_message": "Say ok. correlation case A user-field-only.",
+            "assistant_response": "spike-stub-ok: correlation probe reply",
+            "conversation_history": [
+              {
+                "role": "user",
+                "content": "Say ok. correlation case A user-field-only.",
+                "_db_persisted": true
+              },
+              {
+                "role": "assistant",
+                "content": "spike-stub-ok: correlation probe reply",
+                "reasoning": null,
+                "finish_reason": "stop",
+                "_db_persisted": true
+              }
+            ],
+            "model": "spike-stub",
+            "platform": "api_server",
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868902.1529732,
+          "hook": "on_session_end",
+          "keys": [
+            "completed",
+            "interrupted",
+            "model",
+            "platform",
+            "session_id",
+            "task_id",
+            "telemetry_schema_version",
+            "turn_id"
+          ],
+          "kwargs": {
+            "session_id": "api-94fb3be04b1693bb",
+            "task_id": "api-94fb3be04b1693bb",
+            "turn_id": "api-94fb3be04b1693bb:api-94fb3be04b1693bb:a4952ba8",
+            "completed": true,
+            "interrupted": false,
+            "model": "spike-stub",
+            "platform": "api_server",
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        }
+      ],
+      "findings": {
+        "needle": "11111111-2222-4333-8444-555555555555",
+        "hit_count": 0,
+        "hits": []
+      }
+    },
+    {
+      "case": "B_headers",
+      "http_status": 200,
+      "response_snippet": "{\"id\": \"chatcmpl-5419a5428acb4d5db04b26520a485\", \"object\": \"chat.completion\", \"created\": 1789868902, \"model\": \"spike-stub\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"spike-stub-ok: correlation probe reply\"}, \"finish_reason\": \"stop\"}], \"usage\": {\"prompt_tokens\": 0, \"completion_tokens\": 0, \"total_tokens\": 0}}",
+      "findings": {
+        "needle": "11111111-2222-4333-8444-555555555555",
+        "hit_count": 0,
+        "hits": []
+      },
+      "turn_findings": {
+        "needle": "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee",
+        "hit_count": 0,
+        "hits": []
+      }
+    },
+    {
+      "case": "C_call_context_user_message",
+      "http_status": 200,
+      "response_snippet": "{\"id\": \"chatcmpl-eb63610237a847bdaa245ce605b10\", \"object\": \"chat.completion\", \"created\": 1789868902, \"model\": \"spike-stub\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"spike-stub-ok: correlation probe reply\"}, \"finish_reason\": \"stop\"}], \"usage\": {\"prompt_tokens\": 0, \"completion_tokens\": 0, \"total_tokens\": 0}}",
+      "findings": {
+        "needle": "11111111-2222-4333-8444-555555555555",
+        "hit_count": 2,
+        "hits": [
+          {
+            "hook": "pre_llm_call",
+            "keys": [
+              "conversation_history",
+              "is_first_turn",
+              "model",
+              "platform",
+              "sender_id",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "turn_id",
+              "user_message"
+            ]
+          },
+          {
+            "hook": "post_llm_call",
+            "keys": [
+              "assistant_response",
+              "conversation_history",
+              "model",
+              "platform",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "turn_id",
+              "user_message"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "C2_call_context_system_only",
+      "http_status": 200,
+      "response_snippet": "{\"id\": \"chatcmpl-9c822d14fbd049e686a7d7c73b29a\", \"object\": \"chat.completion\", \"created\": 1789868902, \"model\": \"spike-stub\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"spike-stub-ok: correlation probe reply\"}, \"finish_reason\": \"stop\"}], \"usage\": {\"prompt_tokens\": 0, \"completion_tokens\": 0, \"total_tokens\": 0}}",
+      "findings": {
+        "needle": "11111111-2222-4333-8444-555555555555",
+        "hit_count": 0,
+        "hits": []
+      },
+      "note": "System messages become ephemeral_system_prompt; not in pre_llm_call kwargs"
+    },
+    {
+      "case": "D_combined",
+      "http_status": 200,
+      "response_snippet": "{\"id\": \"chatcmpl-4472b7bb134243f2b13dfd957107d\", \"object\": \"chat.completion\", \"created\": 1789868902, \"model\": \"spike-stub\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"spike-stub-ok: correlation probe reply\"}, \"finish_reason\": \"stop\"}], \"usage\": {\"prompt_tokens\": 0, \"completion_tokens\": 0, \"total_tokens\": 0}}",
+      "findings": {
+        "needle": "11111111-2222-4333-8444-555555555555",
+        "hit_count": 2,
+        "hits": [
+          {
+            "hook": "pre_llm_call",
+            "keys": [
+              "conversation_history",
+              "is_first_turn",
+              "model",
+              "platform",
+              "sender_id",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "turn_id",
+              "user_message"
+            ]
+          },
+          {
+            "hook": "post_llm_call",
+            "keys": [
+              "assistant_response",
+              "conversation_history",
+              "model",
+              "platform",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "turn_id",
+              "user_message"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "case": "E_tool_arg",
+      "http_status": 200,
+      "response_snippet": "{\"id\": \"chatcmpl-edc2a9445c6143be9383b52ff894a\", \"object\": \"chat.completion\", \"created\": 1789868903, \"model\": \"spike-stub\", \"choices\": [{\"index\": 0, \"message\": {\"role\": \"assistant\", \"content\": \"spike-stub-ok: correlation probe reply\"}, \"finish_reason\": \"stop\"}], \"usage\": {\"prompt_tokens\": 0, \"completion_tokens\": 0, \"total_tokens\": 0}, \"hermes\": {\"completed\": false, \"partial\": false, \"failed\": false, \"error\": null, \"error_code\": \"agent_error\"}}",
+      "findings": {
+        "needle": "11111111-2222-4333-8444-555555555555",
+        "hit_count": 13,
+        "hits": [
+          {
+            "hook": "pre_tool_call",
+            "keys": [
+              "api_request_id",
+              "args",
+              "middleware_trace",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "tool_call_id",
+              "tool_name",
+              "turn_id"
+            ]
+          },
+          {
+            "hook": "tool.probe_echo_call_id",
+            "keys": [
+              "call_id_arg",
+              "tool_kwargs_keys"
+            ]
+          },
+          {
+            "hook": "post_tool_call",
+            "keys": [
+              "api_request_id",
+              "args",
+              "duration_ms",
+              "error_message",
+              "error_type",
+              "middleware_trace",
+              "result",
+              "session_id",
+              "status",
+              "task_id",
+              "telemetry_schema_version",
+              "tool_call_id",
+              "tool_name",
+              "turn_id"
+            ]
+          },
+          {
+            "hook": "pre_tool_call",
+            "keys": [
+              "api_request_id",
+              "args",
+              "middleware_trace",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "tool_call_id",
+              "tool_name",
+              "turn_id"
+            ]
+          },
+          {
+            "hook": "tool.probe_echo_call_id",
+            "keys": [
+              "call_id_arg",
+              "tool_kwargs_keys"
+            ]
+          },
+          {
+            "hook": "post_tool_call",
+            "keys": [
+              "api_request_id",
+              "args",
+              "duration_ms",
+              "error_message",
+              "error_type",
+              "middleware_trace",
+              "result",
+              "session_id",
+              "status",
+              "task_id",
+              "telemetry_schema_version",
+              "tool_call_id",
+              "tool_name",
+              "turn_id"
+            ]
+          },
+          {
+            "hook": "pre_tool_call",
+            "keys": [
+              "api_request_id",
+              "args",
+              "middleware_trace",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "tool_call_id",
+              "tool_name",
+              "turn_id"
+            ]
+          },
+          {
+            "hook": "tool.probe_echo_call_id",
+            "keys": [
+              "call_id_arg",
+              "tool_kwargs_keys"
+            ]
+          },
+          {
+            "hook": "post_tool_call",
+            "keys": [
+              "api_request_id",
+              "args",
+              "duration_ms",
+              "error_message",
+              "error_type",
+              "middleware_trace",
+              "result",
+              "session_id",
+              "status",
+              "task_id",
+              "telemetry_schema_version",
+              "tool_call_id",
+              "tool_name",
+              "turn_id"
+            ]
+          },
+          {
+            "hook": "pre_tool_call",
+            "keys": [
+              "api_request_id",
+              "args",
+              "middleware_trace",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "tool_call_id",
+              "tool_name",
+              "turn_id"
+            ]
+          },
+          {
+            "hook": "tool.probe_echo_call_id",
+            "keys": [
+              "call_id_arg",
+              "tool_kwargs_keys"
+            ]
+          },
+          {
+            "hook": "post_tool_call",
+            "keys": [
+              "api_request_id",
+              "args",
+              "duration_ms",
+              "error_message",
+              "error_type",
+              "middleware_trace",
+              "result",
+              "session_id",
+              "status",
+              "task_id",
+              "telemetry_schema_version",
+              "tool_call_id",
+              "tool_name",
+              "turn_id"
+            ]
+          },
+          {
+            "hook": "post_llm_call",
+            "keys": [
+              "assistant_response",
+              "conversation_history",
+              "model",
+              "platform",
+              "session_id",
+              "task_id",
+              "telemetry_schema_version",
+              "turn_id",
+              "user_message"
+            ]
+          }
+        ]
+      },
+      "tool_hook_rows": [
+        {
+          "ts": 1789868903.917773,
+          "hook": "pre_tool_call",
+          "keys": [
+            "api_request_id",
+            "args",
+            "middleware_trace",
+            "session_id",
+            "task_id",
+            "telemetry_schema_version",
+            "tool_call_id",
+            "tool_name",
+            "turn_id"
+          ],
+          "kwargs": {
+            "tool_name": "probe_echo_call_id",
+            "args": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "task_id": "api-6f99f653f3997755",
+            "session_id": "api-6f99f653f3997755",
+            "tool_call_id": "call_9d9caf49ccaa",
+            "turn_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27",
+            "api_request_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27:api:1",
+            "middleware_trace": [],
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868903.918782,
+          "hook": "tool.probe_echo_call_id",
+          "keys": [
+            "call_id_arg",
+            "tool_kwargs_keys"
+          ],
+          "kwargs": {
+            "call_id_arg": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "tool_kwargs_keys": [
+              "session_id",
+              "task_id",
+              "user_task"
+            ]
+          }
+        },
+        {
+          "ts": 1789868903.9189088,
+          "hook": "post_tool_call",
+          "keys": [
+            "api_request_id",
+            "args",
+            "duration_ms",
+            "error_message",
+            "error_type",
+            "middleware_trace",
+            "result",
+            "session_id",
+            "status",
+            "task_id",
+            "telemetry_schema_version",
+            "tool_call_id",
+            "tool_name",
+            "turn_id"
+          ],
+          "kwargs": {
+            "tool_name": "probe_echo_call_id",
+            "args": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "result": "{\"error\": \"Tool handler returned unsupported result type: dict\", \"error_type\": \"tool_result_contract\", \"tool\": \"probe_echo_call_id\", \"result_type\": \"dict\"}",
+            "task_id": "api-6f99f653f3997755",
+            "session_id": "api-6f99f653f3997755",
+            "tool_call_id": "call_9d9caf49ccaa",
+            "turn_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27",
+            "api_request_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27:api:1",
+            "duration_ms": 0,
+            "status": "error",
+            "error_type": "tool_error",
+            "error_message": "Tool handler returned unsupported result type: dict",
+            "middleware_trace": [],
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868903.925815,
+          "hook": "pre_tool_call",
+          "keys": [
+            "api_request_id",
+            "args",
+            "middleware_trace",
+            "session_id",
+            "task_id",
+            "telemetry_schema_version",
+            "tool_call_id",
+            "tool_name",
+            "turn_id"
+          ],
+          "kwargs": {
+            "tool_name": "probe_echo_call_id",
+            "args": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "task_id": "api-6f99f653f3997755",
+            "session_id": "api-6f99f653f3997755",
+            "tool_call_id": "call_d619603d6725",
+            "turn_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27",
+            "api_request_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27:api:2",
+            "middleware_trace": [],
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868903.925917,
+          "hook": "tool.probe_echo_call_id",
+          "keys": [
+            "call_id_arg",
+            "tool_kwargs_keys"
+          ],
+          "kwargs": {
+            "call_id_arg": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "tool_kwargs_keys": [
+              "session_id",
+              "task_id",
+              "user_task"
+            ]
+          }
+        },
+        {
+          "ts": 1789868903.926004,
+          "hook": "post_tool_call",
+          "keys": [
+            "api_request_id",
+            "args",
+            "duration_ms",
+            "error_message",
+            "error_type",
+            "middleware_trace",
+            "result",
+            "session_id",
+            "status",
+            "task_id",
+            "telemetry_schema_version",
+            "tool_call_id",
+            "tool_name",
+            "turn_id"
+          ],
+          "kwargs": {
+            "tool_name": "probe_echo_call_id",
+            "args": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "result": "{\"error\": \"Tool handler returned unsupported result type: dict\", \"error_type\": \"tool_result_contract\", \"tool\": \"probe_echo_call_id\", \"result_type\": \"dict\"}",
+            "task_id": "api-6f99f653f3997755",
+            "session_id": "api-6f99f653f3997755",
+            "tool_call_id": "call_d619603d6725",
+            "turn_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27",
+            "api_request_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27:api:2",
+            "duration_ms": 0,
+            "status": "error",
+            "error_type": "tool_error",
+            "error_message": "Tool handler returned unsupported result type: dict",
+            "middleware_trace": [],
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868903.932286,
+          "hook": "pre_tool_call",
+          "keys": [
+            "api_request_id",
+            "args",
+            "middleware_trace",
+            "session_id",
+            "task_id",
+            "telemetry_schema_version",
+            "tool_call_id",
+            "tool_name",
+            "turn_id"
+          ],
+          "kwargs": {
+            "tool_name": "probe_echo_call_id",
+            "args": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "task_id": "api-6f99f653f3997755",
+            "session_id": "api-6f99f653f3997755",
+            "tool_call_id": "call_7ee2ff9c34b5",
+            "turn_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27",
+            "api_request_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27:api:3",
+            "middleware_trace": [],
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868903.932383,
+          "hook": "tool.probe_echo_call_id",
+          "keys": [
+            "call_id_arg",
+            "tool_kwargs_keys"
+          ],
+          "kwargs": {
+            "call_id_arg": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "tool_kwargs_keys": [
+              "session_id",
+              "task_id",
+              "user_task"
+            ]
+          }
+        },
+        {
+          "ts": 1789868903.932468,
+          "hook": "post_tool_call",
+          "keys": [
+            "api_request_id",
+            "args",
+            "duration_ms",
+            "error_message",
+            "error_type",
+            "middleware_trace",
+            "result",
+            "session_id",
+            "status",
+            "task_id",
+            "telemetry_schema_version",
+            "tool_call_id",
+            "tool_name",
+            "turn_id"
+          ],
+          "kwargs": {
+            "tool_name": "probe_echo_call_id",
+            "args": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "result": "{\"error\": \"Tool handler returned unsupported result type: dict\", \"error_type\": \"tool_result_contract\", \"tool\": \"probe_echo_call_id\", \"result_type\": \"dict\"}",
+            "task_id": "api-6f99f653f3997755",
+            "session_id": "api-6f99f653f3997755",
+            "tool_call_id": "call_7ee2ff9c34b5",
+            "turn_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27",
+            "api_request_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27:api:3",
+            "duration_ms": 0,
+            "status": "error",
+            "error_type": "tool_error",
+            "error_message": "Tool handler returned unsupported result type: dict",
+            "middleware_trace": [],
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868903.938378,
+          "hook": "pre_tool_call",
+          "keys": [
+            "api_request_id",
+            "args",
+            "middleware_trace",
+            "session_id",
+            "task_id",
+            "telemetry_schema_version",
+            "tool_call_id",
+            "tool_name",
+            "turn_id"
+          ],
+          "kwargs": {
+            "tool_name": "probe_echo_call_id",
+            "args": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "task_id": "api-6f99f653f3997755",
+            "session_id": "api-6f99f653f3997755",
+            "tool_call_id": "call_c2f436c57866",
+            "turn_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27",
+            "api_request_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27:api:4",
+            "middleware_trace": [],
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        },
+        {
+          "ts": 1789868903.938459,
+          "hook": "tool.probe_echo_call_id",
+          "keys": [
+            "call_id_arg",
+            "tool_kwargs_keys"
+          ],
+          "kwargs": {
+            "call_id_arg": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "tool_kwargs_keys": [
+              "session_id",
+              "task_id",
+              "user_task"
+            ]
+          }
+        },
+        {
+          "ts": 1789868903.93854,
+          "hook": "post_tool_call",
+          "keys": [
+            "api_request_id",
+            "args",
+            "duration_ms",
+            "error_message",
+            "error_type",
+            "middleware_trace",
+            "result",
+            "session_id",
+            "status",
+            "task_id",
+            "telemetry_schema_version",
+            "tool_call_id",
+            "tool_name",
+            "turn_id"
+          ],
+          "kwargs": {
+            "tool_name": "probe_echo_call_id",
+            "args": {
+              "call_id": "11111111-2222-4333-8444-555555555555"
+            },
+            "result": "{\"error\": \"Tool handler returned unsupported result type: dict\", \"error_type\": \"tool_result_contract\", \"tool\": \"probe_echo_call_id\", \"result_type\": \"dict\"}",
+            "task_id": "api-6f99f653f3997755",
+            "session_id": "api-6f99f653f3997755",
+            "tool_call_id": "call_c2f436c57866",
+            "turn_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27",
+            "api_request_id": "api-6f99f653f3997755:api-6f99f653f3997755:98e67e27:api:4",
+            "duration_ms": 0,
+            "status": "error",
+            "error_type": "tool_error",
+            "error_message": "Tool handler returned unsupported result type: dict",
+            "middleware_trace": [],
+            "telemetry_schema_version": "hermes.observer.v1"
+          }
+        }
+      ]
+    }
+  ],
+  "sse_cancel": {
+    "case": "F_sse_cancel",
+    "http_status": 200,
+    "chunks_before_close": 1,
+    "gateway_mentions_disconnect": false,
+    "gateway_log_hits": [],
+    "source_behavior": "api_server._write_sse_chat_completion catches ConnectionResetError/BrokenPipeError and calls agent.interrupt('SSE client disconnected') then agent_task.cancel() (hermes-agent 0.19.0)."
+  },
+  "hook_log_path": "results/hook_kwargs.jsonl",
+  "source_static_notes": {
+    "chat_completions_reads_body_user": false,
+    "chat_completions_reads_x_call_id": false,
+    "pre_llm_call_kwargs": [
+      "session_id",
+      "task_id",
+      "turn_id",
+      "user_message",
+      "conversation_history",
+      "is_first_turn",
+      "model",
+      "platform",
+      "sender_id"
+    ],
+    "sse_disconnect_calls_agent_interrupt": true,
+    "citations": [
+      "gateway/platforms/api_server.py::_handle_chat_completions (no body['user'])",
+      "gateway/platforms/api_server.py::_write_sse_chat_completion (agent.interrupt on disconnect)",
+      "agent/turn_context.py pre_llm_call invoke_hook kwargs",
+      "model_tools.py resolve_pre_tool_block(function_name, function_args, ...)"
+    ]
+  }
+}
