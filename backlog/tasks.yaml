@@ -24,7 +24,7 @@ tasks:
   owner: BAG
   estimate_h: 4
   priority: P0
-  status: ready
+  status: in_review
   sprint: S1
   issue: 1
   prompt: prompts/P00_bootstrap.md
