@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Event envelope, CallClock, async EventWriter (batch/spill/replay), and `instrument()` (T-M1-01)
 - Spike S-2 (T-M0-03): Hermes vs Token Factory TTFT overhead; R-02 thin FAQ fast-path (D-20260920-20)
 - Spike S-5 (T-M0-06): Apple Silicon ASR/TTS/VAD shortlist + `eval/probe/` assets (D-20260920-19)
 - Spike S-3 (T-M0-04): Hermes→Token Factory tool-call reliability harness under `spikes/T-M0-04/`; choose Nemotron-3.5-Lightning (D-20260920-18)

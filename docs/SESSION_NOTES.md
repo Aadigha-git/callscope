@@ -8,11 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-01
+- Done: Event envelope + CallClock + EventWriter (batch 100/250ms, spill/replay, dedupe, drop-oldest) + `instrument()`; unit tests under `tests/events/`; OpenAPI Event validation.
+- Next: After merge mark T-M1-01 done; S2 continues with **T-M1-12** (budget guard) then T-M1-02 / T-M1-03.
+- Open questions: none for the envelope; sink stays injected until T-M1-02 ingest/repos.
+- Commands to resume: `git switch feat/T-M1-01-event-envelope && make ci`
+
 ## 2026-09-20 / T-M0-03
-- Done: S-2 Hermes vs TF TTFT — direct p50 884 ms, Hermes p50 2287 ms, overhead p50 **1385 ms** (FAIL ≤450); ~$0.006; D-20260920-20 adopts R-02 thin FAQ fast-path.
-- Next: After merge mark T-M0-03 done; S1 M0 spikes complete → start **T-M1-01** (or DEV_GUIDE S2: T-M1-01 / T-M1-12).
+- Done: S-2 Hermes vs TF TTFT — direct p50 884 ms, Hermes p50 2287 ms, overhead p50 **1385 ms** (FAIL ≤450); ~$0.006; D-20260920-20 adopts R-02 thin FAQ fast-path. Merged #58; status done.
+- Next: **T-M1-01** (started).
 - Open questions: exact worker router heuristics for FAQ vs Hermes; whether T-M1-09 can shrink Hermes prompt enough to revisit.
-- Commands to resume: `git switch spike/T-M0-03-hermes-overhead && make ci`
+- Commands to resume: `git switch main && git pull`
 
 ## 2026-09-20 / T-M0-06
 - Done: S-5 native ASR/TTS/VAD shortlist; merged #57; status done.
