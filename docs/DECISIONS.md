@@ -28,6 +28,18 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-19 - S-5: ASR/TTS/VAD shortlist on Apple Silicon
+- Date / Task: 2026-09-20 / T-M0-06
+- Context: Native Mac probe (no Docker Metal). 30 synthetic utterances under `eval/probe/` (macOS `say` Albert; C0 + C1 telephony). Measured RTF, ΔRSS, WER (orthography-sensitive on spoken digits), TTS first-audio, Silero VAD. Parakeet BF16 ~2.5 GB skipped (size gate). Raw: `spikes/T-M0-06/results/benchmark.json`.
+  - **ASR shortlist:** (1) `mlx-whisper` / `mlx-community/whisper-tiny` — RTF C0 mean ~0.03 (Metal); (2) `faster-whisper` base — best WER on this probe (C0 ~0.69 / C1 ~0.74), CPU. Neither is natively streaming → VAD-segmented chunking.
+  - **TTS shortlist:** (1) Piper `en_US-lessac-medium` — first-audio p50 ~53 ms / p95 ~125 ms, RTF ~0.03, **GPL-3.0-or-later** (distribution caution); (2) `kokoro-onnx` v1.0 — Apache-2.0, first-audio p50 ~611 ms (non-stream).
+  - **VAD:** Silero (`silero-vad` pip; also LiveKit Agents path from T-M0-05) — utterance p50 ~8 ms, MIT.
+- Decision: Adopt the shortlist above for T-M1-05/06 native servers. Prefer Piper for latency demos if GPL redistribution is acceptable for the portfolio; otherwise Kokoro. Prefer mlx-whisper-tiny for live path RTF with faster-whisper-base as quality/CPU fallback.
+- Alternatives considered: Parakeet-mlx BF16 (skipped size); whisper-base.en-mlx (worse WER than tiny on this synthetic set + heavier load); cloud ASR/TTS (rejected).
+- Consequences: design §9.5 ASR/TTS/VAD rows filled; U5/S-5 resolved; E2 LoRA deferred (fits RAM, needs real telephony train set) — T-M5-05 remains optional.
+- Design doc impact: U5, S-5, §9.5; supersedes “pending measurements” on D-20260920-14.
+- Status: accepted
+
 ### D-20260920-18 - S-3: Choose Nemotron-3.5-Lightning on Token Factory via Hermes
 - Date / Task: 2026-09-20 / T-M0-04
 - Context: Spike S-3 (U3). hermes-agent 0.19.0 API server with custom provider → Token Factory (`https://api.tokenfactory.nebius.com/v1/`). Stub receptionist toolset locked to `callscope-s3` (no terminal/browser). 60 scripted turns × 3 function_calling candidates. Run ID `394d90d9-702a-44db-b081-be6ee0879428`; raw `spikes/T-M0-04/results/tool_reliability.json`. Total est. spend ~$0.080.
@@ -80,7 +92,7 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 - Alternatives considered: cloud ASR/TTS (rejected: portfolio story); Dockerized GPU ASR (impossible on Mac Desktop).
 - Consequences: T-M0-06 / T-M1-05 / T-M1-06 native servers.
 - Design doc impact: §4.3, §9.5.
-- Status: accepted (pending measurements)
+- Status: accepted (measurements completed in D-20260920-19 / T-M0-06)
 
 ### D-20260920-13 - livekit-server and Hermes on macOS; prefer Token Factory over Ollama
 - Date / Task: 2026-09-20 / chore/rescope-local-mac

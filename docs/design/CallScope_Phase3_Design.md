@@ -57,7 +57,7 @@ The earlier recommendation was to build streaming TTS and barge-in as the projec
 | U2 | Per-turn overhead Hermes adds (system prompt size, memory/skills load) on time-to-first-token with a slim profile | S-2 |
 | U3 | Tool-calling reliability of the chosen open-weight LLM through Token Factory + Hermes | S-3 — **resolved (D-20260920-18):** choose `nvidia/Nemotron-3_5-Lightning` (100% / 60 turns); Qwen3-30B alternate |
 | U4 | LiveKit Agents: custom STT/TTS plugin wiring, interruption behaviour, exact parameter names in the installed version | S-4 — **resolved (D-20260920-05):** own Agents worker + stub providers work; §4.2→`TurnHandlingOptions` mapped on 1.8.2; hermes-livekit not adopted |
-| U5 | Candidate ASR/TTS/VAD on Apple Silicon: streaming, licence, unified-memory, RTF, telephony WER | S-5 |
+| U5 | Candidate ASR/TTS/VAD on Apple Silicon: streaming, licence, unified-memory, RTF, telephony WER | S-5 — **resolved (D-20260920-19):** mlx-whisper-tiny + faster-whisper-base; Piper + kokoro-onnx; Silero VAD |
 | U6 | Mac unified-memory budget + Token Factory RTT/TTFT from this location | S-6 — **resolved (D-20260920-17):** baseline + livekit + regional RTT + chat latency |
 | U7 | ~~SIP trunk + `livekit-sip`~~ — **dropped**; telephony realism via C1–C5 only (Future work) | — |
 
@@ -1129,9 +1129,11 @@ Machine baseline (measured 2026-09-20, T-M0-07): **Apple M5, 16 GB** unified mem
 
 | Item | Measured memory | RTF / notes |
 |---|---|---|
-| ASR (candidate) | *T-M0-06 (S-5)* | Prefer RTF < 1.0; native only (no Docker Metal) |
-| TTS (candidate) | *T-M0-06* | First-audio latency |
-| VAD (Silero) | *T-M0-06* | Already used in Agents spike |
+| ASR (mlx-whisper tiny) | ~200 MB load ΔRSS; steady ~few MB | RTF C0 mean **~0.03** (Metal); C1 ~0.04 |
+| ASR (faster-whisper base, CPU) | ~50–80 MB ΔRSS | RTF C0/C1 mean **~0.18**; best WER on S-5 probe |
+| TTS (Piper lessac-medium) | ~67 MB ΔRSS | first-audio p50 **~53 ms**; RTF ~0.03; GPL caution |
+| TTS (kokoro-onnx) | ~91 MB ΔRSS | first-audio p50 **~611 ms**; Apache-2.0 |
+| VAD (Silero) | ~11 MB ΔRSS | utterance p50 **~8 ms**; MIT |
 | Hermes + worker + APIs | *measure in M1* | Native processes |
 | Optional local LLM fallback | *likely deferred on 16 GB* | Token Factory is primary (ADR-014) |
 | Headroom | ≥4 GB reserved | OS + browser + Compose |
@@ -1139,7 +1141,7 @@ Machine baseline (measured 2026-09-20, T-M0-07): **Apple M5, 16 GB** unified mem
 
 **Token Factory from this Mac (T-M0-07):** network prefer **us-central1** (TCP p50 ≈ 50 ms, HTTPS TTFB p50 ≈ 199 ms) over eu-north1 (TCP p50 ≈ 191 ms). Chat probe on Nemotron-3-Nano via default eu-north1 endpoint: **p50 699 ms / p95 824 ms** (100 tiny non-streaming completions, ~$0.00022). Details: `spikes/T-M0-07/results/SUMMARY.md`.
 
-Training (optional E2 LoRA on whisper-small/base) only if S-5 says feasible; never during a live demo.
+Training (optional E2 LoRA on whisper-small/base): **deferred** after S-5 — models fit RAM, but need a real telephony train set (T-M5-05 optional); never during a live demo.
 
 ### 9.6 Environments and CI/CD
 
@@ -1268,7 +1270,7 @@ Each spike ends with a one-paragraph result appended to the relevant ADR and a g
 | S-2 | Hermes overhead per turn with a slim profile on the chosen LLM | Measured `brain_ttft` p50/p95 for 50 turns; ≤ 450 ms p50 budget | Trim skills/system prompt, enable prefix caching; last resort: thin FAQ fast-path (R-02) |
 | S-3 | Tool-call reliability of 2–3 candidate LLMs via Token Factory + Hermes | ≥ 95% valid tool calls on 60 scripted turns; parser flags recorded | **Done (D-20260920-18):** Lightning 100%, Qwen 100%, Nano 98.3%; choose Lightning |
 | S-4 | LiveKit Agents wiring with custom STT/TTS/LLM adapters; interruption behaviour; compare with `hermes-livekit` | **Done (D-20260920-05):** browser/headless call works with stubs on Agents 1.8.2; §4.2 mapped; own worker confirmed; hermes-livekit not adopted | Pipecat pipeline (same provider interfaces) — fallback only |
-| S-5 | ASR/TTS/VAD on Apple Silicon: streaming, licences, unified-memory, RTF, WER on C0/C1 | Shortlist of 2 ASR + 2 TTS + VAD with measured memory | Widen shortlist; VAD-segmented chunking |
+| S-5 | ASR/TTS/VAD on Apple Silicon: streaming, licences, unified-memory, RTF, WER on C0/C1 | Shortlist of 2 ASR + 2 TTS + VAD with measured memory | **Done (D-20260920-19):** see shortlist; VAD-segmented Whisper |
 | S-6 | Mac sizing + Token Factory RTT/TTFT (100 probes) | §9.5 memory table; native livekit; TF latency | Smaller ASR/TTS; cassette-first |
 | S-7 (optional, before M6) | SIP trunk path with `livekit-sip` | One inbound test call reaches a stub agent | Drop M6 |
 

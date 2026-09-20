@@ -1,0 +1,179 @@
+{
+  "task": "T-M0-06",
+  "spike": "S-5",
+  "limit": 30,
+  "asr": [
+    {
+      "engine": "mlx-whisper",
+      "model": "mlx-community/whisper-tiny",
+      "licence": "MIT (code+weights)",
+      "condition": "c0",
+      "n": 30,
+      "wer": 0.7406,
+      "rtf_mean": 0.0302,
+      "rtf_p95": 0.0681,
+      "peak_rss_mb": 203.4,
+      "streaming": "batch (VAD-segment for streaming)",
+      "errors": 0,
+      "notes": "WER inflated by spoken digit orthography vs ASR digits"
+    },
+    {
+      "engine": "mlx-whisper",
+      "model": "mlx-community/whisper-tiny",
+      "licence": "MIT (code+weights)",
+      "condition": "c1",
+      "n": 30,
+      "wer": 0.8538,
+      "rtf_mean": 0.0429,
+      "rtf_p95": 0.1265,
+      "peak_rss_mb": 1.9,
+      "streaming": "batch (VAD-segment for streaming)",
+      "errors": 0,
+      "notes": ""
+    },
+    {
+      "engine": "mlx-whisper",
+      "model": "mlx-community/whisper-base.en-mlx",
+      "licence": "MIT (code+weights)",
+      "condition": "c0",
+      "n": 30,
+      "wer": 0.8803,
+      "rtf_mean": 0.1513,
+      "rtf_p95": 0.1243,
+      "peak_rss_mb": 260.6,
+      "streaming": "batch (VAD-segment for streaming)",
+      "errors": 0,
+      "notes": "first-utt includes model load"
+    },
+    {
+      "engine": "mlx-whisper",
+      "model": "mlx-community/whisper-base.en-mlx",
+      "licence": "MIT (code+weights)",
+      "condition": "c1",
+      "n": 30,
+      "wer": 1.041,
+      "rtf_mean": 0.0303,
+      "rtf_p95": 0.0849,
+      "peak_rss_mb": 3.1,
+      "streaming": "batch (VAD-segment for streaming)",
+      "errors": 0,
+      "notes": ""
+    },
+    {
+      "engine": "faster-whisper",
+      "model": "Systran/faster-whisper-tiny",
+      "licence": "MIT",
+      "condition": "c0",
+      "n": 30,
+      "wer": 0.7209,
+      "rtf_mean": 0.0797,
+      "rtf_p95": 0.1831,
+      "peak_rss_mb": 208.4,
+      "streaming": "batch (CPU; VAD-segment for streaming)",
+      "errors": 0,
+      "notes": ""
+    },
+    {
+      "engine": "faster-whisper",
+      "model": "Systran/faster-whisper-tiny",
+      "licence": "MIT",
+      "condition": "c1",
+      "n": 30,
+      "wer": 0.8312,
+      "rtf_mean": 0.1609,
+      "rtf_p95": 0.5406,
+      "peak_rss_mb": 26.3,
+      "streaming": "batch (CPU; VAD-segment for streaming)",
+      "errors": 0,
+      "notes": ""
+    },
+    {
+      "engine": "faster-whisper",
+      "model": "Systran/faster-whisper-base",
+      "licence": "MIT",
+      "condition": "c0",
+      "n": 30,
+      "wer": 0.6931,
+      "rtf_mean": 0.1754,
+      "rtf_p95": 0.4773,
+      "peak_rss_mb": 46.2,
+      "streaming": "batch (CPU; VAD-segment for streaming)",
+      "errors": 0,
+      "notes": ""
+    },
+    {
+      "engine": "faster-whisper",
+      "model": "Systran/faster-whisper-base",
+      "licence": "MIT",
+      "condition": "c1",
+      "n": 30,
+      "wer": 0.7368,
+      "rtf_mean": 0.1757,
+      "rtf_p95": 0.3034,
+      "peak_rss_mb": 76.5,
+      "streaming": "batch (CPU; VAD-segment for streaming)",
+      "errors": 0,
+      "notes": ""
+    }
+  ],
+  "tts": [
+    {
+      "engine": "piper",
+      "model": "en_US-lessac-medium",
+      "licence": "GPL-3.0-or-later (distribution caution)",
+      "n": 30,
+      "first_audio_p50_ms": 52.92,
+      "first_audio_p95_ms": 125.0,
+      "rtf_mean": 0.0282,
+      "peak_rss_mb": 66.6,
+      "streaming": "chunked PCM",
+      "errors": 0,
+      "notes": ""
+    },
+    {
+      "engine": "kokoro-onnx",
+      "model": "kokoro-v1.0 + voices-v1.0",
+      "licence": "Apache-2.0 weights",
+      "n": 30,
+      "first_audio_p50_ms": 611.07,
+      "first_audio_p95_ms": 939.0,
+      "rtf_mean": 0.2601,
+      "peak_rss_mb": 90.6,
+      "streaming": "utterance (stream API available)",
+      "errors": 0,
+      "notes": "first_audio \u2248 full utterance for non-stream create()"
+    }
+  ],
+  "vad": [
+    {
+      "engine": "silero-vad",
+      "model": "silero_vad (pip silero-vad / torch)",
+      "licence": "MIT",
+      "n": 30,
+      "mean_speech_ratio": 0.5522,
+      "latency_p50_ms": 8.31,
+      "peak_rss_mb": 11.4,
+      "errors": 0,
+      "notes": "get_speech_timestamps @16kHz; LiveKit Agents also uses Silero (T-M0-05)"
+    }
+  ],
+  "ts_utc": "2026-09-20T22:49:51Z",
+  "shortlist": {
+    "asr": [
+      "mlx-community/whisper-tiny (mlx-whisper)",
+      "Systran/faster-whisper-base"
+    ],
+    "tts": [
+      "piper en_US-lessac-medium",
+      "kokoro-onnx v1.0"
+    ],
+    "vad": [
+      "silero-vad"
+    ]
+  },
+  "notes": [
+    "Parakeet BF16 (~2.5GB) skipped per size gate; int8 not enabled this run",
+    "WER on macOS-say references is orthography-sensitive (spoken digits); use for relative ranking",
+    "E2 LoRA: whisper-small/base MLX fits memory headroom but defer until telephony corpus \u2014 T-M5-05 optional"
+  ]
+}
