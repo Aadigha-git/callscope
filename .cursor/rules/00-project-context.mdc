@@ -1,0 +1,33 @@
+---
+description: CallScope project context, stack and layout (always loaded)
+alwaysApply: true
+---
+# CallScope - project context
+
+A live, self-hosted voice agent (Hermes Agent = reasoning backend) plus an evaluation harness,
+call-review workflow, model-improvement loop and governance artifacts. Target: portfolio project
+for a voice-AI ML engineer role. The design of record is `docs/design/CallScope_Phase3_Design.md`
+(requirements FR-xx/NFR-xx, HLD/LLD, 13 ADRs, security, infra). Read the relevant section before
+implementing; do not re-invent decisions that are already made.
+
+## Stack
+Python 3.11+, FastAPI, Pydantic v2, SQLAlchemy 2 + Alembic, Postgres 16, MinIO/S3, LiveKit +
+LiveKit Agents, Hermes Agent (API server + `hermes-callscope` plugin), vLLM, self-hosted ASR/TTS,
+Prometheus/Grafana, MLflow, Streamlit (review console), TypeScript static web client. Tooling: uv,
+ruff, mypy (strict), pytest, pre-commit, GitHub Actions, Docker Compose.
+
+## Layout
+`callscope/` shared library (events, providers, norm, eval, datasets, governance, observability,
+devtools) | `apps/{api,worker,biz,review,web}` | `servers/{asr,tts,llm}` |
+`plugins/hermes_callscope` | `eval/{scenarios,thresholds.yaml,baselines}` | `infra/` |
+`db/schema.sql` + `migrations/` | `docs/` | `backlog/tasks.yaml` | `prompts/`.
+
+## Ground rules
+1. Work is driven by tasks in `backlog/tasks.yaml`. Follow `20-workflow-artifacts.mdc` for every task.
+2. Never invent API details of Hermes, LiveKit, vLLM or model libraries. Check the installed
+   package source/docs; if unsure, say so and write a spike note in `docs/DECISIONS.md`.
+3. The voice worker is the latency source of truth (ADR-006). Measure with a monotonic clock.
+4. Providers (STT/TTS/Brain) always sit behind the interfaces in `callscope/providers/base.py`.
+5. Small, reviewable changes: one task per branch, one PR per task.
+6. If a task conflicts with the design doc, stop and propose a decision-log entry instead of
+   silently deviating.

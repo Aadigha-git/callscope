@@ -1,0 +1,14 @@
+---
+description: Testing conventions
+globs: ["tests/**/*.py", "**/test_*.py"]
+alwaysApply: false
+---
+- Markers: `unit` (pure, no I/O), `contract` (schemas/APIs/providers), `integration` (needs
+  Postgres etc.), `gpu` (real models, never in CI). Tag every test.
+- No network and no real models in unit tests. Use the deterministic mock providers.
+- Provider contract tests are parametrised over all implementations (mock + real).
+- Deterministic: fixed seeds, frozen clocks, no sleeps (use event-driven waits or fake time).
+- Test behaviour and edge cases (silence, empty ASR, provider timeout, barge-in during tool call),
+  not implementation details. Include a failing-path test for every error mapping.
+- Golden files live in `tests/golden/`; regenerating them requires a PR note explaining why.
+- Coverage gate is enforced in CI; do not lower it - add tests.

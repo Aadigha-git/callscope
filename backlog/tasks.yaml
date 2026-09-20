@@ -1,0 +1,1016 @@
+# Source of truth for tasks, sprints and status. Edit via `make status` / `make sprint` where possible.
+# Fields: id, title, milestone, type, requirements, description, technical_approach, dependencies,
+#         acceptance_criteria, owner, estimate_h, priority, status, sprint, issue, prompt
+# status: backlog | ready | in_progress | in_review | done | blocked
+tasks:
+# ===================== M0 Setup and spikes =====================
+- id: T-M0-01
+  title: Engineering environment and repository bootstrap
+  milestone: M0
+  type: chore
+  requirements: [NFR-05, NFR-12]
+  description: >-
+    Create the GitHub repo from the bootstrap kit: branch protection, CI, secrets handling,
+    labels/milestones/issues, Project board, logging + metrics baseline.
+  technical_approach: >-
+    Follow docs/DEV_GUIDE.md section 4.1 step by step; run scripts/setup_github.sh; verify a
+    green CI run on a trivial PR.
+  dependencies: []
+  acceptance_criteria:
+    - "main is protected; PRs require green CI (lint, typecheck, test, security, artifacts-gate)"
+    - "make setup && make ci passes on a clean clone"
+    - "All backlog tasks exist as GitHub issues linked to milestones M0-M6"
+    - "Secret scanning + push protection enabled; .env is git-ignored"
+  owner: BAG
+  estimate_h: 4
+  priority: P0
+  status: ready
+  sprint: S1
+  issue: null
+  prompt: prompts/P00_bootstrap.md
+- id: T-M0-02
+  title: "Spike S-1: can a call/turn ID reach Hermes hooks via the API server?"
+  milestone: M0
+  type: spike
+  requirements: [FR-02, NFR-08]
+  description: >-
+    Determine whether request metadata (user field, headers, message content) is visible in plugin
+    hook kwargs when Hermes is called through its OpenAI-compatible API server.
+  technical_approach: >-
+    Install Hermes in a scratch venv, write a 30-line plugin that logs kwargs of every hook, call
+    /v1/chat/completions with user and X-Call-Id, record what arrives.
+  dependencies: [T-M0-01]
+  acceptance_criteria:
+    - "Written finding in docs/DECISIONS.md: yes/no and exact mechanism, with Hermes version"
+    - "ADR-006 fallback (CALL_CONTEXT + call_id tool arg) confirmed or replaced"
+    - "Throwaway spike code kept under spikes/ (not in callscope/)"
+  owner: BAG
+  estimate_h: 4
+  priority: P0
+  status: ready
+  sprint: S1
+  issue: null
+  prompt: prompts/M0_spikes.md#t-m0-02
+- id: T-M0-03
+  title: "Spike S-2: Hermes per-turn overhead with a slim profile"
+  milestone: M0
+  type: spike
+  requirements: [NFR-01]
+  description: >-
+    Measure time-to-first-token through Hermes vs the same LLM called directly, with a minimal
+    receptionist profile (no memory, locked toolset).
+  technical_approach: >-
+    Script 50 turns against both paths (vLLM direct, Hermes API server), record p50/p95 TTFT and
+    system-prompt token count; try prompt caching on/off.
+  dependencies: [T-M0-01, T-M0-04]
+  acceptance_criteria:
+    - "Table of p50/p95 TTFT: direct vs Hermes, in DECISIONS.md"
+    - "Verdict against the 450 ms brain budget; mitigation chosen if it fails"
+  owner: BAG
+  estimate_h: 5
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M0_spikes.md#t-m0-03
+- id: T-M0-04
+  title: "Spike S-3: LLM shortlist tool-call reliability via vLLM + Hermes"
+  milestone: M0
+  type: spike
+  requirements: [FR-02, FR-05]
+  description: >-
+    Serve 2-3 open-weight instruct models with vLLM and measure valid tool-call rate through Hermes
+    on 60 scripted receptionist turns.
+  technical_approach: >-
+    Launch vLLM with the right tool-call parser per model, run the scripted turns through a
+    throwaway harness, count valid calls / schema-correct args / recoveries.
+  dependencies: [T-M0-01, T-M0-07]
+  acceptance_criteria:
+    - ">= 95% valid tool calls for the chosen model; results table for all candidates"
+    - "vLLM launch flags and parser recorded in infra/ docs"
+    - "Licence of chosen model recorded"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M0_spikes.md#t-m0-04
+- id: T-M0-05
+  title: "Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison"
+  milestone: M0
+  type: spike
+  requirements: [FR-01, FR-03, FR-04]
+  description: >-
+    Prove a browser call works end to end with stub STT/LLM/TTS through LiveKit Agents; map real
+    parameter names; evaluate the third-party hermes-livekit plugin as an alternative.
+  technical_approach: >-
+    Self-host livekit-server via docker, write a minimal agent with custom provider adapters that
+    echo, test interruption; read hermes-livekit source and note reusable parts and gaps.
+  dependencies: [T-M0-01]
+  acceptance_criteria:
+    - "Browser call with stub providers works locally"
+    - "Config key mapping (design section 4.2) confirmed against installed versions"
+    - "ADR-002 updated: adopt own worker vs hermes-livekit vs Pipecat, with reasons"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: S1
+  issue: null
+  prompt: prompts/M0_spikes.md#t-m0-05
+- id: T-M0-06
+  title: "Spike S-5: ASR/TTS shortlist probe on clean and 8 kHz audio"
+  milestone: M0
+  type: spike
+  requirements: [FR-05, FR-07]
+  description: >-
+    Compare 2 ASR and 2 TTS candidates on streaming support, licence, VRAM and WER on a 30-utterance
+    probe under conditions C0 and C1.
+  technical_approach: >-
+    Record/generate 30 utterances with digits/names/addresses, apply the C1 telephony chain
+    (ffmpeg/sox), transcribe with each candidate, compute WER + digit accuracy with jiwer.
+  dependencies: [T-M0-01, T-M0-07]
+  acceptance_criteria:
+    - "Shortlist of 2 ASR + 2 TTS with numbers, licences and VRAM in DECISIONS.md"
+    - "Probe audio + script committed under eval/probe/ (no personal voices)"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M0_spikes.md#t-m0-06
+- id: T-M0-07
+  title: "Spike S-6: GPU node sizing, warm-up time and RTT from Los Angeles"
+  milestone: M0
+  type: spike
+  requirements: [NFR-01, NFR-03, NFR-11]
+  description: >-
+    Provision the Nebius GPU node, measure VRAM per service, model load/warm-up time, and RTT from
+    Los Angeles for candidate regions.
+  technical_approach: >-
+    Create a GPU VM with persistent model cache disk, load candidate models, record nvidia-smi
+    numbers and cold/warm start times, ping/WebRTC-probe from LA.
+  dependencies: [T-M0-01]
+  acceptance_criteria:
+    - "VRAM table replaces the estimates in design section 9.5"
+    - "Region chosen with measured RTT; warm-up minutes recorded"
+    - "Start/stop procedure written down (input to T-M6-03)"
+  owner: BAG
+  estimate_h: 6
+  priority: P0
+  status: backlog
+  sprint: S1
+  issue: null
+  prompt: prompts/M0_spikes.md#t-m0-07
+# ===================== M1 Walking skeleton =====================
+- id: T-M1-01
+  title: Event envelope, async batching writer, provider-call instrumentation
+  milestone: M1
+  type: feature
+  requirements: [FR-06, NFR-08]
+  description: >-
+    Implement the event envelope (design 6.6), an async buffered writer with disk spill and retry,
+    and a decorator emitting request/first-byte/complete events for any provider call.
+  technical_approach: >-
+    Pydantic v2 models in callscope/events; asyncio queue + batch flusher posting to the ingest
+    API; monotonic clock helper for t_ms; bounded disk buffer on failure.
+  dependencies: [T-M0-01]
+  acceptance_criteria:
+    - "Envelope validates against openapi.yaml Event schema"
+    - "Writer never blocks the caller; drops to disk when ingest is down and replays later"
+    - "Unit tests cover batching, retry, spill/replay, dedupe by event_id"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: S1
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-01
+- id: T-M1-02
+  title: Database migrations from schema.sql (Alembic) and repository layer
+  milestone: M1
+  type: feature
+  requirements: [FR-06, NFR-06]
+  description: >-
+    Turn db/schema.sql into Alembic migrations, add async SQLAlchemy models/repositories for calls,
+    turns, events, tool_calls, and the root-cause seed.
+  technical_approach: >-
+    Baseline migration 0001 equals schema.sql; a test asserts migration-produced schema matches
+    the snapshot; repositories are thin and typed.
+  dependencies: [T-M0-01]
+  acceptance_criteria:
+    - "alembic upgrade head on empty Postgres 16 succeeds in CI"
+    - "Snapshot test proves db/schema.sql matches migrations"
+    - "Repository tests use a real Postgres service"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-02
+- id: T-M1-03
+  title: Provider interfaces (STT/TTS/Brain) and deterministic mock providers
+  milestone: M1
+  type: feature
+  requirements: [FR-05, FR-03, NFR-10, NFR-12]
+  description: >-
+    Define STTProvider, TTSProvider, BrainBackend protocols and mock implementations with
+    controllable latency, errors and scripted outputs for CI and offline replay.
+  technical_approach: >-
+    typing.Protocol classes in callscope/providers/base.py; mocks in providers/mock.py; contract
+    test suite parametrised over every provider implementation.
+  dependencies: [T-M1-01]
+  acceptance_criteria:
+    - "Same provider contract tests pass for mocks and (later) real providers"
+    - "Mocks can simulate slow, failing and interrupted streams"
+  owner: BAG
+  estimate_h: 6
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-03
+- id: T-M1-04
+  title: Sentence chunker and TTS text normaliser
+  milestone: M1
+  type: feature
+  requirements: [FR-03, NFR-01]
+  description: >-
+    Streaming sentence/clause chunker and tts_norm (phones digit-by-digit, dates, codes, markdown
+    and think-block stripping).
+  technical_approach: >-
+    Pure functions with property-based tests (hypothesis optional); chunker is an incremental
+    state machine flushing on boundary or max latency.
+  dependencies: [T-M1-03]
+  acceptance_criteria:
+    - "Chunker emits first sentence as early as boundaries allow; never splits inside numbers"
+    - "Normaliser golden tests for phone, date, time, confirmation code, address"
+  owner: BAG
+  estimate_h: 6
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-04
+- id: T-M1-05
+  title: ASR server (WebSocket streaming + HTTP batch)
+  milestone: M1
+  type: feature
+  requirements: [FR-03, FR-05]
+  description: >-
+    Serve the shortlisted ASR model behind the protocol in design 4.3 with word timings,
+    confidence, hotword support and metrics.
+  technical_approach: >-
+    FastAPI app under servers/asr; model adapter class per backend; VAD-segmented chunking with
+    local agreement when the model is not natively streaming.
+  dependencies: [T-M0-06, T-M0-07, T-M1-03]
+  acceptance_criteria:
+    - "WS and HTTP contracts match design 4.3; provider contract tests pass"
+    - "Real-time factor and VRAM measured and recorded"
+    - "Health and Prometheus metrics endpoints present"
+  owner: BAG
+  estimate_h: 12
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-05
+- id: T-M1-06
+  title: TTS server (chunked PCM streaming)
+  milestone: M1
+  type: feature
+  requirements: [FR-03, FR-05]
+  description: >-
+    Serve the shortlisted TTS model with POST /v1/tts/stream (raw PCM16 chunks), voices endpoint
+    and metrics.
+  technical_approach: >-
+    FastAPI under servers/tts; async generator yielding chunks as produced; sample-rate header;
+    cancellation on client disconnect.
+  dependencies: [T-M0-06, T-M0-07, T-M1-03]
+  acceptance_criteria:
+    - "First audio byte measured (TTFB) and exposed as a metric"
+    - "Client disconnect cancels synthesis promptly (test)"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-06
+- id: T-M1-07
+  title: CallScope API - status, sessions (consent + captcha + token), ingest
+  milestone: M1
+  type: feature
+  requirements: [FR-01, FR-06, NFR-05]
+  description: >-
+    FastAPI service implementing /v1/status, /v1/sessions, /v1/sessions/{id}/end and
+    /v1/events:batch per openapi.yaml, with rate limits and concurrency caps.
+  technical_approach: >-
+    Contract-first: generate response models from openapi.yaml or validate against it in tests;
+    LiveKit token minting via livekit-api; consent enforced server-side.
+  dependencies: [T-M1-02]
+  acceptance_criteria:
+    - "No consent or captcha => 4xx; token TTL 5 min; caps enforced (2 concurrent, 240 s)"
+    - "Events endpoint is idempotent by event_id"
+    - "Contract tests validate responses against openapi.yaml"
+  owner: BAG
+  estimate_h: 12
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-07
+- id: T-M1-08
+  title: Web client (consent modal, call UI, live transcript)
+  milestone: M1
+  type: feature
+  requirements: [FR-01, NFR-05]
+  description: >-
+    Static TypeScript client using livekit-client: consent modal, mic capture with AEC/NS/AGC,
+    call state UI, data-channel transcript, end call, offline status page.
+  technical_approach: >-
+    Vite + vanilla TS in apps/web; strict CSP; transcript rendered with textContent only.
+  dependencies: [T-M1-07]
+  acceptance_criteria:
+    - "Consent must be accepted before the mic is requested"
+    - "Transcript and agent state update live; XSS test with hostile transcript passes"
+  owner: BAG
+  estimate_h: 10
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-08
+- id: T-M1-09
+  title: Hermes receptionist profile and BrainBackend (SSE client with cancel)
+  milestone: M1
+  type: feature
+  requirements: [FR-02, FR-03, NFR-05]
+  description: >-
+    Configure the Hermes receptionist profile and API server; implement HermesBackend streaming
+    /v1/chat/completions with cancellation and error mapping.
+  technical_approach: >-
+    httpx async streaming; parse SSE deltas; close stream to cancel; contract tests against a
+    recorded fixture and against a live Hermes on the GPU node.
+  dependencies: [T-M0-02, T-M0-03, T-M0-04, T-M1-03]
+  acceptance_criteria:
+    - "First-delta and cancel behaviour covered by contract tests"
+    - "Startup self-test lists effective toolset (fails if not the allowlist)"
+  owner: BAG
+  estimate_h: 10
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-09
+- id: T-M1-10
+  title: Voice worker (state machine, LiveKit integration, events)
+  milestone: M1
+  type: feature
+  requirements: [FR-03, FR-04, FR-06, NFR-01]
+  description: >-
+    LiveKit Agents worker implementing the turn state machine, endpointing config, provider wiring,
+    greeting, data-channel events and per-turn event emission.
+  technical_approach: >-
+    Follow design 4.2; state machine in a pure class tested with mocks; LiveKit glue kept thin.
+  dependencies: [T-M0-05, T-M1-01, T-M1-03, T-M1-04, T-M1-05, T-M1-06, T-M1-09]
+  acceptance_criteria:
+    - "60 s live call: greeting, two turns, clean end; events reconstruct the timeline"
+    - "State machine unit tests cover every transition incl. silence and errors"
+  owner: BAG
+  estimate_h: 16
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-10
+- id: T-M1-11
+  title: Compose stacks (cpu/gpu), LiveKit config, metrics wiring, Live-ops dashboard v1
+  milestone: M1
+  type: chore
+  requirements: [FR-12, NFR-12, NFR-07]
+  description: >-
+    docker-compose.cpu.yml and docker-compose.gpu.yml, Caddy, LiveKit config, Prometheus scrape,
+    Grafana provisioning with the Live-ops dashboard.
+  technical_approach: >-
+    Compose profiles; secrets via env files with 600 perms; dashboards as provisioned JSON in git.
+  dependencies: [T-M1-07, T-M1-10]
+  acceptance_criteria:
+    - "make dev-up starts local stack; gpu compose starts on the staging node"
+    - "Dashboard shows active calls and latency percentiles from real calls"
+  owner: BAG
+  estimate_h: 10
+  priority: P1
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M1_walking_skeleton.md#t-m1-11
+# ===================== M2 Receptionist behaviour =====================
+- id: T-M2-01
+  title: Business API, deterministic seed data and knowledge base with gaps
+  milestone: M2
+  type: feature
+  requirements: [FR-02]
+  description: >-
+    Fictional Lakeside Home Services backend: availability, appointments, callbacks, KB search
+    (BM25/tsvector), deterministic reset, idempotency.
+  technical_approach: >-
+    FastAPI under apps/biz using the biz schema; seeded by seed value; KB deliberately lacks some
+    facts for hallucination tests.
+  dependencies: [T-M1-02]
+  acceptance_criteria:
+    - "Reset with the same seed yields identical data (test)"
+    - "Idempotency-Key prevents double booking"
+    - "KB gap list documented for the eval scenarios"
+  owner: BAG
+  estimate_h: 10
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M2_receptionist.md#t-m2-01
+- id: T-M2-02
+  title: Hermes plugin skeleton and receptionist tools
+  milestone: M2
+  type: feature
+  requirements: [FR-02, FR-13]
+  description: >-
+    hermes-callscope pip plugin with entry point and register(ctx); implement the seven tools with
+    strict JSON schemas calling the Business API.
+  technical_approach: >-
+    plugins/hermes_callscope; schemas as pydantic models exported to JSON schema; hermes plugins
+    doctor in CI.
+  dependencies: [T-M0-02, T-M2-01]
+  acceptance_criteria:
+    - "Plugin installs via pip and is discovered by Hermes (integration test)"
+    - "Each tool has schema tests and success/error tests"
+  owner: BAG
+  estimate_h: 12
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M2_receptionist.md#t-m2-02
+- id: T-M2-03
+  title: Policy hook and toolset lockdown self-test
+  milestone: M2
+  type: feature
+  requirements: [FR-13, NFR-05]
+  description: >-
+    pre_tool_call policy (confirmation, arg validation, call_id check, budgets) and a startup
+    self-test that fails closed if any non-plugin tool is enabled.
+  technical_approach: >-
+    Pure policy functions tested exhaustively; hook wrapper thin; denials emit policy.denied events.
+  dependencies: [T-M2-02]
+  acceptance_criteria:
+    - "Mutating call without confirmed=true is blocked with a recoverable error"
+    - "Self-test fails when a terminal/file tool is enabled (test with fake toolset)"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M2_receptionist.md#t-m2-03
+- id: T-M2-04
+  title: Receptionist skill, persona and confirmation protocol
+  milestone: M2
+  type: feature
+  requirements: [FR-02, FR-13]
+  description: >-
+    Skill text: spoken style, one question at a time, read-back protocol, grounding rule, refusal
+    and injection handling, handoff rules.
+  technical_approach: >-
+    Versioned skill file with prompt hash recorded in stack_versions; iterate against the scenario
+    library manually before M3 automates it.
+  dependencies: [T-M2-02]
+  acceptance_criteria:
+    - "10 manual scenario runs complete with correct tool calls"
+    - "Unknown-fact questions lead to decline/callback, not invention"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M2_receptionist.md#t-m2-04
+- id: T-M2-05
+  title: Barge-in, interruption note, filler and degradation paths
+  milestone: M2
+  type: feature
+  requirements: [FR-04, NFR-02, FR-03]
+  description: >-
+    Implement interruption handling with spoken-prefix tracking, interruption note to Hermes,
+    filler after 1.5 s, and the degradation matrix (design 4.11).
+  technical_approach: >-
+    Extend worker state machine; provider failures injected via mocks in tests; barge-in stop
+    latency recorded per event.
+  dependencies: [T-M1-10]
+  acceptance_criteria:
+    - "Barge-in stops audio within 250 ms p95 (measured in a scripted test)"
+    - "Each row of the degradation matrix has a passing test"
+  owner: BAG
+  estimate_h: 12
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M2_receptionist.md#t-m2-05
+- id: T-M2-06
+  title: Recording pipeline, consent record and retention job
+  milestone: M2
+  type: feature
+  requirements: [FR-06, NFR-13, NFR-05]
+  description: >-
+    Record mixed/per-track audio to object storage after consent, register URIs, retention job
+    purging raw audio/payloads at 30 days except reviewed donations, deletion by call ID.
+  technical_approach: >-
+    Worker uploads on call end; scheduled purge command; audit log entries.
+  dependencies: [T-M1-07, T-M1-10]
+  acceptance_criteria:
+    - "No consent => no recording (test)"
+    - "Retention test purges only eligible calls; deletion script works"
+  owner: BAG
+  estimate_h: 8
+  priority: P1
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M2_receptionist.md#t-m2-06
+# ===================== M3 Eval core =====================
+- id: T-M3-01
+  title: Scenario spec schema and scenario library (12 + 4 adversarial)
+  milestone: M3
+  type: feature
+  requirements: [FR-07, FR-08, FR-13]
+  description: >-
+    Pydantic scenario schema, templating for names/phones/addresses/dates, and 16 scenario YAMLs.
+  technical_approach: >-
+    eval/scenarios/*.yaml validated in CI; deterministic template expansion by seed.
+  dependencies: [T-M2-01]
+  acceptance_criteria:
+    - "All scenarios validate; expansion is deterministic for a seed"
+    - "Adversarial scenarios cover injection, cross-customer data, out-of-scope, abuse"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M3_eval_core.md#t-m3-01
+- id: T-M3-02
+  title: Text normaliser and scorers (WER, entities, intent/slot, tools, task success)
+  milestone: M3
+  type: feature
+  requirements: [FR-08]
+  description: >-
+    Versioned normaliser plus scorers implementing the metric definitions in design 4.6.
+  technical_approach: >-
+    Pure functions; jiwer for WER; number normalisation with golden tests; entity extractors per
+    type (PHONE, DATE/TIME, NAME, ADDRESS, CODE).
+  dependencies: [T-M3-01]
+  acceptance_criteria:
+    - "Golden tests for each entity type and normalisation edge case"
+    - "Scorer output schema matches eval_item_results"
+  owner: BAG
+  estimate_h: 12
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M3_eval_core.md#t-m3-02
+- id: T-M3-03
+  title: Dataset builder - synthetic caller audio and augmentation matrix
+  milestone: M3
+  type: feature
+  requirements: [FR-07]
+  description: >-
+    Generate caller audio with a different TTS than the agent's, then apply conditions C0-C5,
+    speed perturbation and noise mixing.
+  technical_approach: >-
+    ffmpeg/sox for band-limit, resample, mu-law; numpy noise mixing at target SNR; packet-loss
+    frame dropper; all parameters recorded per item.
+  dependencies: [T-M3-01, T-M0-06]
+  acceptance_criteria:
+    - "Measured SNR within 0.5 dB of target; C1 spectrum limited to 300-3400 Hz (test)"
+    - "Rebuild with same seed yields identical audio hashes"
+  owner: BAG
+  estimate_h: 14
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M3_eval_core.md#t-m3-03
+- id: T-M3-04
+  title: Data-quality checks, manifests, splits and dataset registry
+  milestone: M3
+  type: feature
+  requirements: [FR-07, NFR-09, NFR-06]
+  description: >-
+    DQ checks, group-based splits (voice/scenario-variant holdout), manifest hash, registration
+    in cs.datasets/dataset_items, frozen test flag.
+  technical_approach: >-
+    Checks as small pure functions returning findings; publish blocked when dq_passed is false.
+  dependencies: [T-M3-03, T-M1-02]
+  acceptance_criteria:
+    - "Leakage check fails when a voice or variant appears in two splits (test)"
+    - "Manifest hash stable; frozen datasets cannot be modified"
+  owner: BAG
+  estimate_h: 10
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M3_eval_core.md#t-m3-04
+- id: T-M3-05
+  title: Eval runner (stage-replay and text-replay) with DB persistence
+  milestone: M3
+  type: feature
+  requirements: [FR-08, NFR-06]
+  description: >-
+    callscope eval run: replay dataset audio through ASR, Hermes/LLM and TTS stages independently
+    and persist item results, metrics and run metadata.
+  technical_approach: >-
+    Uses the same provider interfaces and instrumentation as live calls; resumable; run records
+    git SHA, dataset and stack versions.
+  dependencies: [T-M3-02, T-M3-04, T-M2-04]
+  acceptance_criteria:
+    - "Run on a 20-item golden set completes with CPU mock providers in CI"
+    - "Every eval_runs row has git_sha, dataset_id, stack_version_id"
+  owner: BAG
+  estimate_h: 14
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M3_eval_core.md#t-m3-05
+- id: T-M3-06
+  title: Statistics, compare, thresholds.yaml and regression gate
+  milestone: M3
+  type: feature
+  requirements: [FR-08, NFR-06, NFR-04]
+  description: >-
+    Bootstrap CIs over calls, paired bootstrap comparison, non-inferiority gate driven by
+    eval/thresholds.yaml, CLI compare/gate.
+  technical_approach: >-
+    numpy bootstrap with fixed seed; thresholds file versioned and hashed into eval_runs.
+  dependencies: [T-M3-05]
+  acceptance_criteria:
+    - "Known synthetic data gives expected CI coverage in a test"
+    - "callscope eval gate exits non-zero on a planted regression"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M3_eval_core.md#t-m3-06
+- id: T-M3-07
+  title: Recorded human set protocol and baseline report
+  milestone: M3
+  type: feature
+  requirements: [FR-07, FR-08]
+  description: >-
+    Record ~40 consented calls, produce corrected reference transcripts, freeze the test half,
+    and publish the first baseline report incl. the synthetic-vs-recorded gap.
+  technical_approach: >-
+    Recording guide + consent form; draft transcripts from ASR then human correction; run eval
+    across C0-C5; write baseline into validation_reports draft.
+  dependencies: [T-M3-05, T-M3-06]
+  acceptance_criteria:
+    - "20 dev / 20 frozen test recorded calls with 100% verified transcripts"
+    - "Baseline report with CIs and slice tables committed"
+  owner: BAG
+  estimate_h: 14
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M3_eval_core.md#t-m3-07
+- id: T-M3-08
+  title: Hallucination and prompt-injection scoring
+  milestone: M3
+  type: feature
+  requirements: [FR-08, FR-13, NFR-04]
+  description: >-
+    Rule-based claim checks against KB/tool results, judge-model fallback for residuals with
+    calibration against >= 50 human labels, and injection-success detection.
+  technical_approach: >-
+    Claim extractors for prices/hours/policies; judge is a different model than the agent LLM;
+    report judge-human agreement.
+  dependencies: [T-M3-05]
+  acceptance_criteria:
+    - "Judge agreement with human labels >= 0.8 on the calibration set, or judge unused"
+    - "Adversarial scenarios produce an injection-success count per run"
+  owner: BAG
+  estimate_h: 12
+  priority: P1
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M3_eval_core.md#t-m3-08
+# ===================== M4 Review and caller-sim =====================
+- id: T-M4-01
+  title: Auto-flag rules and root-cause attribution heuristics
+  milestone: M4
+  type: feature
+  requirements: [FR-09]
+  description: >-
+    Implement flag rules and the first-pass attribution algorithm (design 4.7) over events and
+    eval item results.
+  technical_approach: >-
+    Rule objects with unit tests using synthetic timelines; results stored as flags and
+    auto_root_cause.
+  dependencies: [T-M1-02, T-M3-05]
+  acceptance_criteria:
+    - "Each rule has a positive and negative timeline test"
+    - "Attribution agreement vs human labels reported after T-M4-03"
+  owner: BAG
+  estimate_h: 10
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M4_review_and_sim.md#t-m4-01
+- id: T-M4-02
+  title: Review, eval and governance-read API endpoints
+  milestone: M4
+  type: feature
+  requirements: [FR-09, FR-11]
+  description: >-
+    Implement /v1/calls, /v1/calls/{id}, audio signed URL, labels, export-labelled, eval runs and
+    compare endpoints per openapi.yaml.
+  technical_approach: >-
+    Cursor-based pagination; signed URLs expire in 5 minutes; contract tests vs openapi.yaml.
+  dependencies: [T-M4-01, T-M1-07]
+  acceptance_criteria:
+    - "All endpoints match openapi.yaml (contract tests)"
+    - "Audio URL expires; unauthenticated access is rejected"
+  owner: BAG
+  estimate_h: 10
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M4_review_and_sim.md#t-m4-02
+- id: T-M4-03
+  title: Call Review console (Streamlit)
+  milestone: M4
+  type: feature
+  requirements: [FR-09]
+  description: >-
+    Inbox with filters, call detail with lane timeline and audio player, label form, dataset
+    export, eval-run comparison.
+  technical_approach: >-
+    Streamlit talks only to the CallScope API; transcripts escaped on render; Plotly/Altair
+    timeline lanes.
+  dependencies: [T-M4-02]
+  acceptance_criteria:
+    - "30+ calls reviewed and labelled; root-cause distribution chart produced"
+    - "Labelled failures exported into a new dataset version"
+  owner: BAG
+  estimate_h: 16
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M4_review_and_sim.md#t-m4-03
+- id: T-M4-04
+  title: Caller simulator and caller-sim eval mode
+  milestone: M4
+  type: feature
+  requirements: [FR-14, NFR-01, NFR-02]
+  description: >-
+    Simulated caller participant that joins a LiveKit room, plays scenario audio with realistic
+    timing and can barge in; runner records end-to-end latency and turn-taking metrics.
+  technical_approach: >-
+    livekit rtc client publishing audio from dataset items; timeline oracle for expected turns;
+    results into eval tables.
+  dependencies: [T-M3-05, T-M1-10]
+  acceptance_criteria:
+    - "All 16 scenarios run unattended against the staging node"
+    - "Turn-taking and latency metrics land in eval_metrics"
+  owner: BAG
+  estimate_h: 16
+  priority: P1
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M4_review_and_sim.md#t-m4-04
+- id: T-M4-05
+  title: Quality and drift dashboards and alert rules
+  milestone: M4
+  type: feature
+  requirements: [FR-12, NFR-11]
+  description: >-
+    Grafana dashboards for quality/drift and cost, Prometheus alert rules (latency, errors, idle
+    GPU).
+  technical_approach: >-
+    Provisioned JSON dashboards and rules in infra/; ASR-confidence drift panels; alert tests
+    with promtool.
+  dependencies: [T-M1-11, T-M4-01]
+  acceptance_criteria:
+    - "promtool check rules passes in CI"
+    - "Dashboards render from a recorded metrics fixture"
+  owner: BAG
+  estimate_h: 8
+  priority: P2
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M4_review_and_sim.md#t-m4-05
+# ===================== M5 Improvement and governance =====================
+- id: T-M5-01
+  title: MLflow tracking, model inventory and stack version registry
+  milestone: M5
+  type: feature
+  requirements: [FR-11, NFR-06]
+  description: >-
+    Run MLflow, register every model/stack in cs.model_versions and cs.stack_versions, and expose
+    the /v1/models endpoints.
+  technical_approach: >-
+    Registration helper used by eval and training; production stack unique constraint enforced.
+  dependencies: [T-M4-02]
+  acceptance_criteria:
+    - "Every eval run links to a stack version and MLflow run"
+    - "Model inventory endpoint lists licence, status, intended use"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M5_improvement_governance.md#t-m5-01
+- id: T-M5-02
+  title: "Experiment E1: ASR hotword / prompt biasing"
+  milestone: M5
+  type: experiment
+  requirements: [FR-10]
+  description: >-
+    Bias the ASR with domain vocabulary and measure entity accuracy on telephony slices.
+  technical_approach: >-
+    Follow the protocol in design 4.8: hypothesis first, train/dev/test discipline, paired
+    bootstrap, MLflow record.
+  dependencies: [T-M3-07, T-M5-01]
+  acceptance_criteria:
+    - "Hypothesis and success criterion written before running"
+    - "Result on frozen test with CI; decision logged in DECISIONS.md"
+  owner: BAG
+  estimate_h: 8
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M5_improvement_governance.md#t-m5-02
+- id: T-M5-03
+  title: "Experiment E2/E3: LoRA ASR adaptation or endpointing tuning"
+  milestone: M5
+  type: experiment
+  requirements: [FR-10]
+  description: >-
+    Pick the next experiment from the top root-cause bucket: LoRA adaptation of the ASR on
+    telephony-augmented data, or endpointing/VAD grid search.
+  technical_approach: >-
+    Train on train split only, tune on dev, evaluate once on frozen test; training runs with
+    serving paused.
+  dependencies: [T-M5-02, T-M4-03]
+  acceptance_criteria:
+    - "Measured improvement (or documented null result) with CIs on the frozen test"
+    - "No regression on clean audio beyond the declared margin"
+  owner: BAG
+  estimate_h: 20
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M5_improvement_governance.md#t-m5-03
+- id: T-M5-04
+  title: Governance generator - model cards, validation reports, risk register, gates
+  milestone: M5
+  type: feature
+  requirements: [FR-11, NFR-06]
+  description: >-
+    Render model cards and validation reports from DB + eval results; enforce lifecycle
+    transitions (candidate -> validated -> production) against thresholds.
+  technical_approach: >-
+    Jinja2 templates to Markdown/DOCX; transition endpoint checks report pass/fail and card
+    completeness; risk register CRUD.
+  dependencies: [T-M5-01, T-M3-06]
+  acceptance_criteria:
+    - "Promoted model has a card and passing validation report; failing gate returns 409"
+    - "Report includes exact reproduction command (git SHA, dataset, stack)"
+  owner: BAG
+  estimate_h: 14
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M5_improvement_governance.md#t-m5-04
+# ===================== M6 Hardening and telephony =====================
+- id: T-M6-01
+  title: Load test and concurrency limits
+  milestone: M6
+  type: test
+  requirements: [NFR-03, NFR-01]
+  description: >-
+    Run N simulated callers to find the latency knee and confirm the public concurrency cap.
+  technical_approach: >-
+    Caller-sim at 1..5 concurrent calls; plot p50/p95 vs concurrency; tune vLLM/ASR batching.
+  dependencies: [T-M4-04]
+  acceptance_criteria:
+    - ">= 3 concurrent calls with p95 within 20% of NFR-01"
+    - "Chart and finding recorded in DECISIONS.md"
+  owner: BAG
+  estimate_h: 8
+  priority: P1
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M6_hardening.md#t-m6-01
+- id: T-M6-02
+  title: Security test suite and abuse controls
+  milestone: M6
+  type: test
+  requirements: [NFR-05, NFR-13]
+  description: >-
+    Implement the six testable security requirements (design 8.3), caps, captcha, egress rules
+    and toolset self-test in CI/GPU suites.
+  technical_approach: >-
+    pytest security marker; network egress test from the Hermes container; rate-limit tests.
+  dependencies: [T-M2-03, T-M2-06, T-M1-07]
+  acceptance_criteria:
+    - "All six security requirements have passing automated tests"
+    - "gitleaks and pip-audit clean"
+  owner: BAG
+  estimate_h: 10
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M6_hardening.md#t-m6-02
+- id: T-M6-03
+  title: GPU lifecycle scripts, auto-shutdown and offline mode
+  milestone: M6
+  type: feature
+  requirements: [NFR-07, NFR-11]
+  description: >-
+    make demo-up/demo-down, idle auto-shutdown, status page with recorded sample calls and latest
+    eval dashboard when the GPU node is off.
+  technical_approach: >-
+    Cloud CLI scripts + health-wait + smoke test; idle detector from active_calls metric.
+  dependencies: [T-M0-07, T-M1-11]
+  acceptance_criteria:
+    - "Cold start to healthy demo within the measured warm-up time"
+    - "Node stops itself 30 minutes after last session (test log)"
+  owner: BAG
+  estimate_h: 10
+  priority: P0
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M6_hardening.md#t-m6-03
+- id: T-M6-04
+  title: SIP inbound via livekit-sip (stretch)
+  milestone: M6
+  type: feature
+  requirements: [FR-15]
+  description: >-
+    Inbound phone call through a SIP trunk into the same agent at 8 kHz, with call caps and
+    allowlists.
+  technical_approach: >-
+    Spike S-7 first; livekit-sip service and trunk config; compare live 8 kHz WER to simulated C1.
+  dependencies: [T-M6-02]
+  acceptance_criteria:
+    - "One inbound test call completes a booking"
+    - "Per-number caps and no outbound dialing verified"
+  owner: BAG
+  estimate_h: 12
+  priority: P3
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M6_hardening.md#t-m6-04
+- id: T-M6-05
+  title: Demo polish, README and write-up, release v1.0.0
+  milestone: M6
+  type: docs
+  requirements: [FR-01, FR-11, NFR-06]
+  description: >-
+    Public README, architecture diagram, results write-up (benchmark, improvement, governance),
+    demo windows, tag v1.0.0 with build artifact.
+  technical_approach: >-
+    Pull real numbers from validation reports; record a demo video/recorded calls for offline mode.
+  dependencies: [T-M5-04, T-M6-03]
+  acceptance_criteria:
+    - "README lets a stranger reproduce the eval on mock providers"
+    - "v1.0.0 release with wheel, changelog and validation report attached"
+  owner: BAG
+  estimate_h: 10
+  priority: P1
+  status: backlog
+  sprint: null
+  issue: null
+  prompt: prompts/M6_hardening.md#t-m6-05

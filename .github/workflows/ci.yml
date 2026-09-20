@@ -1,0 +1,103 @@
+name: CI
+on:
+  pull_request:
+  push:
+    branches: [main]
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+permissions:
+  contents: read
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with: { python-version: "3.11", enable-cache: true }
+      - run: uv sync --extra dev
+      - run: uv run ruff check .
+      - run: uv run ruff format --check .
+
+  typecheck:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with: { python-version: "3.11", enable-cache: true }
+      - run: uv sync --extra dev
+      - run: uv run mypy
+
+  test:
+    runs-on: ubuntu-latest
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_USER: callscope
+          POSTGRES_PASSWORD: ci_only_password
+          POSTGRES_DB: callscope_test
+        ports: ["5432:5432"]
+        options: >-
+          --health-cmd "pg_isready -U callscope" --health-interval 5s
+          --health-timeout 3s --health-retries 10
+    env:
+      CALLSCOPE_ENV: test
+      CALLSCOPE_TEST_DATABASE_URL: postgresql://callscope:ci_only_password@localhost:5432/callscope_test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with: { python-version: "3.11", enable-cache: true }
+      - run: uv sync --extra dev
+      - run: uv run pytest -m "unit or contract or integration" --junitxml=junit.xml
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: test-results
+          path: junit.xml
+
+  security:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: astral-sh/setup-uv@v5
+        with: { python-version: "3.11" }
+      - run: uv sync --extra dev
+      - run: uv run pip-audit --strict --skip-editable
+
+  artifacts-gate:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with: { fetch-depth: 0 }
+      - uses: astral-sh/setup-uv@v5
+        with: { python-version: "3.11" }
+      - run: uv sync --extra dev
+      - run: uv run python -m callscope.devtools.backlog validate
+      - name: Backlog view is up to date
+        run: |
+          uv run python -m callscope.devtools.backlog render
+          git diff --exit-code docs/BACKLOG.md || (echo "Run 'make backlog-render' and commit docs/BACKLOG.md" && exit 1)
+      - name: PR artifact gate (changelog, backlog, API and schema docs)
+        env:
+          PR_TITLE: ${{ github.event.pull_request.title }}
+        run: uv run python -m callscope.devtools.check_artifacts origin/${{ github.base_ref }}
+
+  build:
+    needs: [lint, typecheck, test, security]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with: { python-version: "3.11" }
+      - run: uv build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/

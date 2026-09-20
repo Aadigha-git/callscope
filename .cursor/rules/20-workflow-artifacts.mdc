@@ -1,0 +1,41 @@
+---
+description: Mandatory workflow and project-artifact maintenance for every task (always loaded)
+alwaysApply: true
+---
+# Task workflow - follow for EVERY task
+
+## Start
+1. Read the task in `backlog/tasks.yaml` (requirements, approach, dependencies, acceptance criteria).
+   Refuse to start if a dependency is not `done`; say which one.
+2. Read the referenced design sections in `docs/design/CallScope_Phase3_Design.md`.
+3. `git switch -c feat/<TASK-ID>-<slug>` (types: feat, fix, spike, chore, docs, test, exp).
+4. `make status T=<TASK-ID> S=in_progress`.
+5. State a short plan (files to touch, tests to write) before editing.
+
+## While working
+- Write/adjust tests with the code. Commit small, Conventional Commits, task ID in the footer:
+  `feat(worker): add barge-in stop\n\nRefs: T-M2-05`.
+- Any design decision, trade-off, spike result, or deviation from the design doc goes into
+  `docs/DECISIONS.md` immediately (use the template there). Decisions that change an ADR also
+  update the ADR status line.
+- If you discover new work, add a task to `backlog/tasks.yaml` (next free ID, all required fields),
+  do not silently expand scope.
+
+## Before opening the PR (all must be true)
+- `make ci` passes (ruff, mypy, pytest with coverage gate, backlog validation).
+- `docs/CHANGELOG.md` has an entry under **Unreleased** (Added/Changed/Fixed).
+- `docs/api/openapi.yaml` updated if any endpoint/contract changed; `db/schema.sql` + migration
+  updated if the database changed. Contract tests updated.
+- `make status T=<ID> S=in_review` then `make backlog-render`; commit `docs/BACKLOG.md`.
+- PR description filled from `.github/PULL_REQUEST_TEMPLATE.md`, including acceptance-criteria
+  checklist with evidence (test names, run IDs, metrics).
+- Append a short entry to `docs/SESSION_NOTES.md` (what was done, what is next, open questions).
+
+## After merge
+- `make status T=<ID> S=done`, `make backlog-render`.
+- If it was the last task of a milestone, run the milestone-close prompt in `prompts/ceremonies.md`.
+
+## Never
+- Commit secrets, `.env`, recordings, model weights, personal data.
+- Skip hooks or force-push `main`. Mark a task done with failing tests or unmet acceptance criteria.
+- Claim measurements you did not run. Numbers in docs/PRs must come from real runs with IDs.

@@ -1,0 +1,69 @@
+# Recipe lines must start with a real tab (GNU Make / BSD Make compatible).
+.DEFAULT_GOAL := help
+PY := uv run python
+
+help: ## Show targets
+	@grep -E '^[a-zA-Z_-]+:.*?## ' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "  %-20s %s\n", $$1, $$2}'
+
+setup: ## Install deps and git hooks
+	@test -d .git || git init -b main
+	uv sync --extra dev
+	uv run pre-commit install
+	@test -f .env || cp .env.example .env
+	@echo "Edit .env (never commit it)."
+
+dev-up: ## Start local services (Postgres, MinIO, Prometheus, Grafana)
+	docker compose -f docker-compose.local.yml up -d
+
+dev-down: ## Stop local services
+	docker compose -f docker-compose.local.yml down
+
+lint: ## Ruff lint + format check
+	uv run ruff check .
+	uv run ruff format --check .
+
+fmt: ## Auto-format
+	uv run ruff check --fix .
+	uv run ruff format .
+
+typecheck: ## mypy (strict) on callscope/
+	uv run mypy
+
+test: ## Unit + contract tests with coverage gate
+	uv run pytest
+
+test-integration: ## Also run tests needing services (set CALLSCOPE_TEST_DATABASE_URL)
+	uv run pytest -m "integration or not integration"
+
+ci: lint typecheck test backlog-validate ## Everything CI runs locally
+	@echo "CI parity OK"
+
+backlog-validate: ## Validate backlog/tasks.yaml
+	$(PY) -m callscope.devtools.backlog validate
+
+backlog-render: ## Regenerate docs/BACKLOG.md from tasks.yaml
+	$(PY) -m callscope.devtools.backlog render
+
+status: ## Usage: make status T=T-M1-03 S=in_progress
+	$(PY) -m callscope.devtools.backlog status $(T) $(S) && $(PY) -m callscope.devtools.backlog render
+
+sprint: ## Usage: make sprint N=S1 T=T-M0-01,T-M0-02
+	$(PY) -m callscope.devtools.backlog sprint $(N) $(T) && $(PY) -m callscope.devtools.backlog render
+
+report: ## Usage: make report SPRINT=S1  (or MILESTONE=M1)
+	$(PY) -m callscope.devtools.backlog report $(if $(SPRINT),--sprint $(SPRINT),--milestone $(MILESTONE))
+
+issues: ## Create GitHub issues for tasks without one (needs gh auth)
+	$(PY) -m callscope.devtools.backlog issues
+
+check-artifacts: ## Local run of the PR artifact gate
+	$(PY) -m callscope.devtools.check_artifacts origin/main
+
+build: ## Build wheel + sdist
+	uv build
+
+design-md: ## Convert the Word design doc to Markdown for Cursor (needs pandoc)
+	pandoc docs/design/*.docx -t gfm --wrap=none -o docs/design/CallScope_Phase3_Design.md
+
+clean: ## Remove caches and build output
+	rm -rf .pytest_cache .mypy_cache .ruff_cache dist build htmlcov .coverage

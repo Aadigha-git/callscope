@@ -1,0 +1,35 @@
+__pycache__/
+*.py[cod]
+.venv/
+.env
+.env.*
+!.env.example
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+dist/
+build/
+*.egg-info/
+mlruns/
+node_modules/
+# data & artifacts never go in git
+data/
+artifacts/
+recordings/
+# Bootstrap sometimes leaves a duplicate Word doc at repo root; keep only docs/design/*.docx
+/*.docx
+*.wav
+*.flac
+*.mp3
+*.ogg
+*.onnx
+*.safetensors
+*.gguf
+*.pt
+secrets/
+*.enc.yaml.dec
+.DS_Store
+.idea/
+.vscode/

@@ -1,0 +1,9 @@
+global:
+  scrape_interval: 5s
+scrape_configs:
+  - job_name: callscope-worker
+    static_configs:
+      - targets: ["host.docker.internal:9100"]   # CALLSCOPE_METRICS_PORT
+  - job_name: callscope-api
+    static_configs:
+      - targets: ["host.docker.internal:8000"]

@@ -1,0 +1,12 @@
+- { name: "type:feature", color: "1D76DB" }
+- { name: "type:chore", color: "BFD4F2" }
+- { name: "type:spike", color: "D4C5F9" }
+- { name: "type:experiment", color: "FBCA04" }
+- { name: "type:test", color: "0E8A16" }
+- { name: "type:docs", color: "C5DEF5" }
+- { name: "type:bug", color: "D73A4A" }
+- { name: "prio:P0", color: "B60205" }
+- { name: "prio:P1", color: "D93F0B" }
+- { name: "prio:P2", color: "FBCA04" }
+- { name: "prio:P3", color: "C2E0C6" }
+- { name: "blocked", color: "000000" }

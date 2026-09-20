@@ -1,0 +1,458 @@
+openapi: 3.1.0
+info:
+  title: CallScope API
+  version: 1.0.0
+  description: Session, ingest, review, evaluation and governance endpoints. Public endpoints are marked; all others require a service bearer token.
+servers:
+  - url: https://callscope.example.com
+security:
+  - serviceToken: []
+paths:
+  /v1/status:
+    get:
+      summary: Demo status (public)
+      security: []
+      responses:
+        '200':
+          description: Current demo state
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Status' }
+  /v1/sessions:
+    post:
+      summary: Start a browser call session (public, rate limited)
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SessionRequest' }
+      responses:
+        '201':
+          description: Room and short-lived token
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/SessionResponse' }
+        '403': { $ref: '#/components/responses/Problem' }
+        '429': { $ref: '#/components/responses/Problem' }
+        '503': { $ref: '#/components/responses/Problem' }
+  /v1/sessions/{callId}/end:
+    post:
+      summary: End a session (public, token-bound)
+      security: []
+      parameters: [ { $ref: '#/components/parameters/CallId' } ]
+      responses:
+        '204': { description: Ended }
+  /v1/events:batch:
+    post:
+      summary: Idempotent batch ingest of call events
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [events]
+              properties:
+                events:
+                  type: array
+                  maxItems: 500
+                  items: { $ref: '#/components/schemas/Event' }
+      responses:
+        '202':
+          description: Accepted (duplicates ignored by event_id)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  accepted: { type: integer }
+                  duplicates: { type: integer }
+  /v1/calls/{callId}/recording:
+    post:
+      summary: Register uploaded recording URIs
+      parameters: [ { $ref: '#/components/parameters/CallId' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [mixed_uri]
+              properties:
+                mixed_uri: { type: string }
+                caller_uri: { type: string }
+                agent_uri: { type: string }
+      responses:
+        '204': { description: Registered }
+  /v1/calls:
+    get:
+      summary: List calls
+      parameters:
+        - { name: flagged, in: query, schema: { type: boolean } }
+        - { name: root_cause, in: query, schema: { type: string } }
+        - { name: stack_version_id, in: query, schema: { type: string, format: uuid } }
+        - { name: channel, in: query, schema: { type: string, enum: [browser, sip, sim, replay] } }
+        - { name: from, in: query, schema: { type: string, format: date-time } }
+        - { name: limit, in: query, schema: { type: integer, default: 50, maximum: 200 } }
+        - { name: cursor, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Page of calls
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  items: { type: array, items: { $ref: '#/components/schemas/CallSummary' } }
+                  next_cursor: { type: [string, 'null'] }
+  /v1/calls/{callId}:
+    get:
+      summary: Call detail with turns, events, tool calls and labels
+      parameters: [ { $ref: '#/components/parameters/CallId' } ]
+      responses:
+        '200':
+          description: Call detail
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/CallDetail' }
+        '404': { $ref: '#/components/responses/Problem' }
+  /v1/calls/{callId}/audio:
+    get:
+      summary: Short-lived signed URL for call audio
+      parameters: [ { $ref: '#/components/parameters/CallId' } ]
+      responses:
+        '200':
+          description: Signed URL (expires in 5 minutes)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  url: { type: string, format: uri }
+                  expires_at: { type: string, format: date-time }
+  /v1/calls/{callId}/labels:
+    post:
+      summary: Add a root-cause label
+      parameters: [ { $ref: '#/components/parameters/CallId' } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/LabelRequest' }
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/Label' }
+  /v1/datasets:export-labelled:
+    post:
+      summary: Export labelled failures into a new dataset version draft
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [name, version]
+              properties:
+                name: { type: string }
+                version: { type: string }
+                root_causes: { type: array, items: { type: string } }
+      responses:
+        '202':
+          description: Export job accepted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  dataset_id: { type: string, format: uuid }
+  /v1/eval/runs:
+    get:
+      summary: List evaluation runs
+      responses:
+        '200':
+          description: Runs
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/EvalRun' }
+    post:
+      summary: Trigger an evaluation run
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [dataset_id, stack_version_id, mode]
+              properties:
+                dataset_id: { type: string, format: uuid }
+                stack_version_id: { type: string, format: uuid }
+                mode: { type: string, enum: [stage_replay, text_replay, caller_sim, baseline] }
+      responses:
+        '202':
+          description: Queued
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/EvalRun' }
+  /v1/eval/runs/{runId}:
+    get:
+      summary: Run detail with metrics
+      parameters: [ { name: runId, in: path, required: true, schema: { type: string, format: uuid } } ]
+      responses:
+        '200':
+          description: Run with metrics
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/EvalRun'
+                  - type: object
+                    properties:
+                      metrics:
+                        type: array
+                        items: { $ref: '#/components/schemas/Metric' }
+  /v1/eval/compare:
+    get:
+      summary: Paired comparison of two runs
+      parameters:
+        - { name: a, in: query, required: true, schema: { type: string, format: uuid } }
+        - { name: b, in: query, required: true, schema: { type: string, format: uuid } }
+      responses:
+        '200':
+          description: Per-metric deltas with paired-bootstrap CIs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    metric: { type: string }
+                    slice: { type: string }
+                    delta: { type: number }
+                    ci_low: { type: number }
+                    ci_high: { type: number }
+                    non_inferior: { type: boolean }
+  /v1/models:
+    get:
+      summary: Model inventory
+      parameters:
+        - { name: component, in: query, schema: { type: string } }
+        - { name: status, in: query, schema: { type: string } }
+      responses:
+        '200':
+          description: Model versions
+          content:
+            application/json:
+              schema:
+                type: array
+                items: { $ref: '#/components/schemas/ModelVersion' }
+    post:
+      summary: Register a model version (status starts as candidate)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/ModelVersionCreate' }
+      responses:
+        '201':
+          description: Registered
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModelVersion' }
+  /v1/models/{modelVersionId}/transition:
+    post:
+      summary: Lifecycle transition (gates enforced server-side)
+      parameters: [ { name: modelVersionId, in: path, required: true, schema: { type: string, format: uuid } } ]
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [to]
+              properties:
+                to: { type: string, enum: [validated, production, retired, rejected] }
+                report_id: { type: string, format: uuid }
+                rationale: { type: string }
+      responses:
+        '200':
+          description: Transitioned
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ModelVersion' }
+        '409':
+          description: Gate not satisfied
+          content:
+            application/problem+json:
+              schema: { $ref: '#/components/schemas/Problem' }
+  /v1/governance/reports/{reportId}:
+    get:
+      summary: Validation report
+      parameters: [ { name: reportId, in: path, required: true, schema: { type: string, format: uuid } } ]
+      responses:
+        '200':
+          description: Report
+          content:
+            application/json:
+              schema: { $ref: '#/components/schemas/ValidationReport' }
+components:
+  securitySchemes:
+    serviceToken:
+      type: http
+      scheme: bearer
+  parameters:
+    CallId:
+      name: callId
+      in: path
+      required: true
+      schema: { type: string, format: uuid }
+  responses:
+    Problem:
+      description: Error (RFC 7807)
+      content:
+        application/problem+json:
+          schema: { $ref: '#/components/schemas/Problem' }
+  schemas:
+    Problem:
+      type: object
+      required: [type, title, status]
+      properties:
+        type: { type: string }
+        title: { type: string }
+        status: { type: integer }
+        detail: { type: string }
+        code: { type: string }
+    Status:
+      type: object
+      properties:
+        state: { type: string, enum: [online, warming_up, offline] }
+        active_calls: { type: integer }
+        max_concurrent: { type: integer }
+        stack_label: { type: string }
+        next_window: { type: [string, 'null'], format: date-time }
+    SessionRequest:
+      type: object
+      required: [consent_recording, captcha_token, policy_version]
+      properties:
+        consent_recording: { type: boolean, const: true }
+        consent_donate: { type: boolean, default: false }
+        captcha_token: { type: string }
+        policy_version: { type: string }
+    SessionResponse:
+      type: object
+      properties:
+        call_id: { type: string, format: uuid }
+        livekit_url: { type: string }
+        room: { type: string }
+        token: { type: string }
+        expires_at: { type: string, format: date-time }
+        max_duration_s: { type: integer }
+    Event:
+      type: object
+      required: [event_id, call_id, t_ms, ts, source, type]
+      properties:
+        event_id: { type: string, format: uuid }
+        call_id: { type: string, format: uuid }
+        turn_id: { type: [string, 'null'], format: uuid }
+        t_ms: { type: integer }
+        ts: { type: string, format: date-time }
+        source: { type: string, enum: [worker, plugin, client, sim] }
+        type: { type: string }
+        payload: { type: object, additionalProperties: true }
+    CallSummary:
+      type: object
+      properties:
+        call_id: { type: string, format: uuid }
+        started_at: { type: string, format: date-time }
+        channel: { type: string }
+        stack_label: { type: string }
+        duration_s: { type: number }
+        flagged: { type: boolean }
+        flag_reasons: { type: array, items: { type: string } }
+        root_causes: { type: array, items: { type: string } }
+    CallDetail:
+      allOf:
+        - $ref: '#/components/schemas/CallSummary'
+        - type: object
+          properties:
+            turns: { type: array, items: { type: object } }
+            events: { type: array, items: { $ref: '#/components/schemas/Event' } }
+            tool_calls: { type: array, items: { type: object } }
+            labels: { type: array, items: { $ref: '#/components/schemas/Label' } }
+    LabelRequest:
+      type: object
+      required: [root_cause_code, severity, reviewer]
+      properties:
+        turn_id: { type: [string, 'null'], format: uuid }
+        root_cause_code: { type: string }
+        severity: { type: integer, minimum: 1, maximum: 4 }
+        reviewer: { type: string }
+        notes: { type: string }
+        add_to_dataset: { type: string, enum: [train, dev] }
+    Label:
+      allOf:
+        - $ref: '#/components/schemas/LabelRequest'
+        - type: object
+          properties:
+            label_id: { type: string, format: uuid }
+            created_at: { type: string, format: date-time }
+    EvalRun:
+      type: object
+      properties:
+        run_id: { type: string, format: uuid }
+        dataset_id: { type: string, format: uuid }
+        stack_version_id: { type: string, format: uuid }
+        mode: { type: string }
+        status: { type: string }
+        git_sha: { type: string }
+        started_at: { type: [string, 'null'], format: date-time }
+        finished_at: { type: [string, 'null'], format: date-time }
+    Metric:
+      type: object
+      properties:
+        metric: { type: string }
+        slice: { type: string }
+        value: { type: number }
+        ci_low: { type: number }
+        ci_high: { type: number }
+        n: { type: integer }
+    ModelVersionCreate:
+      type: object
+      required: [component, name, revision, owner]
+      properties:
+        component: { type: string, enum: [asr, tts, llm, vad, turn_detector, judge] }
+        name: { type: string }
+        base_model: { type: string }
+        revision: { type: string }
+        license: { type: string }
+        artifact_uri: { type: string }
+        config: { type: object }
+        intended_use: { type: string }
+        out_of_scope_use: { type: string }
+        owner: { type: string }
+        mlflow_run_id: { type: string }
+    ModelVersion:
+      allOf:
+        - $ref: '#/components/schemas/ModelVersionCreate'
+        - type: object
+          properties:
+            model_version_id: { type: string, format: uuid }
+            status: { type: string, enum: [candidate, validated, production, retired, rejected] }
+            created_at: { type: string, format: date-time }
+    ValidationReport:
+      type: object
+      properties:
+        report_id: { type: string, format: uuid }
+        model_version_id: { type: string, format: uuid }
+        eval_run_id: { type: string, format: uuid }
+        thresholds: { type: object }
+        results: { type: object }
+        passed: { type: boolean }
+        report_uri: { type: string }
+        signed_off_by: { type: [string, 'null'] }

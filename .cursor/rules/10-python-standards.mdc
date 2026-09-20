@@ -1,0 +1,19 @@
+---
+description: Python coding standards
+globs: ["**/*.py"]
+alwaysApply: false
+---
+- Python 3.11+, full type hints; mypy strict must pass for `callscope/`. No `Any` unless justified in a comment.
+- Format/lint with ruff (line length 100). No `print` outside `callscope/devtools` (use `logging`).
+- Pydantic v2 models for all boundaries (API, events, config, scenario specs). Validate at the edges.
+- Async I/O for network/streaming code; never block the event loop (no `time.sleep`, sync HTTP,
+  or heavy CPU work inside coroutines - use `asyncio.to_thread`).
+- Time: `time.monotonic()` for durations/latency, timezone-aware UTC for timestamps.
+- Errors: raise specific exceptions, never bare `except:`; log with context, never swallow silently.
+  Provider failures map to the degradation matrix (design 4.11).
+- Logging: `logging.getLogger(__name__)`; structured `extra={...}`; NEVER log transcripts, tool
+  args, phone numbers, emails, or secrets.
+- Config via `callscope.config.Settings`; no `os.environ` reads scattered in code; no secrets in code.
+- Public functions/classes get short docstrings stating the contract (inputs, outputs, errors).
+- Keep functions small and pure where possible (normalisers, scorers, policy rules, chunker).
+- Dependencies: add via `uv add`; justify any new runtime dependency in the PR description.
