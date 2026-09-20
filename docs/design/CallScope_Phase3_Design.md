@@ -55,7 +55,7 @@ The earlier recommendation was to build streaming TTS and barge-in as the projec
 |---|---|---|
 | U1 | How a per-call correlation ID reaches Hermes hook kwargs when called through the API server | S-1 — **resolved (D-20260920-04):** metadata/`user`/headers do not reach hooks; use user-message `CALL_CONTEXT` + tool-arg `call_id` |
 | U2 | Per-turn overhead Hermes adds (system prompt size, memory/skills load) on time-to-first-token with a slim profile | S-2 |
-| U3 | Tool-calling reliability of the chosen open-weight LLM through Token Factory + Hermes | S-3 |
+| U3 | Tool-calling reliability of the chosen open-weight LLM through Token Factory + Hermes | S-3 — **resolved (D-20260920-18):** choose `nvidia/Nemotron-3_5-Lightning` (100% / 60 turns); Qwen3-30B alternate |
 | U4 | LiveKit Agents: custom STT/TTS plugin wiring, interruption behaviour, exact parameter names in the installed version | S-4 — **resolved (D-20260920-05):** own Agents worker + stub providers work; §4.2→`TurnHandlingOptions` mapped on 1.8.2; hermes-livekit not adopted |
 | U5 | Candidate ASR/TTS/VAD on Apple Silicon: streaming, licence, unified-memory, RTF, telephony WER | S-5 |
 | U6 | Mac unified-memory budget + Token Factory RTT/TTFT from this location | S-6 — **resolved (D-20260920-17):** baseline + livekit + regional RTT + chat latency |
@@ -1266,7 +1266,7 @@ Each spike ends with a one-paragraph result appended to the relevant ADR and a g
 |---|---|---|---|
 | S-1 | Can a call/turn ID reach Hermes hook kwargs via the API server? | **Done (D-20260920-04):** no for `user`/headers; yes for user-message `CALL_CONTEXT` + tool-arg `call_id` | `CALL_CONTEXT` in user message + `call_id` tool arg (confirmed) |
 | S-2 | Hermes overhead per turn with a slim profile on the chosen LLM | Measured `brain_ttft` p50/p95 for 50 turns; ≤ 450 ms p50 budget | Trim skills/system prompt, enable prefix caching; last resort: thin FAQ fast-path (R-02) |
-| S-3 | Tool-call reliability of 2–3 candidate LLMs via Token Factory + Hermes | ≥ 95% valid tool calls on 60 scripted turns; parser flags recorded | Choose next candidate; tighten schemas |
+| S-3 | Tool-call reliability of 2–3 candidate LLMs via Token Factory + Hermes | ≥ 95% valid tool calls on 60 scripted turns; parser flags recorded | **Done (D-20260920-18):** Lightning 100%, Qwen 100%, Nano 98.3%; choose Lightning |
 | S-4 | LiveKit Agents wiring with custom STT/TTS/LLM adapters; interruption behaviour; compare with `hermes-livekit` | **Done (D-20260920-05):** browser/headless call works with stubs on Agents 1.8.2; §4.2 mapped; own worker confirmed; hermes-livekit not adopted | Pipecat pipeline (same provider interfaces) — fallback only |
 | S-5 | ASR/TTS/VAD on Apple Silicon: streaming, licences, unified-memory, RTF, WER on C0/C1 | Shortlist of 2 ASR + 2 TTS + VAD with measured memory | Widen shortlist; VAD-segmented chunking |
 | S-6 | Mac sizing + Token Factory RTT/TTFT (100 probes) | §9.5 memory table; native livekit; TF latency | Smaller ASR/TTS; cassette-first |
