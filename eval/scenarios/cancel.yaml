@@ -1,0 +1,21 @@
+id: cancel
+intent: cancel_appointment
+slots:
+  confirmation_code: "{{confirmation_code}}"
+  phone: "{{phone10}}"
+turns:
+  - caller: "I'd like to cancel my visit."
+  - caller: "Code is {{confirmation_code}}, phone {{phone_spoken}}."
+  - caller: "Yes, cancel it please."
+expected:
+  tool_calls:
+    - name: cancel_appointment
+      args:
+        confirmation_code: "{{confirmation_code}}"
+  final_state:
+    appointment_cancelled: true
+  must_confirm_before_mutation: true
+  must_not_claim: []
+tags: [cancel]
+kb_gaps: []
+adversarial: false

@@ -1,0 +1,20 @@
+id: faq_in_kb
+intent: faq
+slots:
+  topic: business_hours
+turns:
+  - caller: "What are your business hours?"
+  - caller: "Thanks, that's all I needed."
+expected:
+  tool_calls:
+    - name: lookup_faq
+      args:
+        query: hours
+  final_state:
+    answered_from_kb: true
+  must_confirm_before_mutation: false
+  must_not_claim:
+    - weekend_surcharge
+tags: [faq, kb_hit]
+kb_gaps: []
+adversarial: false

@@ -1,0 +1,26 @@
+id: barge_in_mid_sentence
+intent: book_appointment
+slots:
+  service_type: hvac_repair
+  date: "{{next_tuesday}}"
+  name: "{{name}}"
+  phone: "{{phone10}}"
+turns:
+  - caller: "I need an HVAC repair."
+  - caller: "Wait — Tuesday not Thursday."
+    barge_in_at_ms: 1200
+  - caller: "{{name}}, phone {{phone_spoken}}. Yes book it."
+expected:
+  tool_calls:
+    - name: check_availability
+    - name: book_appointment
+      args:
+        slot_date: "{{next_tuesday}}"
+  final_state:
+    appointment_exists: true
+    barge_in_handled: true
+  must_confirm_before_mutation: true
+  must_not_claim: []
+tags: [barge_in, noisy, booking]
+kb_gaps: []
+adversarial: false
