@@ -1,0 +1,9 @@
+# Allowed tool *names* for the CallScope receptionist toolset (T-M2-03).
+# Used by tests / docs; platform lockdown remains platform_toolsets.api_server.
+check_availability
+book_appointment
+reschedule_appointment
+cancel_appointment
+lookup_faq
+request_callback
+transfer_to_human

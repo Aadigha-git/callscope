@@ -8,7 +8,7 @@
 |---|---|---|---|---|
 | M0 Setup and spikes | 7 | 0 | 7 | 0 |
 | M1 Walking skeleton | 13 | 0 | 13 | 0 |
-| M2 Receptionist behaviour | 3 | 1 | 6 | 28 |
+| M2 Receptionist behaviour | 3 | 2 | 6 | 28 |
 | M3 Eval core | 0 | 0 | 8 | 84 |
 | M4 Review and caller-sim | 0 | 0 | 6 | 60 |
 | M5 Improvement and governance | 0 | 0 | 5 | 58 |
@@ -65,7 +65,7 @@
 |---|---|---|---|---|---|---|---|---|
 | T-M2-01 | Business API, deterministic seed data and knowledge base with gaps | FR-02 | T-M1-02 | 10 | BAG | done |  | #19 |
 | T-M2-02 | Hermes plugin skeleton and receptionist tools | FR-02, FR-13 | T-M0-02, T-M2-01 | 12 | BAG | in_review |  | #20 |
-| T-M2-03 | Policy hook and toolset lockdown self-test | FR-13, NFR-05 | T-M2-02 | 8 | BAG | backlog |  | #21 |
+| T-M2-03 | Policy hook and toolset lockdown self-test | FR-13, NFR-05 | T-M2-02 | 8 | BAG | in_review |  | #21 |
 | T-M2-04 | Receptionist skill, persona and confirmation protocol | FR-02, FR-13 | T-M2-02 | 8 | BAG | backlog |  | #22 |
 | T-M2-05 | Barge-in, interruption note, filler and degradation paths | FR-04, NFR-02, FR-03 | T-M1-10 | 12 | BAG | done |  | #23 |
 | T-M2-06 | Local recording, consent record and purge/delete-call | FR-06, NFR-13, NFR-05 | T-M1-07, T-M1-10 | 6 | BAG | done |  | #24 |
