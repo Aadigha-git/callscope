@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-05
+- Done: ASR FastAPI server (WS `/v1/stream`, POST `/v1/transcribe`, `/healthz`, `/metrics`),
+  FakeASR + EnergyVAD + lazy mlx-whisper backend, `ASRClient` STTProvider, `make asr`.
+- Next: Open PR; after merge mark done → **T-M1-06** TTS server (or T-M1-13 per sprint).
+- Open questions: none; real mlx RTF/memory remain those in D-20260920-19 / S-5.
+- Commands to resume: `git switch feat/T-M1-05-asr-server && make ci`
+
 ## 2026-09-20 / T-M1-04
 - Done: `SentenceChunker` + `tts_norm` with golden/property tests under `tests/norm/`.
 - Next: After merge mark done; **T-M1-05** ASR server (or T-M1-13 per sprint order).

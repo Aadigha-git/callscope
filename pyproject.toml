@@ -16,6 +16,11 @@ dependencies = [
   "sqlalchemy[asyncio]>=2.0.36",
   "alembic>=1.14",
   "psycopg[binary]>=3.1",
+  "fastapi>=0.115",
+  "uvicorn[standard]>=0.30",
+  "httpx>=0.27",
+  "python-multipart>=0.0.9",
+  "websockets>=13",
 ]
 
 [project.optional-dependencies]
@@ -35,7 +40,7 @@ dev = [
 ]
 
 [tool.setuptools.packages.find]
-include = ["callscope*"]
+include = ["callscope*", "servers*"]
 
 [tool.ruff]
 line-length = 100
@@ -54,8 +59,12 @@ ignore = ["S603", "S607"]  # subprocess use is limited to devtools calling git/g
 [tool.mypy]
 python_version = "3.11"
 strict = true
-files = ["callscope"]
+files = ["callscope", "servers"]
 plugins = ["pydantic.mypy"]
+
+[[tool.mypy.overrides]]
+module = ["mlx_whisper", "mlx_whisper.*", "numpy", "numpy.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"
@@ -65,7 +74,7 @@ markers = [
   "unit: pure unit tests, no I/O",
   "contract: validates API/schema contracts",
   "integration: needs services (Postgres etc.)",
-  "gpu: needs the GPU node / real models",
+  "gpu: needs Apple Silicon / real model weights",
 ]
 
 [tool.coverage.run]

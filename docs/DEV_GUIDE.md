@@ -85,6 +85,8 @@ Statuses: `backlog` → `ready` → `in_progress` → `in_review` → `done` (or
 ### 2.9 Logging and basic monitoring
 JSON logs with `call_id`/`turn_id` and PII scrubbing; Prometheus metrics. Compose runs Prometheus +
 Grafana; Live-ops wiring arrives in T-M1-11. `make budget` shows Token Factory spend vs cap (T-M1-12).
+`make asr` starts the native ASR server on `:8200` (default `CALLSCOPE_ASR_BACKEND=fake`; set
+`mlx_whisper` on Apple Silicon — D-20260920-23).
 
 ### 2.10 Bootstrap done-when checklist
 - [x] `make setup && make ci` green on a clean clone; pre-commit installed

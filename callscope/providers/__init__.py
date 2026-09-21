@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from callscope.providers.asr_client import ASRClient
 from callscope.providers.base import (
     BrainBackend,
     BrainDelta,
@@ -27,6 +28,7 @@ from callscope.providers.budget import (
 from callscope.providers.mock import MockBrain, MockSTT, MockTTS
 
 __all__ = [
+    "ASRClient",
     "BrainBackend",
     "BrainDelta",
     "BudgetExceededError",
