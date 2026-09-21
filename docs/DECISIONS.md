@@ -28,6 +28,17 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-27 - Web client: Vite + vanilla TS + livekit-client
+- Date / Task: 2026-09-20 / T-M1-08
+- Context: Design §4.2 client; C1. Need consent-before-mic and XSS-safe transcript.
+- Decision: `apps/web` Vite vanilla TypeScript (no framework). `livekit-client` 2.x
+  `Room` + `createLocalAudioTrack` (AEC/NS/AGC on) verified from installed package.
+  Data topic `callscope`. Strict CSP meta. Vitest for UI state + XSS. `make web-*` + CI `web` job.
+- Alternatives considered: React (rejected — prompt says vanilla); hermes-livekit web (out of scope).
+- Consequences: Live call still needs T-M1-10 worker for agent audio/transcripts.
+- Design doc impact: none.
+- Status: accepted
+
 ### D-20260920-26 - CallScope API: memory store + concurrent cap (no per-IP limits)
 - Date / Task: 2026-09-20 / T-M1-07
 - Context: OpenAPI session/status/events; ADR-010 removed public per-IP abuse limits;

@@ -85,12 +85,9 @@ Statuses: `backlog` → `ready` → `in_progress` → `in_review` → `done` (or
 ### 2.9 Logging and basic monitoring
 JSON logs with `call_id`/`turn_id` and PII scrubbing; Prometheus metrics. Compose runs Prometheus +
 Grafana; Live-ops wiring arrives in T-M1-11. `make budget` shows Token Factory spend vs cap (T-M1-12).
-`make asr` starts the native ASR server on `:8200` (default `CALLSCOPE_ASR_BACKEND=fake`; set
-`mlx_whisper` on Apple Silicon — D-20260920-23). `make tts` starts TTS on `:8300` (fake default;
-`piper` / `kokoro_onnx` optional — D-20260920-25). `make api` starts CallScope API on `:8000`
-(consent sessions + LiveKit tokens — D-20260920-26). LLM calls default to cassette **replay**
-(`eval/cassettes/`); live capture needs `--live` / `CALLSCOPE_LLM_MODE=live` plus the budget
-guard (T-M1-13 / D-20260920-24).
+`make asr` / `make tts` / `make api` start native ASR (:8200), TTS (:8300), and CallScope API
+(:8000). `make web-dev` runs the Vite client (:5173, proxies `/v1`). LLM calls default to cassette
+**replay**; live capture needs `--live` + budget guard (T-M1-13).
 
 ### 2.10 Bootstrap done-when checklist
 - [x] `make setup && make ci` green on a clean clone; pre-commit installed

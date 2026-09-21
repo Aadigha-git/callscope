@@ -52,3 +52,4 @@ spikes/**/:memory:
 spikes/**/*.ses
 
 spikes/T-M0-03/.venv
+*.tsbuildinfo
