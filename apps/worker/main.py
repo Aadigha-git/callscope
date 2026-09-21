@@ -1,6 +1,8 @@
-"""Voice worker entrypoint: metrics + mock CallSession smoke / LiveKit note.
+"""Voice worker entrypoint: metrics serve, mock CallSession smoke, LiveKit note.
 
-Run: ``python -m apps.worker --mock-call``
+Run:
+  python -m apps.worker --serve      # metrics only (demo / Procfile)
+  python -m apps.worker --mock-call  # headless smoke
 """
 
 from __future__ import annotations
@@ -68,8 +70,18 @@ async def run_mock_call(*, max_duration_s: float = 5.0) -> list[Event]:
     return collected
 
 
+async def _serve_forever() -> None:
+    stop = asyncio.Event()
+    await stop.wait()
+
+
 def main(argv: list[str] | None = None) -> None:
     parser = argparse.ArgumentParser(description="CallScope voice worker")
+    parser.add_argument(
+        "--serve",
+        action="store_true",
+        help="Expose Prometheus metrics and idle (demo / Procfile)",
+    )
     parser.add_argument(
         "--mock-call",
         action="store_true",
@@ -86,7 +98,7 @@ def main(argv: list[str] | None = None) -> None:
         level=os.environ.get("CALLSCOPE_LOG_LEVEL", "INFO"),
         json_output=os.environ.get("CALLSCOPE_LOG_JSON", "true").lower() == "true",
     )
-    metrics_port = int(os.environ.get("CALLSCOPE_METRICS_PORT", "9101"))
+    metrics_port = int(os.environ.get("CALLSCOPE_METRICS_PORT", "9100"))
     start_metrics_server(metrics_port)
     logger.info("metrics listening on :%s", metrics_port)
 
@@ -100,12 +112,21 @@ def main(argv: list[str] | None = None) -> None:
         require_livekit_agents()
         logger.error(
             "LiveKit Agents config mapping is ready (WorkerConfig / livekit_glue); "
-            "full STT/TTS/Hermes AgentSession wiring ships with make demo (T-M1-11). "
-            "See spikes/T-M0-05/agent/worker.py for the verified Agents scaffold."
+            "full AgentSession STT/TTS/Hermes adapters are not wired yet — use the "
+            "spike scaffold under spikes/T-M0-05/agent/worker.py for room smoke."
         )
         raise SystemExit(2)
 
-    logger.info("CallScope worker. Pass --mock-call for smoke, or --livekit (T-M1-11).")
+    if args.serve:
+        logger.info("worker serving metrics; Ctrl-C to stop")
+        try:
+            asyncio.run(_serve_forever())
+        except KeyboardInterrupt:
+            logger.info("worker stopped")
+        return
+
+    logger.info("Pass --serve (demo), --mock-call (smoke), or --livekit.")
+    raise SystemExit(0)
 
 
 if __name__ == "__main__":

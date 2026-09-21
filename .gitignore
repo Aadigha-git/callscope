@@ -36,6 +36,7 @@ secrets/
 .DS_Store
 .idea/
 .vscode/
+.demo/
 
 # Spike local runtimes (Hermes scratch installs)
 spikes/**/.venv/

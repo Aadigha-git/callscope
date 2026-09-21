@@ -18,13 +18,16 @@ dev-up: ## Start local services (Postgres, MinIO, Prometheus, Grafana)
 dev-down: ## Stop local services
 	docker compose -f docker-compose.local.yml down
 
-demo: ## Start full local demo stack (Compose data plane + native processes; T-M1-11)
-	@echo "T-M1-11 will implement make demo (Procfile/honcho + livekit-server --dev)."
-	@echo "For now: make dev-up, then start native processes per docs/DEV_GUIDE.md."
-	@$(MAKE) dev-up
+demo: ## Start Compose data plane + native Procfile (API/ASR/TTS/worker/web/livekit)
+	@chmod +x scripts/demo_start.sh scripts/demo_stop.sh
+	@./scripts/demo_start.sh
 
-demo-stop: ## Stop demo stack
-	@$(MAKE) dev-down
+demo-stop: ## Stop honcho natives + Compose data plane
+	@chmod +x scripts/demo_start.sh scripts/demo_stop.sh
+	@./scripts/demo_stop.sh
+
+compose-validate: ## Validate local Compose + Prometheus/Grafana demo wiring
+	uv run pytest tests/infra/test_compose_config.py -q --no-cov
 
 budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
 	$(PY) -m callscope.devtools.budget_cli $(ARGS)
@@ -38,8 +41,12 @@ tts: ## Run native TTS server (fake backend by default; port 8300)
 api: ## Run CallScope API (port 8000)
 	$(PY) -m apps.api
 
-worker: ## Voice worker mock smoke (metrics :9101); use --livekit after --extra worker
-	$(PY) -m apps.worker --mock-call
+worker: ## Voice worker: MOCK=1 for smoke, else --serve metrics (:9100)
+	@if [ "$(MOCK)" = "1" ]; then \
+		$(PY) -m apps.worker --mock-call; \
+	else \
+		CALLSCOPE_METRICS_PORT=$${CALLSCOPE_METRICS_PORT:-9100} $(PY) -m apps.worker --serve; \
+	fi
 
 hermes-selftest: ## Fail closed if Hermes toolset allowlist drifts (T-M1-09)
 	$(PY) infra/hermes/toolset_selftest.py --config infra/hermes/config.yaml
@@ -82,7 +89,7 @@ test: ## Unit + contract tests with coverage gate
 test-integration: ## Also run tests needing services (set CALLSCOPE_TEST_DATABASE_URL)
 	uv run pytest -m "integration or not integration"
 
-ci: lint typecheck test backlog-validate ## Everything CI runs locally
+ci: lint typecheck test backlog-validate compose-validate ## Everything CI runs locally
 	@echo "CI parity OK"
 
 backlog-validate: ## Validate backlog/tasks.yaml

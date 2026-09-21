@@ -84,12 +84,39 @@ Statuses: `backlog` → `ready` → `in_progress` → `in_review` → `done` (or
 
 ### 2.9 Logging and basic monitoring
 JSON logs with `call_id`/`turn_id` and PII scrubbing; Prometheus metrics. Compose runs Prometheus +
-Grafana; Live-ops wiring arrives in T-M1-11. `make budget` shows Token Factory spend vs cap (T-M1-12).
-`make asr` / `make tts` / `make api` start native ASR (:8200), TTS (:8300), and CallScope API
-(:8000). `make web-dev` runs the Vite client (:5173, proxies `/v1`). `make worker` runs a headless
-mock CallSession smoke (metrics :9101). Hermes receptionist profile: `infra/hermes/` +
-`make hermes-selftest`; worker talks via `HermesBackend` (T-M1-09). LLM calls default to cassette
-**replay**; live capture needs `--live` + budget guard (T-M1-13).
+Grafana with the **CallScope Live-ops** dashboard (active calls, response/stage latency).
+`make budget` shows Token Factory spend vs cap (T-M1-12).
+
+### 2.9.1 Local demo (`make demo`)
+Data plane in Docker; voice stack native (no Metal in Docker Desktop):
+
+| Process | How | Port |
+|---|---|---|
+| Postgres | Compose | 5432 |
+| MinIO | Compose | 9000 / 9001 |
+| Prometheus | Compose → scrapes `host.docker.internal` | 9090 |
+| Grafana | Compose (admin / `GRAFANA_ADMIN_PASSWORD`) | 3000 |
+| livekit-server | `brew install livekit` → Procfile | 7880 |
+| API | Procfile `apps.api` | 8000 |
+| ASR | Procfile `servers.asr` (fake default) | 8200 |
+| TTS | Procfile `servers.tts` (fake default) | 8300 |
+| Worker metrics | Procfile `apps.worker --serve` | 9100 |
+| Web | Procfile Vite | 5173 |
+
+```bash
+make setup                  # once
+brew install livekit        # once
+make demo                   # Compose + honcho Procfile
+# open http://127.0.0.1:5173 and http://127.0.0.1:3000 (Live-ops folder)
+make demo-stop
+```
+
+Startup order: Compose (wait for Postgres) → honcho (livekit, api, asr, tts, worker, web).
+Hermes is **optional** (`infra/hermes/` + `hermes gateway run`); Biz API is not in M1.
+Logs: `.demo/honcho.log`. Target: fresh clone → working demo under ~20 minutes (NFR-07).
+
+`make asr` / `make tts` / `make api` / `make worker MOCK=1` still work standalone. Hermes:
+`make hermes-selftest`. LLM calls default to cassette **replay**; live needs `--live` + budget.
 
 ### 2.10 Bootstrap done-when checklist
 - [x] `make setup && make ci` green on a clean clone; pre-commit installed
