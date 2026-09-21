@@ -1,0 +1,11 @@
+id: 07_faq_unknown
+status: dry_plan
+acceptance: unknown_fact_declines
+kb_gap: "exact price of a specific repair (see docs/kb_gaps.md)"
+turns:
+  - role: caller
+    text: "How much exactly to replace my compressor model X?"
+  - role: agent
+    tools: [lookup_faq]
+    text: "I don't have that exact price. Can I take a callback?"
+    must_not: ["invent dollar amount"]

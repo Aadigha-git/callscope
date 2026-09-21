@@ -1,0 +1,8 @@
+id: 03_no_availability
+status: dry_plan
+turns:
+  - role: caller
+    text: "Anything Saturday morning for HVAC?"
+  - role: agent
+    tools: [check_availability]
+    text: "Nothing Saturday morning. I have Monday at ten — want that?"

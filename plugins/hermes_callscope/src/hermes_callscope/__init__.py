@@ -1,7 +1,9 @@
-"""Hermes Agent plugin: CallScope receptionist tools + policy (T-M2-02/03).
+"""Hermes Agent plugin: CallScope receptionist tools, policy, and skill.
 
 Registration API verified against hermes-agent 0.19.0 spike plugins
 (``PluginContext.register_tool`` / ``register_hook``; handlers return JSON strings).
+``register_skill`` is used when present (design V1); otherwise the skill text is
+logged and available via ``hermes_callscope.skill`` for the worker system prompt.
 """
 
 from __future__ import annotations
@@ -12,6 +14,7 @@ from typing import Any
 
 from hermes_callscope.policy import Deny, PolicyState, evaluate, record_success
 from hermes_callscope.schemas import tool_json_schema
+from hermes_callscope.skill import SKILL_NAME, prompt_hash, skill_text
 from hermes_callscope.tools import DESCRIPTIONS, HANDLERS
 
 logger = logging.getLogger("hermes_callscope")
@@ -41,8 +44,6 @@ def register(ctx: Any) -> None:
                     _metrics.POLICY_DENIED.labels(rule=decision.rule).inc()
                 except Exception:
                     pass
-            # Hermes 0.19: return a substitute tool result string to block execution.
-            # Spike hooks were log-only; returning a string is the fail-closed fallback.
             return json.dumps(
                 {
                     "ok": False,
@@ -76,7 +77,30 @@ def register(ctx: Any) -> None:
             handler=handler,
             description=desc,
         )
-    logger.info("registered %d tools on toolset=%s", len(HANDLERS), TOOLSET)
+
+    text = skill_text()
+    ph = prompt_hash()
+    registered_skill = False
+    if hasattr(ctx, "register_skill"):
+        try:
+            ctx.register_skill(name=SKILL_NAME, content=text)
+            registered_skill = True
+        except TypeError:
+            try:
+                ctx.register_skill(SKILL_NAME, text)
+                registered_skill = True
+            except Exception:
+                logger.warning("register_skill failed; skill available via skill_text()")
+        except Exception:
+            logger.warning("register_skill failed; skill available via skill_text()")
+    logger.info(
+        "registered %d tools toolset=%s skill=%s registered_skill=%s prompt_hash=%s",
+        len(HANDLERS),
+        TOOLSET,
+        SKILL_NAME,
+        registered_skill,
+        ph,
+    )
 
 
-__all__ = ["POLICY_STATE", "TOOLSET", "register"]
+__all__ = ["POLICY_STATE", "TOOLSET", "prompt_hash", "register", "skill_text"]

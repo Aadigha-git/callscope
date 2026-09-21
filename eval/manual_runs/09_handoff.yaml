@@ -1,0 +1,7 @@
+id: 09_handoff
+status: dry_plan
+turns:
+  - role: caller
+    text: "This is the second time you people messed up. Get me a human now."
+  - role: agent
+    tools: [transfer_to_human]

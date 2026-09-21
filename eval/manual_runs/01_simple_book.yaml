@@ -1,0 +1,21 @@
+id: 01_simple_book
+status: dry_plan
+prompt_hash_ref: hermes_callscope.skill.prompt_hash
+caller: fictional
+turns:
+  - role: caller
+    text: "Hi, I need an HVAC tune-up next week."
+  - role: agent
+    text: "Thanks for calling Lakeside. This is a recorded demo with fictional data. What day works?"
+  - role: caller
+    text: "Tuesday afternoon. Name is Jordan Lee, phone 555-010-1234, at 12 Maple Street."
+  - role: agent
+    note: "check_availability then read-back; wait for yes"
+    tools:
+      - check_availability
+  - role: caller
+    text: "Yes, that sounds right."
+  - role: agent
+    tools:
+      - book_appointment
+    args_note: "confirmed=true after explicit yes"

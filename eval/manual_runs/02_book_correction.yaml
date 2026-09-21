@@ -1,0 +1,13 @@
+id: 02_book_correction
+status: dry_plan
+turns:
+  - role: caller
+    text: "Book plumbing for Thursday. Sam Rivera, 555-010-9999, 9 Oak Ave."
+  - role: agent
+    tools: [check_availability]
+    text: "I have Thursday at two. Shall I book that?"
+  - role: caller
+    text: "No, Tuesday not Thursday."
+  - role: agent
+    note: "re-check and re-readback before confirmed=true"
+    tools: [check_availability, book_appointment]

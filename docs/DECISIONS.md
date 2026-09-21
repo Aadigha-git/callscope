@@ -28,6 +28,19 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-35 - Receptionist skill registration + prompt hash
+- Date / Task: 2026-09-20 / T-M2-04
+- Context: Design §4.4 skill `callscope:receptionist`. Hermes 0.19 spike verified tools/hooks
+  but not `register_skill` kwargs.
+- Decision: Ship versioned `skills/receptionist.md`; `prompt_hash()` = sha256(system preamble +
+  skill). Call `ctx.register_skill` when present; always expose `skill_text`/`prompt_hash` for
+  worker/stack_versions. Ten fictional dry-plan transcripts under `eval/manual_runs/` (live
+  re-runs when Hermes+biz are up). Wording tracked in `docs/prompts/CHANGELOG.md`.
+- Alternatives considered: hard-require register_skill (rejected until Hermes API confirmed).
+- Consequences: CI asserts guardrail phrases + hash stability + 10 scenario files.
+- Design doc impact: none.
+- Status: accepted
+
 ### D-20260920-34 - Local disk recordings + JSONL retention catalog
 - Date / Task: 2026-09-20 / T-M2-06
 - Context: Design §4.2/NFR-13 — consent-gated audio, 30-day purge, delete-by-call. Walking

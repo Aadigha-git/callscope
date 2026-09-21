@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M2-04
+- Done: receptionist skill + prompt_hash, register_skill when available, 10 manual_runs stubs,
+  docs/prompts/CHANGELOG (D-20260920-35).
+- Next: Merge stacked PRs #73→#74→#77.
+- Commands to resume: `git switch feat/T-M2-04-skill && make ci`
+
 ## 2026-09-20 / T-M2-06
 - Done: CallRecorder (consent-gated WAV), API recording register, retention catalog +
   `make purge` / delete-call, infra timer example (D-20260920-34). **Merged** (#76).
