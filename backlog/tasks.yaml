@@ -521,7 +521,7 @@ tasks:
   owner: BAG
   estimate_h: 8
   priority: P0
-  status: in_progress
+  status: in_review
   sprint: null
   issue: null
   prompt: prompts/M1_walking_skeleton.md#t-m1-13

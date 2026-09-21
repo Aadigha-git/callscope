@@ -57,7 +57,7 @@
 | T-M1-10 | Voice worker (state machine, LiveKit integration, events) | FR-03, FR-04, FR-06, NFR-01 | T-M0-05, T-M1-01, T-M1-03, T-M1-04, T-M1-05, T-M1-06, T-M1-09 | 16 | BAG | backlog |  | #17 |
 | T-M1-11 | Local runner + Compose (Postgres/Prom/Grafana) + make demo | FR-12, NFR-12, NFR-07 | T-M1-07, T-M1-10 | 8 | BAG | backlog |  | #18 |
 | T-M1-12 | LLM budget guard (Token Factory spend cap) | NFR-11 | T-M1-01 | 6 | BAG | done |  |  |
-| T-M1-13 | LLM record/replay cassettes | NFR-06, NFR-11, NFR-12 | T-M1-03, T-M1-12 | 8 | BAG | in_progress |  |  |
+| T-M1-13 | LLM record/replay cassettes | NFR-06, NFR-11, NFR-12 | T-M1-03, T-M1-12 | 8 | BAG | in_review |  |  |
 
 ## M2 Receptionist behaviour
 

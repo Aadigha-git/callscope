@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-13
+- Done: CassetteStore + CassetteBrain (replay/record/live + budget gate); tests; eval/cassettes/.
+- Next: Finish PR; after merge → **T-M1-06** TTS (S4) or wire Hermes in T-M1-09.
+- Open questions: none; HermesBackend uses this wrapper when T-M1-09 lands.
+- Commands to resume: `git switch feat/T-M1-13-llm-cassettes && make ci`
+
 ## 2026-09-20 / T-M1-05
 - Done: ASR FastAPI server (WS `/v1/stream`, POST `/v1/transcribe`, `/healthz`, `/metrics`),
   FakeASR + EnergyVAD + lazy mlx-whisper backend, `ASRClient` STTProvider, `make asr`.

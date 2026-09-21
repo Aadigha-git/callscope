@@ -95,7 +95,7 @@ class TTSProvider(Protocol):
 
 @runtime_checkable
 class BrainBackend(Protocol):
-    async def stream_reply(
+    def stream_reply(
         self,
         messages: list[Msg],
         *,

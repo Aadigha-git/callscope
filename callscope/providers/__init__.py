@@ -25,6 +25,15 @@ from callscope.providers.budget import (
     cost_from_usage,
     estimate_usd,
 )
+from callscope.providers.cassettes import (
+    CassetteBrain,
+    CassetteError,
+    CassetteMissingError,
+    CassetteMode,
+    CassetteStore,
+    request_hash,
+    resolve_mode,
+)
 from callscope.providers.mock import MockBrain, MockSTT, MockTTS
 
 __all__ = [
@@ -34,6 +43,11 @@ __all__ = [
     "BudgetExceededError",
     "BudgetGuard",
     "BudgetStatus",
+    "CassetteBrain",
+    "CassetteError",
+    "CassetteMissingError",
+    "CassetteMode",
+    "CassetteStore",
     "MockBrain",
     "MockSTT",
     "MockTTS",
@@ -50,4 +64,6 @@ __all__ = [
     "WordTiming",
     "cost_from_usage",
     "estimate_usd",
+    "request_hash",
+    "resolve_mode",
 ]
