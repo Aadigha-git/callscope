@@ -6,8 +6,8 @@
 
 | Milestone | Done | In flight | Total | Est. hours (remaining) |
 |---|---|---|---|---|
-| M0 Setup and spikes | 6 | 1 | 7 | 6 |
-| M1 Walking skeleton | 0 | 0 | 13 | 116 |
+| M0 Setup and spikes | 7 | 0 | 7 | 0 |
+| M1 Walking skeleton | 0 | 1 | 13 | 116 |
 | M2 Receptionist behaviour | 0 | 0 | 6 | 56 |
 | M3 Eval core | 0 | 0 | 8 | 84 |
 | M4 Review and caller-sim | 0 | 0 | 6 | 60 |
@@ -22,7 +22,7 @@
 |---|---|---|---|
 | T-M0-01 | Engineering environment and repository bootstrap | 4 | done |
 | T-M0-02 | Spike S-1: can a call/turn ID reach Hermes hooks via the API server? | 4 | done |
-| T-M0-03 | Spike S-2: Hermes per-turn overhead vs Token Factory direct | 6 | in_review |
+| T-M0-03 | Spike S-2: Hermes per-turn overhead vs Token Factory direct | 6 | done |
 | T-M0-04 | Spike S-3: LLM shortlist tool-call reliability via Token Factory + Hermes | 10 | done |
 | T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | 8 | done |
 | T-M0-06 | Spike S-5: Apple Silicon ASR/TTS/VAD shortlist probe | 10 | done |
@@ -35,7 +35,7 @@
 |---|---|---|---|---|---|---|---|---|
 | T-M0-01 | Engineering environment and repository bootstrap | NFR-05, NFR-12 |  | 4 | BAG | done | S1 | #1 |
 | T-M0-02 | Spike S-1: can a call/turn ID reach Hermes hooks via the API server? | FR-02, NFR-08 | T-M0-01 | 4 | BAG | done | S1 | #2 |
-| T-M0-03 | Spike S-2: Hermes per-turn overhead vs Token Factory direct | NFR-01 | T-M0-01, T-M0-04 | 6 | BAG | in_review | S1 | #3 |
+| T-M0-03 | Spike S-2: Hermes per-turn overhead vs Token Factory direct | NFR-01 | T-M0-01, T-M0-04 | 6 | BAG | done | S1 | #3 |
 | T-M0-04 | Spike S-3: LLM shortlist tool-call reliability via Token Factory + Hermes | FR-02, FR-05 | T-M0-01, T-M0-07 | 10 | BAG | done | S1 | #4 |
 | T-M0-05 | Spike S-4: LiveKit Agents wiring, interruption behaviour, hermes-livekit comparison | FR-01, FR-03, FR-04 | T-M0-01 | 8 | BAG | done | S1 | #5 |
 | T-M0-06 | Spike S-5: Apple Silicon ASR/TTS/VAD shortlist probe | FR-05, FR-07 | T-M0-01, T-M0-07 | 10 | BAG | done | S1 | #6 |
@@ -45,7 +45,7 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M1-01 | Event envelope, async batching writer, provider-call instrumentation | FR-06, NFR-08 | T-M0-01 | 8 | BAG | backlog |  | #8 |
+| T-M1-01 | Event envelope, async batching writer, provider-call instrumentation | FR-06, NFR-08 | T-M0-01 | 8 | BAG | in_review |  | #8 |
 | T-M1-02 | Database migrations from schema.sql (Alembic) and repository layer | FR-06, NFR-06 | T-M0-01 | 8 | BAG | backlog |  | #9 |
 | T-M1-03 | Provider interfaces (STT/TTS/Brain) and deterministic mock providers | FR-05, FR-03, NFR-10, NFR-12 | T-M1-01 | 6 | BAG | backlog |  | #10 |
 | T-M1-04 | Sentence chunker and TTS text normaliser | FR-03, NFR-01 | T-M1-03 | 6 | BAG | backlog |  | #11 |

@@ -34,6 +34,17 @@ POLICY_DENIED = Counter("callscope_policy_denied_total", "Policy hook denials", 
 PROVIDER_ERRORS = Counter(
     "callscope_provider_errors_total", "Provider failures by stage", ["stage"]
 )
+EVENTS_DROPPED = Counter(
+    "callscope_events_dropped_total",
+    "Events dropped by the writer (queue full, closed, spill, dedupe)",
+    ["reason"],
+)
+EVENTS_FLUSHED = Counter("callscope_events_flushed_total", "Events successfully delivered to sink")
+EVENTS_SPILLED = Counter("callscope_events_spilled_total", "Events written to local spill file")
+EVENTS_REPLAYED = Counter(
+    "callscope_events_replayed_total", "Events replayed from spill after recovery"
+)
+EVENTS_SINK_ERRORS = Counter("callscope_events_sink_errors_total", "Sink flush attempt failures")
 
 
 def observe_stage(stage: str, seconds: float) -> None:
