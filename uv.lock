@@ -336,6 +336,7 @@ source = { editable = "." }
 dependencies = [
     { name = "alembic" },
     { name = "fastapi" },
+    { name = "hermes-callscope" },
     { name = "httpx" },
     { name = "livekit-api" },
     { name = "prometheus-client" },
@@ -376,6 +377,7 @@ worker = [
 requires-dist = [
     { name = "alembic", specifier = ">=1.14" },
     { name = "fastapi", specifier = ">=0.115" },
+    { name = "hermes-callscope", editable = "plugins/hermes_callscope" },
     { name = "honcho", marker = "extra == 'dev'", specifier = ">=2.0" },
     { name = "httpx", specifier = ">=0.27" },
     { name = "livekit", marker = "extra == 'worker'", specifier = "==1.1.18" },
@@ -1162,6 +1164,21 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/01/ee/02a2c011bdab74c6fb3c75474d40b3052059d95df7e73351460c8588d963/h11-0.16.0.tar.gz", hash = "sha256:4e35b956cf45792e4caa5885e69fba00bdbc6ffafbfa020300e549b208ee5ff1", size = 101250, upload-time = "2025-04-24T03:35:25.427Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/04/4b/29cac41a4d98d144bf5f6d33995617b185d14b22401f75ca86f384e87ff1/h11-0.16.0-py3-none-any.whl", hash = "sha256:63cf8bbe7522de3bf65932fda1d9c2772064ffb3dae62d55932da54b31cb6c86", size = 37515, upload-time = "2025-04-24T03:35:24.344Z" },
+]
+
+[[package]]
+name = "hermes-callscope"
+version = "0.1.0"
+source = { editable = "plugins/hermes_callscope" }
+dependencies = [
+    { name = "httpx" },
+    { name = "pydantic" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.27" },
+    { name = "pydantic", specifier = ">=2.7" },
 ]
 
 [[package]]

@@ -22,7 +22,11 @@ dependencies = [
   "python-multipart>=0.0.9",
   "websockets>=13",
   "livekit-api>=1.0",
+  "hermes-callscope",
 ]
+
+[tool.uv.sources]
+hermes-callscope = { path = "plugins/hermes_callscope", editable = true }
 
 [project.optional-dependencies]
 dev = [
@@ -64,6 +68,7 @@ ignore = ["S603", "S607"]  # subprocess use is limited to devtools calling git/g
 "apps/biz/seed.py" = ["T201"]
 "apps/biz/store.py" = ["S311", "E501"]  # deterministic seed RNG; long FAQ strings
 "apps/biz/routes.py" = ["B008"]  # FastAPI Query defaults
+"plugins/hermes_callscope/**" = ["S110", "SIM105", "E501"]
 "infra/hermes/toolset_selftest.py" = ["T201"]
 "callscope/db/models.py" = ["RUF012"]  # SQLAlchemy __table_args__ dicts
 
