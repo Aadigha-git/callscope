@@ -2,7 +2,12 @@ openapi: 3.1.0
 info:
   title: CallScope API
   version: 1.0.0
-  description: Session, ingest, review, evaluation and governance endpoints. Public endpoints are marked; all others require a service bearer token.
+  description: |
+    Session, ingest, review, evaluation and governance endpoints. Public endpoints are marked;
+    all others require a service bearer token.
+
+    M1 walking skeleton (T-M1-07): `/v1/status`, `/v1/sessions`, `/v1/sessions/{callId}/end`,
+    and `/v1/events:batch` are implemented in `apps/api`. Remaining paths land in later milestones.
 servers:
   - url: https://callscope.example.com
 security:
