@@ -8,11 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
-## 2026-09-20 / T-M1-03
-- Done: `callscope/providers/{base,mock}.py` — STT/TTS/Brain protocols + mocks; contract suite in `tests/providers/test_contract.py` (pytest discovers `test_*.py`).
-- Next: After merge mark done; **T-M1-04** chunker/tts_norm.
+## 2026-09-20 / T-M1-04
+- Done: `SentenceChunker` + `tts_norm` with golden/property tests under `tests/norm/`.
+- Next: After merge mark done; **T-M1-05** ASR server (or T-M1-13 per sprint order).
 - Open questions: none.
-- Commands to resume: `git switch feat/T-M1-03-provider-interfaces && make ci`
+- Commands to resume: `git switch feat/T-M1-04-chunker-tts-norm && make ci`
+
+## 2026-09-20 / T-M1-03
+- Done: provider protocols + mocks; merged #62; status done.
+- Next: **T-M1-04** (started).
+- Open questions: none.
+- Commands to resume: `git switch main && git pull`
 
 ## 2026-09-20 / T-M1-02
 - Done: Alembic baseline + repos; merged #61; status done.
