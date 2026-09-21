@@ -1,0 +1,160 @@
+/* CallScope web — local demo client (not a marketing landing). */
+:root {
+  --bg: #12161c;
+  --fg: #e8eef4;
+  --muted: #8b98a5;
+  --accent: #2f8f6b;
+  --warn: #c47a2a;
+  --danger: #b54a4a;
+  --panel: #1a2129;
+  --line: #2a3440;
+  --font-sans: "IBM Plex Sans", "Segoe UI", sans-serif;
+  --font-display: "IBM Plex Serif", Georgia, serif;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  font-family: var(--font-sans);
+  color: var(--fg);
+  background:
+    radial-gradient(1000px 500px at 8% -10%, #1b2a24 0%, transparent 55%),
+    radial-gradient(800px 420px at 100% 0%, #1a2230 0%, transparent 50%),
+    var(--bg);
+}
+
+#app {
+  max-width: 42rem;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+h1 {
+  font-family: var(--font-display);
+  font-size: 1.75rem;
+  font-weight: 600;
+  margin: 0 0 0.35rem;
+  letter-spacing: -0.02em;
+}
+
+.lead {
+  color: var(--muted);
+  margin: 0 0 1rem;
+  line-height: 1.45;
+}
+
+.banner {
+  background: #243028;
+  border: 1px solid #355043;
+  color: #cfe6d8;
+  padding: 0.7rem 0.85rem;
+  border-radius: 6px;
+  margin-bottom: 1rem;
+  font-size: 0.9rem;
+}
+
+.panel {
+  background: var(--panel);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.muted {
+  color: var(--muted);
+  font-size: 0.9rem;
+}
+
+.row {
+  display: flex;
+  gap: 0.6rem;
+  flex-wrap: wrap;
+}
+
+button {
+  border: 0;
+  border-radius: 6px;
+  padding: 0.65rem 0.9rem;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  background: var(--accent);
+  color: #04140c;
+}
+
+button.secondary {
+  background: #2a3440;
+  color: var(--fg);
+}
+
+button.danger {
+  background: var(--danger);
+  color: #fff;
+}
+
+button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+dialog {
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--panel);
+  color: var(--fg);
+  padding: 1.25rem;
+  max-width: 28rem;
+  width: calc(100% - 2rem);
+}
+
+dialog::backdrop {
+  background: rgba(0, 0, 0, 0.55);
+}
+
+label.check {
+  display: flex;
+  gap: 0.5rem;
+  align-items: flex-start;
+  margin: 0.75rem 0;
+  font-size: 0.9rem;
+  line-height: 1.35;
+}
+
+#transcript {
+  min-height: 10rem;
+  max-height: 18rem;
+  overflow: auto;
+  white-space: pre-wrap;
+  word-break: break-word;
+  font-size: 0.92rem;
+  line-height: 1.4;
+}
+
+#agent-state {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin-bottom: 0.5rem;
+}
+
+#status-line {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+#status-line.offline {
+  color: var(--warn);
+}
+
+audio {
+  width: 100%;
+  margin-top: 0.75rem;
+}
+
+.hidden {
+  display: none !important;
+}

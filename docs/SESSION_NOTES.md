@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-08
+- Done: `apps/web` Vite/TS client — consent modal, fictional banner, status, LiveKit connect,
+  data-channel transcript (textContent), vitest XSS/state, `make web-*`, CI web job.
+- Next: Finish PR; after merge → **T-M1-09** Hermes profile/backend (or T-M1-10 worker).
+- Open questions: full E2E needs worker (T-M1-10) publishing agent audio + callscope events.
+- Commands to resume: `git switch feat/T-M1-08-web-client && make web-test && make ci`
+
 ## 2026-09-20 / T-M1-07
 - Done: CallScope API — status/sessions/end/events:batch, LiveKit tokens, session cap,
   service-token ingest, RFC 7807, metrics; MemoryCallStore for CI.

@@ -38,6 +38,18 @@ tts: ## Run native TTS server (fake backend by default; port 8300)
 api: ## Run CallScope API (port 8000)
 	$(PY) -m apps.api
 
+web-install: ## npm install for apps/web
+	cd apps/web && npm install
+
+web-test: ## Vitest for apps/web
+	cd apps/web && npm test
+
+web-build: ## Production build of apps/web
+	cd apps/web && npm run build
+
+web-dev: ## Vite dev server (proxies /v1 → :8000)
+	cd apps/web && npm run dev
+
 db-upgrade: ## Apply Alembic migrations to CALLSCOPE_DATABASE_URL (or settings default)
 	uv run alembic upgrade head
 
