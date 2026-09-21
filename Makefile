@@ -27,8 +27,7 @@ demo-stop: ## Stop demo stack
 	@$(MAKE) dev-down
 
 budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
-	@echo "T-M1-12 will implement spend tracking. Current .env defaults:"
-	@grep -E '^CALLSCOPE_LLM_|^TOKEN_FACTORY_' .env 2>/dev/null || grep -E '^CALLSCOPE_LLM_|^TOKEN_FACTORY_' .env.example
+	$(PY) -m callscope.devtools.budget_cli $(ARGS)
 
 lint: ## Ruff lint + format check
 	uv run ruff check .

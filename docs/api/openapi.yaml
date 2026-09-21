@@ -411,6 +411,7 @@ components:
         mode: { type: string }
         status: { type: string }
         git_sha: { type: string }
+        estimated_usd: { type: [number, 'null'], description: Projected Token Factory spend for the run }
         started_at: { type: [string, 'null'], format: date-time }
         finished_at: { type: [string, 'null'], format: date-time }
     Metric:

@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- LLM budget guard (`BudgetGuard`, `make budget`, `--estimate`/`--check`) + `eval_runs.estimated_usd` (T-M1-12, D-20260920-21)
 - Event envelope, CallClock, async EventWriter (batch/spill/replay), and `instrument()` (T-M1-01)
 - Spike S-2 (T-M0-03): Hermes vs Token Factory TTFT overhead; R-02 thin FAQ fast-path (D-20260920-20)
 - Spike S-5 (T-M0-06): Apple Silicon ASR/TTS/VAD shortlist + `eval/probe/` assets (D-20260920-19)

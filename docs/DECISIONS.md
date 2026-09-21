@@ -28,6 +28,20 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-21 - Budget guard: catalog $/1M x usage tokens; eval_runs.estimated_usd
+- Date / Task: 2026-09-20 / T-M1-12
+- Context: ADR-016 / NFR-11. Token Factory chat completions expose OpenAI-compatible
+  `usage.prompt_tokens` / `usage.completion_tokens` (spikes T-M0-03/07). Public catalog
+  prices in D-20260920-12. No documented `usage.cost` field — do not invent one.
+- Decision: `BudgetGuard` estimates USD as tokens x catalog $/1M for known model IDs;
+  `require_live_budget` fails closed; `make budget` / `--estimate` / `--check` CLI;
+  add nullable `cs.eval_runs.estimated_usd` (+ OpenAPI) for upcoming eval runs (Alembic in T-M1-02).
+- Alternatives considered: persist spend only in `.env` (insufficient for eval audit);
+  invent TF cost field (rejected — not in observed responses).
+- Consequences: live/eval entrypoints call `require_live_budget` before network; cassettes (T-M1-13) remain free.
+- Design doc impact: schema Appendix A column; ADR-016 unchanged in spirit.
+- Status: accepted
+
 ### D-20260920-20 - S-2: Hermes TTFT overhead fails 450 ms gate; adopt thin FAQ fast-path (R-02)
 - Date / Task: 2026-09-20 / T-M0-03
 - Context: Spike S-2 (U2). hermes-agent 0.19.0 API server → Token Factory custom provider vs OpenAI-compatible client → TF direct. Model `nvidia/Nemotron-3_5-Lightning`. 50 streamed turns, empty toolset, slim spoken system string. Run `6a3855de-f0f2-45e4-906a-5af9defb2c49`; ~$0.006 spend. Raw: `spikes/T-M0-03/results/ttft_overhead.json`.
