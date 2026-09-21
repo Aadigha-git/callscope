@@ -28,6 +28,22 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-26 - CallScope API: memory store + concurrent cap (no per-IP limits)
+- Date / Task: 2026-09-20 / T-M1-07
+- Context: OpenAPI session/status/events; ADR-010 removed public per-IP abuse limits;
+  backlog AC: no captcha / public-abuse rate-limit paths. Prompt still mentioned IP caps —
+  follow ADR-010 + backlog AC.
+- Decision: `apps/api` implements `/v1/status`, `/v1/sessions`, `/v1/sessions/{id}/end`,
+  `/v1/events:batch`, `/metrics`. Default `MemoryCallStore` for CI (Postgres repos remain for
+  later wiring). Concurrent session cap = 2 (`SessionCapLimiter`); token TTL 300 s via
+  `livekit-api` 1.2.1 `AccessToken` (verified). Service bearer on events batch. RFC 7807
+  problem+json. No captcha / per-IP rate limit code.
+- Alternatives considered: require Postgres in every unit test (rejected for CI speed);
+  implement per-IP limits (rejected — ADR-010 / AC).
+- Consequences: `make api`; SQL-backed store can replace MemoryCallStore when demo uses Compose.
+- Design doc impact: none (aligns ADR-010).
+- Status: accepted
+
 ### D-20260920-25 - TTS server: fake default; Piper + kokoro-onnx optional
 - Date / Task: 2026-09-20 / T-M1-06
 - Context: Design §4.3 + S-5 shortlist (D-20260920-19). Port **8300**.

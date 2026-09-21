@@ -35,6 +35,9 @@ asr: ## Run native ASR server (fake backend by default; port 8200)
 tts: ## Run native TTS server (fake backend by default; port 8300)
 	CALLSCOPE_TTS_BACKEND=$${CALLSCOPE_TTS_BACKEND:-fake} $(PY) -m servers.tts
 
+api: ## Run CallScope API (port 8000)
+	$(PY) -m apps.api
+
 db-upgrade: ## Apply Alembic migrations to CALLSCOPE_DATABASE_URL (or settings default)
 	uv run alembic upgrade head
 
