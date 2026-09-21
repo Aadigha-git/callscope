@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Synthetic dataset builder (~120 calls) with C0-C5 telephony augmentation
+  (`callscope.datasets`, `dataset_cli`) (T-M3-03)
 - Eval normaliser (`NORMALIZER_VERSION`) + ASR/entity/NLU/tool/task scorers with golden
   tests (≥40 strings); `EvalItemResult` mirrors `cs.eval_item_results` (T-M3-02)
 - Scenario schema + 16 YAML templates under `eval/scenarios/` with seeded expansion

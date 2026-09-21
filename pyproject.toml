@@ -24,6 +24,8 @@ dependencies = [
   "livekit-api>=1.0",
   "hermes-callscope",
   "jiwer>=4.0.0",
+  "numpy>=2.4.6",
+  "scipy>=1.17.1",
 ]
 
 [tool.uv.sources]
@@ -74,7 +76,7 @@ ignore = ["S603", "S607"]  # subprocess use is limited to devtools calling git/g
 "callscope/db/models.py" = ["RUF012"]  # SQLAlchemy __table_args__ dicts
 
 [tool.mypy]
-python_version = "3.11"
+python_version = "3.12"
 strict = true
 files = ["callscope", "servers", "apps"]
 plugins = ["pydantic.mypy"]
@@ -85,6 +87,8 @@ module = [
   "mlx_whisper.*",
   "numpy",
   "numpy.*",
+  "scipy",
+  "scipy.*",
   "piper",
   "piper.*",
   "kokoro_onnx",
@@ -93,6 +97,7 @@ module = [
   "livekit.*",
 ]
 ignore_missing_imports = true
+follow_imports = "skip"
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

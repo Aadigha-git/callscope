@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M3-03
+- Done: `callscope/datasets` synth+augment C0-C5, Spec v1 (~120), CLI build; SNR/spectrum/determinism tests.
+- Next: PR; then T-M3-04 DQ/manifests.
+- Commands: `git switch feat/T-M3-03-dataset && make ci`
+
 ## 2026-09-21 / T-M3-02
 - Done: `callscope/eval/normalize.py` + scorers (asr/entities/nlu/tools/task), types aligned
   to `cs.eval_item_results`, golden tests (≥40), 100% branch coverage on normalize+entities.
