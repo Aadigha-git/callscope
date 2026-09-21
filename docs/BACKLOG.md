@@ -9,7 +9,7 @@
 | M0 Setup and spikes | 7 | 0 | 7 | 0 |
 | M1 Walking skeleton | 13 | 0 | 13 | 0 |
 | M2 Receptionist behaviour | 6 | 0 | 6 | 0 |
-| M3 Eval core | 2 | 1 | 8 | 64 |
+| M3 Eval core | 3 | 1 | 8 | 52 |
 | M4 Review and caller-sim | 0 | 0 | 6 | 60 |
 | M5 Improvement and governance | 0 | 0 | 5 | 58 |
 | M6 Hardening and showcase | 0 | 0 | 4 (+1 dropped) | 38 |
@@ -76,8 +76,8 @@
 |---|---|---|---|---|---|---|---|---|
 | T-M3-01 | Scenario spec schema and scenario library (12 + 4 adversarial) | FR-07, FR-08, FR-13 | T-M2-01 | 8 | BAG | done |  | #25 |
 | T-M3-02 | Text normaliser and scorers (WER, entities, intent/slot, tools, task success) | FR-08 | T-M3-01 | 12 | BAG | done |  | #27 |
-| T-M3-03 | Dataset builder - synthetic caller audio (~120 calls) and C0-C5 | FR-07 | T-M3-01, T-M0-06 | 12 | BAG | in_review |  | #28 |
-| T-M3-04 | Data-quality checks, manifests, splits and dataset registry | FR-07, NFR-09, NFR-06 | T-M3-03, T-M1-02 | 8 | BAG | backlog |  | #29 |
+| T-M3-03 | Dataset builder - synthetic caller audio (~120 calls) and C0-C5 | FR-07 | T-M3-01, T-M0-06 | 12 | BAG | done |  | #28 |
+| T-M3-04 | Data-quality checks, manifests, splits and dataset registry | FR-07, NFR-09, NFR-06 | T-M3-03, T-M1-02 | 8 | BAG | in_review |  | #29 |
 | T-M3-05 | Eval runner (stage-replay and text-replay) with DB + cassettes | FR-08, NFR-06, NFR-11 | T-M3-02, T-M3-04, T-M2-04, T-M1-13 | 14 | BAG | backlog |  | #31 |
 | T-M3-06 | Statistics, compare, thresholds.yaml and regression gate | FR-08, NFR-06, NFR-04 | T-M3-05 | 8 | BAG | backlog |  | #32 |
 | T-M3-07 | Recorded human set protocol and baseline report (~30 calls) | FR-07, FR-08 | T-M3-05, T-M3-06 | 10 | BAG | backlog |  | #33 |
