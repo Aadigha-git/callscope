@@ -1,0 +1,16 @@
+# Synthetic dataset v1 — ~120 calls (not 300). Wider bootstrap CIs; report n per slice.
+version: 1
+n_calls: 120
+seed: 42
+voices:
+  - caller_alto_a
+  - caller_alto_b
+  - caller_tenor_a
+  - caller_tenor_b
+  - caller_baritone_a
+  - caller_baritone_b
+conditions: [C0, C1, C2, C3, C4, C5]
+ci_width_note: >
+  Default synthetic set is ~120 calls (not 300); bootstrap CIs are wider —
+  always report n per slice.
+tts_note: SynthVoiceTTS deterministic formant beeps (caller path; not agent Piper/Kokoro).
