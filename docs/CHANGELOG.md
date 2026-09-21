@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Native TTS server (`servers/tts`, `make tts`, `TTSClient`) with fake + optional Piper/Kokoro (T-M1-06, D-20260920-25)
 - LLM record/replay cassettes (`CassetteStore`, `CassetteBrain`) under `eval/cassettes/` (T-M1-13, D-20260920-24)
 - Native ASR server (`servers/asr`, `make asr`, `ASRClient`) with fake + optional mlx-whisper (T-M1-05, D-20260920-23)
 - Sentence chunker + `tts_norm` for streaming TTS (T-M1-04)

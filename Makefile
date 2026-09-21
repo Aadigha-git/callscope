@@ -32,6 +32,9 @@ budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
 asr: ## Run native ASR server (fake backend by default; port 8200)
 	CALLSCOPE_ASR_BACKEND=$${CALLSCOPE_ASR_BACKEND:-fake} $(PY) -m servers.asr
 
+tts: ## Run native TTS server (fake backend by default; port 8300)
+	CALLSCOPE_TTS_BACKEND=$${CALLSCOPE_TTS_BACKEND:-fake} $(PY) -m servers.tts
+
 db-upgrade: ## Apply Alembic migrations to CALLSCOPE_DATABASE_URL (or settings default)
 	uv run alembic upgrade head
 

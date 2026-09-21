@@ -90,7 +90,7 @@ class STTProvider(Protocol):
 class TTSProvider(Protocol):
     sample_rate: int
 
-    async def stream(self, text: str, *, voice: str, speed: float) -> AsyncIterator[bytes]: ...
+    def stream(self, text: str, *, voice: str, speed: float) -> AsyncIterator[bytes]: ...
 
 
 @runtime_checkable

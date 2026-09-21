@@ -50,7 +50,7 @@
 | T-M1-03 | Provider interfaces (STT/TTS/Brain) and deterministic mock providers | FR-05, FR-03, NFR-10, NFR-12 | T-M1-01 | 6 | BAG | done |  | #10 |
 | T-M1-04 | Sentence chunker and TTS text normaliser | FR-03, NFR-01 | T-M1-03 | 6 | BAG | done |  | #11 |
 | T-M1-05 | ASR server (native Mac process, WebSocket + HTTP) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 12 | BAG | done |  | #12 |
-| T-M1-06 | TTS server (native Mac process, chunked PCM streaming) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 8 | BAG | in_progress |  | #13 |
+| T-M1-06 | TTS server (native Mac process, chunked PCM streaming) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 8 | BAG | in_review |  | #13 |
 | T-M1-07 | CallScope API - status, sessions (consent + token), ingest | FR-01, FR-06, NFR-05 | T-M1-02 | 10 | BAG | backlog |  | #14 |
 | T-M1-08 | Web client (consent modal, call UI, live transcript) | FR-01, NFR-05 | T-M1-07 | 10 | BAG | backlog |  | #15 |
 | T-M1-09 | Hermes receptionist profile and BrainBackend (Token Factory via Hermes) | FR-02, FR-03, NFR-05 | T-M0-02, T-M0-03, T-M0-04, T-M1-03, T-M1-12, T-M1-13 | 10 | BAG | backlog |  | #16 |

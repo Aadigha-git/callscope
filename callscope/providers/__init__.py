@@ -35,6 +35,7 @@ from callscope.providers.cassettes import (
     resolve_mode,
 )
 from callscope.providers.mock import MockBrain, MockSTT, MockTTS
+from callscope.providers.tts_client import TTSClient
 
 __all__ = [
     "ASRClient",
@@ -58,6 +59,7 @@ __all__ = [
     "ProviderUnavailable",
     "STTEvent",
     "STTProvider",
+    "TTSClient",
     "TTSProvider",
     "ToolEvent",
     "Transcript",
