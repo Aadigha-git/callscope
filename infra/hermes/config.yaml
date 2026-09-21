@@ -1,0 +1,31 @@
+# Model: Nebius Token Factory via Hermes custom OpenAI-compatible provider.
+# Keys verified in hermes-agent 0.19.0 (spikes T-M0-02 / T-M0-04).
+model:
+  provider: custom
+  model: nvidia/Nemotron-3_5-Lightning
+  base_url: https://api.tokenfactory.nebius.com/v1
+  api_key: ${TOKEN_FACTORY_API_KEY}
+
+# Optional local fallback (mlx-lm / llama.cpp) — swap base_url/model/api_key:
+# model:
+#   provider: custom
+#   model: local-instruct
+#   base_url: http://127.0.0.1:8080/v1
+#   api_key: local-not-a-secret
+
+plugins:
+  enabled:
+    - hermes-callscope   # pip plugin (T-M2); spike used callscope-s3-tools
+  disabled: []
+
+agent:
+  max_turns: 8
+
+# Slim profile (S-2 / R-02): disable persistent memory for public callers.
+memory:
+  memory_enabled: false
+
+# Security-critical: only the CallScope receptionist toolset on the API server.
+platform_toolsets:
+  api_server:
+    - callscope-receptionist

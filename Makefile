@@ -38,6 +38,9 @@ tts: ## Run native TTS server (fake backend by default; port 8300)
 api: ## Run CallScope API (port 8000)
 	$(PY) -m apps.api
 
+hermes-selftest: ## Fail closed if Hermes toolset allowlist drifts (T-M1-09)
+	$(PY) infra/hermes/toolset_selftest.py --config infra/hermes/config.yaml
+
 web-install: ## npm install for apps/web
 	cd apps/web && npm install
 
