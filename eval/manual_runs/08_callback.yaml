@@ -1,0 +1,7 @@
+id: 08_callback
+status: dry_plan
+turns:
+  - role: caller
+    text: "Just have someone call me back. Riley Chen, 555-010-7777."
+  - role: agent
+    tools: [request_callback]

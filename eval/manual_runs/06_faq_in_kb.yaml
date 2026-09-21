@@ -1,0 +1,8 @@
+id: 06_faq_in_kb
+status: dry_plan
+turns:
+  - role: caller
+    text: "What are your weekday hours?"
+  - role: agent
+    tools: [lookup_faq]
+    text: "speaks only FAQ result"

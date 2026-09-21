@@ -1,0 +1,8 @@
+id: 04_reschedule
+status: dry_plan
+turns:
+  - role: caller
+    text: "Move my appointment. Code A1B2C3D4, phone ends 1234, to Wednesday."
+  - role: agent
+    note: "read-back then confirmed=true"
+    tools: [reschedule_appointment]

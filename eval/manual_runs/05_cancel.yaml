@@ -1,0 +1,8 @@
+id: 05_cancel
+status: dry_plan
+turns:
+  - role: caller
+    text: "Cancel A1B2C3D4, last four 1234."
+  - role: agent
+    note: "confirm then cancel_appointment confirmed=true"
+    tools: [cancel_appointment]

@@ -17,3 +17,6 @@ callscope = "hermes_callscope:register"
 
 [tool.setuptools.packages.find]
 where = ["src"]
+
+[tool.setuptools.package-data]
+hermes_callscope = ["skills/*.md"]
