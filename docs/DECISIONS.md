@@ -28,6 +28,22 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-25 - TTS server: fake default; Piper + kokoro-onnx optional
+- Date / Task: 2026-09-20 / T-M1-06
+- Context: Design §4.3 + S-5 shortlist (D-20260920-19). Port **8300**.
+- Decision: FastAPI `servers/tts` with `POST /v1/tts/stream` (chunked `audio/L16`,
+  `X-Sample-Rate`), `GET /v1/voices`, `/healthz`, `/metrics` (TTFB, RTF, chars/s).
+  Default backend `fake` (cancellable sine). Optional `piper` (chunked synth from spike
+  API; GPL-3.0-or-later voice — redistribution caution) and `kokoro_onnx` (full
+  `create` then 20 ms chunking; Apache-2.0). Warm-up on lifespan. `TTSClient` implements
+  `TTSProvider`. Never log synthesis text.
+- Measurements: Piper/Kokoro TTFB/RTF from S-5 (`spikes/T-M0-06/results/`); fake exposes
+  the same Prometheus metrics in CI.
+- Alternatives considered: always-on Piper (rejected — GPL + weights in CI).
+- Consequences: `make tts`; `CALLSCOPE_TTS_*` in `.env.example`.
+- Design doc impact: none.
+- Status: accepted
+
 ### D-20260920-24 - LLM cassettes: content-hash store + CassetteBrain wrapper
 - Date / Task: 2026-09-20 / T-M1-13
 - Context: ADR-016 / NFR-06 / NFR-11. HermesBackend (T-M1-09) not built yet; need a

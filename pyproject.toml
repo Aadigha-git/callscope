@@ -63,7 +63,7 @@ files = ["callscope", "servers"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["mlx_whisper", "mlx_whisper.*", "numpy", "numpy.*"]
+module = ["mlx_whisper", "mlx_whisper.*", "numpy", "numpy.*", "piper", "piper.*", "kokoro_onnx", "kokoro_onnx.*"]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]

@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-06
+- Done: TTS FastAPI server (chunked PCM `/v1/tts/stream`, voices, health/metrics TTFB),
+  FakeTTS + optional Piper/kokoro-onnx, `TTSClient`, `make tts`.
+- Next: Open PR; after merge → **T-M1-07** CallScope API.
+- Open questions: none; real TTFB/RTF remain S-5 / D-20260920-19.
+- Commands to resume: `git switch feat/T-M1-06-tts-server && make ci`
+
 ## 2026-09-20 / T-M1-13
 - Done: CassetteStore + CassetteBrain (replay/record/live + budget gate); tests; eval/cassettes/.
 - Next: Finish PR; after merge → **T-M1-06** TTS (S4) or wire Hermes in T-M1-09.
