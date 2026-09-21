@@ -7,7 +7,7 @@
 | Milestone | Done | In flight | Total | Est. hours (remaining) |
 |---|---|---|---|---|
 | M0 Setup and spikes | 7 | 0 | 7 | 0 |
-| M1 Walking skeleton | 1 | 1 | 13 | 108 |
+| M1 Walking skeleton | 2 | 1 | 13 | 102 |
 | M2 Receptionist behaviour | 0 | 0 | 6 | 56 |
 | M3 Eval core | 0 | 0 | 8 | 84 |
 | M4 Review and caller-sim | 0 | 0 | 6 | 60 |
@@ -46,7 +46,7 @@
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
 | T-M1-01 | Event envelope, async batching writer, provider-call instrumentation | FR-06, NFR-08 | T-M0-01 | 8 | BAG | done |  | #8 |
-| T-M1-02 | Database migrations from schema.sql (Alembic) and repository layer | FR-06, NFR-06 | T-M0-01 | 8 | BAG | backlog |  | #9 |
+| T-M1-02 | Database migrations from schema.sql (Alembic) and repository layer | FR-06, NFR-06 | T-M0-01 | 8 | BAG | in_review |  | #9 |
 | T-M1-03 | Provider interfaces (STT/TTS/Brain) and deterministic mock providers | FR-05, FR-03, NFR-10, NFR-12 | T-M1-01 | 6 | BAG | backlog |  | #10 |
 | T-M1-04 | Sentence chunker and TTS text normaliser | FR-03, NFR-01 | T-M1-03 | 6 | BAG | backlog |  | #11 |
 | T-M1-05 | ASR server (native Mac process, WebSocket + HTTP) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 12 | BAG | backlog |  | #12 |
@@ -56,7 +56,7 @@
 | T-M1-09 | Hermes receptionist profile and BrainBackend (Token Factory via Hermes) | FR-02, FR-03, NFR-05 | T-M0-02, T-M0-03, T-M0-04, T-M1-03, T-M1-12, T-M1-13 | 10 | BAG | backlog |  | #16 |
 | T-M1-10 | Voice worker (state machine, LiveKit integration, events) | FR-03, FR-04, FR-06, NFR-01 | T-M0-05, T-M1-01, T-M1-03, T-M1-04, T-M1-05, T-M1-06, T-M1-09 | 16 | BAG | backlog |  | #17 |
 | T-M1-11 | Local runner + Compose (Postgres/Prom/Grafana) + make demo | FR-12, NFR-12, NFR-07 | T-M1-07, T-M1-10 | 8 | BAG | backlog |  | #18 |
-| T-M1-12 | LLM budget guard (Token Factory spend cap) | NFR-11 | T-M1-01 | 6 | BAG | in_review |  |  |
+| T-M1-12 | LLM budget guard (Token Factory spend cap) | NFR-11 | T-M1-01 | 6 | BAG | done |  |  |
 | T-M1-13 | LLM record/replay cassettes | NFR-06, NFR-11, NFR-12 | T-M1-03, T-M1-12 | 8 | BAG | backlog |  |  |
 
 ## M2 Receptionist behaviour

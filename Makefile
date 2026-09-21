@@ -29,6 +29,15 @@ demo-stop: ## Stop demo stack
 budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
 	$(PY) -m callscope.devtools.budget_cli $(ARGS)
 
+db-upgrade: ## Apply Alembic migrations to CALLSCOPE_DATABASE_URL (or settings default)
+	uv run alembic upgrade head
+
+db-downgrade: ## Downgrade one Alembic revision
+	uv run alembic downgrade -1
+
+db-current: ## Show current Alembic revision
+	uv run alembic current
+
 lint: ## Ruff lint + format check
 	uv run ruff check .
 	uv run ruff format --check .

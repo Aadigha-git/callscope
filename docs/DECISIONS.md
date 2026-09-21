@@ -28,6 +28,17 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-22 - Alembic baseline = schema.sql; catalog fingerprint for drift
+- Date / Task: 2026-09-20 / T-M1-02
+- Context: Acceptance asks for pg_dump equivalence; CI/local Mac may lack client tooling consistency.
+- Decision: Migration `0001` executes `db/schema.sql` verbatim. Drift test compares a stable
+  `information_schema` / `pg_catalog` fingerprint of schemas `cs`+`biz` after Alembic vs after
+  applying schema.sql (not raw pg_dump text). Async SQLAlchemy + psycopg3 driver.
+- Alternatives considered: hand-written Alembic ops mirroring DDL (drift-prone); require pg_dump in CI.
+- Consequences: `make db-upgrade`; repos in `callscope/db/`; compose init still mounts schema.sql for empty volumes.
+- Design doc impact: none (schema already Appendix A).
+- Status: accepted
+
 ### D-20260920-21 - Budget guard: catalog $/1M x usage tokens; eval_runs.estimated_usd
 - Date / Task: 2026-09-20 / T-M1-12
 - Context: ADR-016 / NFR-11. Token Factory chat completions expose OpenAI-compatible
