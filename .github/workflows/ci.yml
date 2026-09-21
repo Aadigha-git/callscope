@@ -75,10 +75,12 @@ jobs:
       - run: uv sync --extra dev
       # Audit locked third-party deps. Do not combine --strict with --skip-editable:
       # pip-audit treats skipped editables as fatal under --strict (verified in
-      # pip_audit._cli for the installed version). Export omits the local project.
+      # pip_audit._cli for the installed version). Export omits the local project
+      # and the path-editable hermes-callscope plugin (no PyPI hashes).
       - name: Audit locked dependencies
         run: |
-          uv export --frozen --no-emit-project --extra dev -o /tmp/requirements-audit.txt
+          uv export --frozen --no-emit-project --no-emit-package hermes-callscope \
+            --extra dev -o /tmp/requirements-audit.txt
           uv run pip-audit -r /tmp/requirements-audit.txt --strict --disable-pip
 
   artifacts-gate:
