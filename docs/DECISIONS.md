@@ -28,6 +28,22 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-29 - Voice worker: CallSession owns turns; LiveKit Agents glue is config-thin
+- Date / Task: 2026-09-20 / T-M1-10
+- Context: Design §4.2 + S-4 (D-20260920-05). Need a testable turn loop without
+  pulling `livekit-agents[silero]` into default CI deps.
+- Decision: Pure `TurnStateMachine` + `CallSession` (STT→brain→chunker→TTS, events,
+  data-channel messages, metrics) with injectable providers/media. `WorkerConfig`
+  maps §4.2 keys to Agents `TurnHandlingOptions` / Silero VAD kwargs (verified in
+  spike). Optional extra `worker` installs livekit-agents; `--livekit` entrypoint
+  documents T-M1-11 for full AgentSession STT/TTS/Hermes adapters.
+- Alternatives considered: Full Agents plugins in this PR (rejected: heavy CI deps,
+  harder FSM unit tests); hermes-livekit (already rejected D-20260920-05).
+- Consequences: `make worker --mock-call` smokes the loop; 60 s LiveKit call is a
+  manual check once T-M1-11 wires the Agents session to CallScope providers.
+- Design doc impact: none (implements §4.2 / ADR-002 / ADR-006).
+- Status: accepted
+
 ### D-20260920-28 - HermesBackend: SSE client + receptionist toolset lockdown
 - Date / Task: 2026-09-20 / T-M1-09
 - Context: Need BrainBackend over Hermes 0.19.0 API server; spikes T-M0-02/03/04 verified

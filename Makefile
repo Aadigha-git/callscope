@@ -38,6 +38,9 @@ tts: ## Run native TTS server (fake backend by default; port 8300)
 api: ## Run CallScope API (port 8000)
 	$(PY) -m apps.api
 
+worker: ## Voice worker mock smoke (metrics :9101); use --livekit after --extra worker
+	$(PY) -m apps.worker --mock-call
+
 hermes-selftest: ## Fail closed if Hermes toolset allowlist drifts (T-M1-09)
 	$(PY) infra/hermes/toolset_selftest.py --config infra/hermes/config.yaml
 

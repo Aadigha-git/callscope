@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-10
+- Done: `apps/worker` — TurnStateMachine, CallSession (greeting/turns/errors/interrupt hook),
+  WorkerConfig↔Agents mapping, EventWriter sink helper, `make worker --mock-call`, unit tests.
+- Next: Finish PR; after merge → **T-M1-11** make demo (wire LiveKit Agents + native procs).
+- Open questions: 60 s live timeline AC needs local livekit-server + Agents adapters (T-M1-11).
+- Commands to resume: `git switch feat/T-M1-10-voice-worker && make worker && make ci`
+
 ## 2026-09-20 / T-M1-09
 - Done: `infra/hermes` receptionist profile (TF custom provider, memory off, toolset lockdown +
   `make hermes-selftest`); `HermesBackend` SSE stream/cancel/first-token timeout/CALL_CONTEXT;
