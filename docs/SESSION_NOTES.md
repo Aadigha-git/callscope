@@ -8,11 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-02
+- Done: Alembic `0001` = `db/schema.sql`; `callscope/db` engine/models/repos; catalog snapshot + integration tests; `make db-upgrade` (D-20260920-22).
+- Next: After merge mark done; **T-M1-03** provider interfaces/mocks.
+- Open questions: none.
+- Commands to resume: `git switch feat/T-M1-02-alembic-repos && make ci`
+
 ## 2026-09-20 / T-M1-12
-- Done: `callscope/providers/budget.py` — catalog pricing × TF usage tokens; CLI `make budget`; refuse over-cap live; `eval_runs.estimated_usd` in schema/OpenAPI (D-20260920-21).
-- Next: After merge mark done; continue S2 with **T-M1-02** or **T-M1-03** (DEV_GUIDE).
+- Done: Budget guard + CLI; merged #60; status done.
+- Next: **T-M1-02** (started).
 - Open questions: none; wiring into eval/Hermes backends lands with those tasks + T-M1-13.
-- Commands to resume: `git switch feat/T-M1-12-llm-budget && make ci`
+- Commands to resume: `git switch main && git pull`
 
 ## 2026-09-20 / T-M1-01
 - Done: Event envelope + CallClock + EventWriter + `instrument()`; merged #59; status done.

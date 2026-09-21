@@ -1,4 +1,6 @@
--- CallScope reference schema (PostgreSQL 16). Source of truth = Alembic migrations; this is the snapshot.
+-- CallScope reference schema (PostgreSQL 16). Snapshot kept in sync with Alembic
+-- baseline migration 0001 (see migrations/versions/0001_baseline.py). Apply via
+-- `make db-upgrade` or docker-compose init for empty volumes.
 CREATE SCHEMA IF NOT EXISTS cs;
 CREATE SCHEMA IF NOT EXISTS biz;
 

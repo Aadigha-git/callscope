@@ -13,6 +13,9 @@ dependencies = [
   "pydantic-settings>=2.3",
   "prometheus-client>=0.20",
   "pyyaml>=6.0",
+  "sqlalchemy[asyncio]>=2.0.36",
+  "alembic>=1.14",
+  "psycopg[binary]>=3.1",
 ]
 
 [project.optional-dependencies]
@@ -28,6 +31,7 @@ dev = [
   "pglast>=6.2",
   "openapi-spec-validator>=0.7",
   "psycopg[binary]>=3.1",
+  "sqlalchemy[asyncio]>=2.0.36",
 ]
 
 [tool.setuptools.packages.find]
@@ -45,6 +49,7 @@ ignore = ["S603", "S607"]  # subprocess use is limited to devtools calling git/g
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106", "PT018"]
 "callscope/devtools/**" = ["T201"]  # CLI tools print to the terminal
+"callscope/db/models.py" = ["RUF012"]  # SQLAlchemy __table_args__ dicts
 
 [tool.mypy]
 python_version = "3.11"
