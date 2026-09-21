@@ -23,6 +23,7 @@ dependencies = [
   "websockets>=13",
   "livekit-api>=1.0",
   "hermes-callscope",
+  "jiwer>=4.0.0",
 ]
 
 [tool.uv.sources]

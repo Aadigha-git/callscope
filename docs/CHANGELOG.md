@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Eval normaliser (`NORMALIZER_VERSION`) + ASR/entity/NLU/tool/task scorers with golden
+  tests (≥40 strings); `EvalItemResult` mirrors `cs.eval_item_results` (T-M3-02)
 - Scenario schema + 16 YAML templates under `eval/scenarios/` with seeded expansion
   (`callscope.eval.scenarios`) (T-M3-01)
 - M2 milestone review (`docs/sprints/M2-review.md`)
