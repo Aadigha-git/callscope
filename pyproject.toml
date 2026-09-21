@@ -38,6 +38,7 @@ dev = [
   "openapi-spec-validator>=0.7",
   "psycopg[binary]>=3.1",
   "sqlalchemy[asyncio]>=2.0.36",
+  "honcho>=2.0",
 ]
 worker = [
   "livekit-agents[silero]==1.8.2",

@@ -26,16 +26,21 @@ services:
     ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
     volumes: [miniodata:/data]
   prometheus:
-    image: prom/prometheus:latest
+    image: prom/prometheus:v2.54.1
     volumes: ["./infra/prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro"]
     ports: ["127.0.0.1:9090:9090"]
     extra_hosts: ["host.docker.internal:host-gateway"]
   grafana:
-    image: grafana/grafana:latest
+    image: grafana/grafana:11.2.0
     environment:
       GF_SECURITY_ADMIN_PASSWORD: ${GRAFANA_ADMIN_PASSWORD:-admin_local_only}
+      GF_USERS_DEFAULT_THEME: light
     ports: ["127.0.0.1:3000:3000"]
-    volumes: [grafanadata:/var/lib/grafana]
+    volumes:
+      - grafanadata:/var/lib/grafana
+      - ./infra/grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./infra/grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on: [prometheus]
 volumes:
   pgdata: {}
   miniodata: {}

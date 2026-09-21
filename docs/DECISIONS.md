@@ -28,6 +28,22 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-30 - make demo: Compose data plane + honcho Procfile; biz/Hermes optional
+- Date / Task: 2026-09-20 / T-M1-11
+- Context: Design §9 / ADR-015 — ASR/TTS/worker/livekit native; Postgres/Prom/Grafana in Compose.
+  Prompt also listed biz + Hermes in the Procfile; `apps/biz` does not exist yet; Hermes needs a
+  separate install + `TOKEN_FACTORY_API_KEY`.
+- Decision: `make demo` → `scripts/demo_start.sh` (Compose up + `honcho start -f Procfile`).
+  Procfile: livekit, api, asr, tts, worker `--serve`, web. **Omit biz** until that app exists.
+  **Omit Hermes** from auto-start (document optional run). Grafana provisioned with Live-ops
+  dashboard; Prometheus scrapes host.docker.internal :8000/:9100/:8200/:8300. Pin Prom/Grafana
+  image tags. CI validates compose/prom/grafana/Procfile via `tests/infra/test_compose_config.py`.
+- Alternatives considered: Docker LiveKit only (works but S-6 prefers brew native); include Hermes
+  in Procfile (rejected: fail-closed without keys / install).
+- Consequences: Full Agents room path still uses spike or future wiring; demo proves ports + metrics.
+- Design doc impact: none (implements §9 local runner).
+- Status: accepted
+
 ### D-20260920-29 - Voice worker: CallSession owns turns; LiveKit Agents glue is config-thin
 - Date / Task: 2026-09-20 / T-M1-10
 - Context: Design §4.2 + S-4 (D-20260920-05). Need a testable turn loop without

@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-11
+- Done: Procfile + honcho, `scripts/demo_{start,stop}.sh`, Grafana Live-ops + Prometheus scrapes,
+  compose image pins, `tests/infra/test_compose_config.py`, DEV_GUIDE ports table (D-20260920-30).
+- Next: Finish PR; M1 walking skeleton nearly complete — next backlog is M2 (or polish Agents wiring).
+- Open questions: Hermes/biz not in Procfile; LiveKit Agents STT/TTS adapters still spike-only.
+- Commands to resume: `git switch feat/T-M1-11-make-demo && make compose-validate && make ci`
+
 ## 2026-09-20 / T-M1-10
 - Done: `apps/worker` — TurnStateMachine, CallSession (greeting/turns/errors/interrupt hook),
   WorkerConfig↔Agents mapping, EventWriter sink helper, `make worker --mock-call`, unit tests.
