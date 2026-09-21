@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 import numpy as np
+import pytest
 
 from callscope.datasets.augment import apply_condition
 from callscope.datasets.io_audio import (
@@ -26,6 +27,8 @@ from callscope.datasets.synth import (
     plan_calls,
 )
 from callscope.eval.scenarios import load_all_scenarios
+
+pytestmark = pytest.mark.unit
 
 
 def _tone(sr: int = SAMPLE_RATE_HZ, seconds: float = 1.0, f0: float = 440.0) -> np.ndarray:

@@ -18,6 +18,8 @@ from callscope.eval.scenarios import (
     validate_library,
 )
 
+pytestmark = pytest.mark.unit
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 AS_OF = date(2026, 9, 21)
 EXPECTED_IDS = frozenset(

@@ -1,4 +1,4 @@
-"""Golden normalisation cases (≥40) and scorer unit tests (T-M3-02)."""
+"""Golden normalisation cases (>=40) and scorer unit tests (T-M3-02)."""
 
 from __future__ import annotations
 
@@ -24,6 +24,8 @@ from callscope.eval.scorers.nlu import score_nlu, slot_prf
 from callscope.eval.scorers.task import score_task
 from callscope.eval.scorers.tools import score_tools
 from callscope.eval.types import EvalItemResult
+
+pytestmark = pytest.mark.unit
 
 # (raw, expected_normalized)
 GOLDEN_NORMALIZE: list[tuple[str, str]] = [
