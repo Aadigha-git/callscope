@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- `hermes-callscope` plugin: seven receptionist tools calling Business API (T-M2-02)
 - Local call recording (consent-gated WAV), `POST /v1/calls/{id}/recording`, and
   `make purge` / `delete-call` retention CLI (T-M2-06)
 - Worker barge-in gate, filler (1.5 s), turn abort (8 s), and §4.11 degradation matrix

@@ -568,7 +568,7 @@ tasks:
   owner: BAG
   estimate_h: 12
   priority: P0
-  status: in_progress
+  status: in_review
   sprint: null
   issue: 20
   prompt: prompts/M2_receptionist.md#t-m2-02

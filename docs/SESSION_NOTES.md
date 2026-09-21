@@ -10,15 +10,21 @@ Template:
 
 ## 2026-09-20 / T-M2-06
 - Done: CallRecorder (consent-gated WAV), API recording register, retention catalog +
-  `make purge` / delete-call, infra timer example (D-20260920-34). Rebased onto #75.
-- Next: Merge #76; then #73→#74→#77 (plugin stack).
-- Commands to resume: `git switch feat/T-M2-06-recording && make ci`
+  `make purge` / delete-call, infra timer example (D-20260920-34). **Merged** (#76).
+- Next: Merge #73→#74→#77 (plugin stack).
+- Commands to resume: `git switch main && make ci`
 
 ## 2026-09-20 / T-M2-05
 - Done: `InterruptionGate`, `DegradeController`, CallSession filler/abort/barge-in stop latency,
   §4.11 matrix tests (p95 ≤250 ms decision→cancel). **Merged** (#75).
 - Next: T-M2-06 recording/purge; T-M2-04 skill (after #73/#74).
 - Commands to resume: `git switch main && make ci`
+
+## 2026-09-20 / T-M2-02
+- Done: `plugins/hermes_callscope` — 7 tools, schemas, BizClient, register(ctx), tests with
+  fake Business API; toolset `callscope-receptionist`.
+- Next: PR merge → T-M2-03 policy + T-M2-04 skill.
+- Commands to resume: `git switch feat/T-M2-02-hermes-plugin && make ci`
 
 ## 2026-09-20 / T-M2-01
 - Done: Lakeside Business API (`apps/biz`) — seed, availability, idempotent book, auth by

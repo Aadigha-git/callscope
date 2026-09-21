@@ -56,6 +56,19 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 - Design doc impact: clarifies metric semantics for §4.10 histogram.
 - Status: accepted
 
+### D-20260920-32 - hermes-callscope plugin package + toolset name
+- Date / Task: 2026-09-20 / T-M2-02
+- Context: Design §4.4; spike T-M0-04 verified `register_tool(..., toolset=)` and JSON-string
+  handlers on hermes-agent 0.19.0.
+- Decision: Ship editable `plugins/hermes_callscope` (`hermes-callscope`) with entry point
+  `hermes_agent.plugins` → `callscope`. Toolset id **`callscope-receptionist`** (matches
+  `infra/hermes`). Seven tools call Business API via httpx; mutating tools refuse without
+  `confirmed=true` at handler layer (full policy hook in T-M2-03).
+- Alternatives considered: keep tools only in spike (rejected).
+- Consequences: `uv sync` installs plugin; CI tests schemas/handlers without live Hermes.
+- Design doc impact: none.
+- Status: accepted
+
 ### D-20260920-31 - Business API: in-memory deterministic store for CI
 - Date / Task: 2026-09-20 / T-M2-01
 - Context: Design §4.5/§6.4 + `biz` schema. Need identical seed→data in CI without requiring
