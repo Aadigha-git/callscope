@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / M2 close
+- Done: All M2 tasks merged (#72–#78 except #74 retargeted as #78). Backlog 6/6 done.
+  Milestone review: `docs/sprints/M2-review.md`.
+- Next: Start **M3** (T-M3-01 scenario schema) after optional `v0.2.0` tag approval.
+- Open questions: Approve version bump + tag push?
+- Commands to resume: `git switch main && make ci`; then `make status T=T-M3-01 S=in_progress`
+
 ## 2026-09-20 / T-M2-04
 - Done: receptionist skill + prompt_hash, register_skill when available, 10 manual_runs stubs,
   docs/prompts/CHANGELOG (D-20260920-35).

@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- M2 milestone review (`docs/sprints/M2-review.md`)
 - Receptionist skill `callscope:receptionist` + prompt hash + 10 manual-run stubs (T-M2-04)
 - Policy hook for hermes-callscope (`evaluate` Allow/Deny, budgets, confirmation) (T-M2-03)
 - `hermes-callscope` plugin: seven receptionist tools calling Business API (T-M2-02)
