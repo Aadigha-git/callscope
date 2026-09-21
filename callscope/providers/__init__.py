@@ -2,6 +2,20 @@
 
 from __future__ import annotations
 
+from callscope.providers.base import (
+    BrainBackend,
+    BrainDelta,
+    Msg,
+    ProviderError,
+    ProviderTimeout,
+    ProviderUnavailable,
+    STTEvent,
+    STTProvider,
+    ToolEvent,
+    Transcript,
+    TTSProvider,
+    WordTiming,
+)
 from callscope.providers.budget import (
     BudgetExceededError,
     BudgetGuard,
@@ -10,12 +24,28 @@ from callscope.providers.budget import (
     cost_from_usage,
     estimate_usd,
 )
+from callscope.providers.mock import MockBrain, MockSTT, MockTTS
 
 __all__ = [
+    "BrainBackend",
+    "BrainDelta",
     "BudgetExceededError",
     "BudgetGuard",
     "BudgetStatus",
+    "MockBrain",
+    "MockSTT",
+    "MockTTS",
     "ModelPrice",
+    "Msg",
+    "ProviderError",
+    "ProviderTimeout",
+    "ProviderUnavailable",
+    "STTEvent",
+    "STTProvider",
+    "TTSProvider",
+    "ToolEvent",
+    "Transcript",
+    "WordTiming",
     "cost_from_usage",
     "estimate_usd",
 ]

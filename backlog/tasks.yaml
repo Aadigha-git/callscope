@@ -230,7 +230,7 @@ tasks:
   owner: BAG
   estimate_h: 8
   priority: P0
-  status: in_review
+  status: done
   sprint: null
   issue: 9
   prompt: prompts/M1_walking_skeleton.md#t-m1-02
@@ -255,7 +255,7 @@ tasks:
   owner: BAG
   estimate_h: 6
   priority: P0
-  status: backlog
+  status: in_review
   sprint: null
   issue: 10
   prompt: prompts/M1_walking_skeleton.md#t-m1-03

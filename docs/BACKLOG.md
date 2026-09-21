@@ -7,7 +7,7 @@
 | Milestone | Done | In flight | Total | Est. hours (remaining) |
 |---|---|---|---|---|
 | M0 Setup and spikes | 7 | 0 | 7 | 0 |
-| M1 Walking skeleton | 2 | 1 | 13 | 102 |
+| M1 Walking skeleton | 3 | 1 | 13 | 94 |
 | M2 Receptionist behaviour | 0 | 0 | 6 | 56 |
 | M3 Eval core | 0 | 0 | 8 | 84 |
 | M4 Review and caller-sim | 0 | 0 | 6 | 60 |
@@ -46,8 +46,8 @@
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
 | T-M1-01 | Event envelope, async batching writer, provider-call instrumentation | FR-06, NFR-08 | T-M0-01 | 8 | BAG | done |  | #8 |
-| T-M1-02 | Database migrations from schema.sql (Alembic) and repository layer | FR-06, NFR-06 | T-M0-01 | 8 | BAG | in_review |  | #9 |
-| T-M1-03 | Provider interfaces (STT/TTS/Brain) and deterministic mock providers | FR-05, FR-03, NFR-10, NFR-12 | T-M1-01 | 6 | BAG | backlog |  | #10 |
+| T-M1-02 | Database migrations from schema.sql (Alembic) and repository layer | FR-06, NFR-06 | T-M0-01 | 8 | BAG | done |  | #9 |
+| T-M1-03 | Provider interfaces (STT/TTS/Brain) and deterministic mock providers | FR-05, FR-03, NFR-10, NFR-12 | T-M1-01 | 6 | BAG | in_review |  | #10 |
 | T-M1-04 | Sentence chunker and TTS text normaliser | FR-03, NFR-01 | T-M1-03 | 6 | BAG | backlog |  | #11 |
 | T-M1-05 | ASR server (native Mac process, WebSocket + HTTP) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 12 | BAG | backlog |  | #12 |
 | T-M1-06 | TTS server (native Mac process, chunked PCM streaming) | FR-03, FR-05 | T-M0-06, T-M0-07, T-M1-03 | 8 | BAG | backlog |  | #13 |

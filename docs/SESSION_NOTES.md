@@ -8,11 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
-## 2026-09-20 / T-M1-02
-- Done: Alembic `0001` = `db/schema.sql`; `callscope/db` engine/models/repos; catalog snapshot + integration tests; `make db-upgrade` (D-20260920-22).
-- Next: After merge mark done; **T-M1-03** provider interfaces/mocks.
+## 2026-09-20 / T-M1-03
+- Done: `callscope/providers/{base,mock}.py` — STT/TTS/Brain protocols + mocks; contract suite in `tests/providers/test_contract.py` (pytest discovers `test_*.py`).
+- Next: After merge mark done; **T-M1-04** chunker/tts_norm.
 - Open questions: none.
-- Commands to resume: `git switch feat/T-M1-02-alembic-repos && make ci`
+- Commands to resume: `git switch feat/T-M1-03-provider-interfaces && make ci`
+
+## 2026-09-20 / T-M1-02
+- Done: Alembic baseline + repos; merged #61; status done.
+- Next: **T-M1-03** (started).
+- Open questions: none.
+- Commands to resume: `git switch main && git pull`
 
 ## 2026-09-20 / T-M1-12
 - Done: Budget guard + CLI; merged #60; status done.
