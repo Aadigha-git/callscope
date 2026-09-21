@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Voice worker (`apps/worker`): TurnStateMachine, CallSession, §4.2→LiveKit config
+  mapping, mock smoke (`make worker`) (T-M1-10, D-20260920-29)
 - Hermes receptionist profile (`infra/hermes`) + `HermesBackend` SSE BrainBackend with CALL_CONTEXT,
   first-token timeout, cancel, cassette wrap (T-M1-09, D-20260920-28)
 - Browser web client (`apps/web`, Vite + livekit-client) with consent gate and XSS-safe transcript (T-M1-08, D-20260920-27)

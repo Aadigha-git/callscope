@@ -75,7 +75,7 @@ class BrainDelta:
 
 @runtime_checkable
 class STTProvider(Protocol):
-    async def stream(
+    def stream(
         self,
         pcm: AsyncIterator[bytes],
         *,

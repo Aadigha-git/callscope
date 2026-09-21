@@ -39,6 +39,11 @@ dev = [
   "psycopg[binary]>=3.1",
   "sqlalchemy[asyncio]>=2.0.36",
 ]
+worker = [
+  "livekit-agents[silero]==1.8.2",
+  "livekit==1.1.18",
+  "numpy>=2.0",
+]
 
 [tool.setuptools.packages.find]
 include = ["callscope*", "servers*", "apps*"]
@@ -65,7 +70,18 @@ files = ["callscope", "servers", "apps"]
 plugins = ["pydantic.mypy"]
 
 [[tool.mypy.overrides]]
-module = ["mlx_whisper", "mlx_whisper.*", "numpy", "numpy.*", "piper", "piper.*", "kokoro_onnx", "kokoro_onnx.*"]
+module = [
+  "mlx_whisper",
+  "mlx_whisper.*",
+  "numpy",
+  "numpy.*",
+  "piper",
+  "piper.*",
+  "kokoro_onnx",
+  "kokoro_onnx.*",
+  "livekit",
+  "livekit.*",
+]
 ignore_missing_imports = true
 
 [tool.pytest.ini_options]
