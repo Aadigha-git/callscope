@@ -28,6 +28,20 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-31 - Business API: in-memory deterministic store for CI
+- Date / Task: 2026-09-20 / T-M2-01
+- Context: Design §4.5/§6.4 + `biz` schema. Need identical seed→data in CI without requiring
+  Postgres for every unit test; schema uses Postgres-only types (tsvector, int4range).
+- Decision: Ship FastAPI `apps/biz` with an in-memory `BizStore` that mirrors the biz tables
+  and is reseeded via `POST /admin/reset?seed=` (admin bearer). KB ranking is token-overlap
+  approximating tsvector for local demo; Postgres-backed store can replace later without
+  changing HTTP contracts (`docs/api/biz.openapi.yaml`). Gaps listed in `docs/kb_gaps.md`.
+- Alternatives considered: require Postgres for all biz tests (rejected: slower CI); SQLite
+  (rejected: no tsvector/int4range parity).
+- Consequences: Plugin (T-M2-02) talks HTTP to `:8100`; demo Procfile includes `biz`.
+- Design doc impact: none.
+- Status: accepted
+
 ### D-20260920-30 - make demo: Compose data plane + honcho Procfile; biz/Hermes optional
 - Date / Task: 2026-09-20 / T-M1-11
 - Context: Design §9 / ADR-015 — ASR/TTS/worker/livekit native; Postgres/Prom/Grafana in Compose.

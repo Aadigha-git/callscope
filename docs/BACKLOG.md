@@ -7,8 +7,8 @@
 | Milestone | Done | In flight | Total | Est. hours (remaining) |
 |---|---|---|---|---|
 | M0 Setup and spikes | 7 | 0 | 7 | 0 |
-| M1 Walking skeleton | 12 | 1 | 13 | 8 |
-| M2 Receptionist behaviour | 0 | 0 | 6 | 56 |
+| M1 Walking skeleton | 13 | 0 | 13 | 0 |
+| M2 Receptionist behaviour | 0 | 1 | 6 | 56 |
 | M3 Eval core | 0 | 0 | 8 | 84 |
 | M4 Review and caller-sim | 0 | 0 | 6 | 60 |
 | M5 Improvement and governance | 0 | 0 | 5 | 58 |
@@ -55,7 +55,7 @@
 | T-M1-08 | Web client (consent modal, call UI, live transcript) | FR-01, NFR-05 | T-M1-07 | 10 | BAG | done |  | #15 |
 | T-M1-09 | Hermes receptionist profile and BrainBackend (Token Factory via Hermes) | FR-02, FR-03, NFR-05 | T-M0-02, T-M0-03, T-M0-04, T-M1-03, T-M1-12, T-M1-13 | 10 | BAG | done |  | #16 |
 | T-M1-10 | Voice worker (state machine, LiveKit integration, events) | FR-03, FR-04, FR-06, NFR-01 | T-M0-05, T-M1-01, T-M1-03, T-M1-04, T-M1-05, T-M1-06, T-M1-09 | 16 | BAG | done |  | #17 |
-| T-M1-11 | Local runner + Compose (Postgres/Prom/Grafana) + make demo | FR-12, NFR-12, NFR-07 | T-M1-07, T-M1-10 | 8 | BAG | in_review |  | #18 |
+| T-M1-11 | Local runner + Compose (Postgres/Prom/Grafana) + make demo | FR-12, NFR-12, NFR-07 | T-M1-07, T-M1-10 | 8 | BAG | done |  | #18 |
 | T-M1-12 | LLM budget guard (Token Factory spend cap) | NFR-11 | T-M1-01 | 6 | BAG | done |  |  |
 | T-M1-13 | LLM record/replay cassettes | NFR-06, NFR-11, NFR-12 | T-M1-03, T-M1-12 | 8 | BAG | done |  |  |
 
@@ -63,7 +63,7 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M2-01 | Business API, deterministic seed data and knowledge base with gaps | FR-02 | T-M1-02 | 10 | BAG | backlog |  | #19 |
+| T-M2-01 | Business API, deterministic seed data and knowledge base with gaps | FR-02 | T-M1-02 | 10 | BAG | in_review |  | #19 |
 | T-M2-02 | Hermes plugin skeleton and receptionist tools | FR-02, FR-13 | T-M0-02, T-M2-01 | 12 | BAG | backlog |  | #20 |
 | T-M2-03 | Policy hook and toolset lockdown self-test | FR-13, NFR-05 | T-M2-02 | 8 | BAG | backlog |  | #21 |
 | T-M2-04 | Receptionist skill, persona and confirmation protocol | FR-02, FR-13 | T-M2-02 | 8 | BAG | backlog |  | #22 |

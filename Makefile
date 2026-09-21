@@ -41,6 +41,9 @@ tts: ## Run native TTS server (fake backend by default; port 8300)
 api: ## Run CallScope API (port 8000)
 	$(PY) -m apps.api
 
+biz: ## Run Lakeside Business API (port 8100)
+	$(PY) -m apps.biz
+
 worker: ## Voice worker: MOCK=1 for smoke, else --serve metrics (:9100)
 	@if [ "$(MOCK)" = "1" ]; then \
 		$(PY) -m apps.worker --mock-call; \
