@@ -28,6 +28,25 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-23 - ASR server: fake default, EnergyVAD, mlx-whisper optional
+- Date / Task: 2026-09-20 / T-M1-05
+- Context: Design §4.3 + S-5 shortlist (D-20260920-19). Whisper-family is not natively
+  streaming; CI must not load Metal weights.
+- Decision: FastAPI `servers/asr` on port **8200** (`make asr`). Default backend `fake`
+  (`CALLSCOPE_ASR_BACKEND=fake`). Optional `mlx_whisper` (`mlx-community/whisper-tiny`) loaded
+  only in lifespan / first use — never at import. Energy VAD (no torch) segments for the
+  non-streaming path; Silero stays on the LiveKit worker (T-M0-05). Hotwords → Whisper
+  `initial_prompt` when using mlx. `ASRClient` implements `STTProvider`.
+- Measurements: unified-memory / RTF for mlx-whisper-tiny from S-5 (RTF C0 mean ~0.03; see
+  `spikes/T-M0-06/results/`). Fake backend exposes the same Prometheus RTF/latency metrics for
+  contract tests (no claim of production RTF from fake).
+- Alternatives considered: Silero inside ASR process (rejected — torch in CI); always-on mlx
+  (rejected — import/load cost + CI).
+- Consequences: `CALLSCOPE_ASR_*` in `.env.example`; gpu-marked mlx test gated by
+  `CALLSCOPE_RUN_GPU=1`.
+- Design doc impact: none (matches §4.3 / port table).
+- Status: accepted
+
 ### D-20260920-22 - Alembic baseline = schema.sql; catalog fingerprint for drift
 - Date / Task: 2026-09-20 / T-M1-02
 - Context: Acceptance asks for pg_dump equivalence; CI/local Mac may lack client tooling consistency.

@@ -3,6 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Native ASR server (`servers/asr`, `make asr`, `ASRClient`) with fake + optional mlx-whisper (T-M1-05, D-20260920-23)
 - Sentence chunker + `tts_norm` for streaming TTS (T-M1-04)
 - Provider protocols + MockSTT/MockTTS/MockBrain and contract suite (T-M1-03)
 - Alembic baseline (`migrations/0001`), async SQLAlchemy models/repos, `make db-upgrade` (T-M1-02, D-20260920-22)

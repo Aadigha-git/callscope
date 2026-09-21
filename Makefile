@@ -29,6 +29,9 @@ demo-stop: ## Stop demo stack
 budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
 	$(PY) -m callscope.devtools.budget_cli $(ARGS)
 
+asr: ## Run native ASR server (fake backend by default; port 8200)
+	CALLSCOPE_ASR_BACKEND=$${CALLSCOPE_ASR_BACKEND:-fake} $(PY) -m servers.asr
+
 db-upgrade: ## Apply Alembic migrations to CALLSCOPE_DATABASE_URL (or settings default)
 	uv run alembic upgrade head
 
@@ -46,7 +49,7 @@ fmt: ## Auto-format
 	uv run ruff check --fix .
 	uv run ruff format .
 
-typecheck: ## mypy (strict) on callscope/
+typecheck: ## mypy (strict) on callscope/ + servers/
 	uv run mypy
 
 test: ## Unit + contract tests with coverage gate
