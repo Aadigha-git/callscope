@@ -663,7 +663,7 @@ tasks:
   owner: BAG
   estimate_h: 6
   priority: P1
-  status: in_review
+  status: done
   sprint: null
   issue: 24
   prompt: prompts/M2_receptionist.md#t-m2-06
