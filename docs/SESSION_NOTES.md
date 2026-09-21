@@ -8,11 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M2-06
+- Done: CallRecorder (consent-gated WAV), API recording register, retention catalog +
+  `make purge` / delete-call, infra timer example (D-20260920-34). Rebased onto #75.
+- Next: Merge #76; then #73→#74→#77 (plugin stack).
+- Commands to resume: `git switch feat/T-M2-06-recording && make ci`
+
 ## 2026-09-20 / T-M2-05
 - Done: `InterruptionGate`, `DegradeController`, CallSession filler/abort/barge-in stop latency,
-  §4.11 matrix tests (p95 ≤250 ms decision→cancel).
-- Next: PR merge; T-M2-06 recording/purge; T-M2-04 skill (after #73/#74); merge #73/#74 via UI.
-- Commands to resume: `git switch feat/T-M2-05-barge-in && make ci`
+  §4.11 matrix tests (p95 ≤250 ms decision→cancel). **Merged** (#75).
+- Next: T-M2-06 recording/purge; T-M2-04 skill (after #73/#74).
+- Commands to resume: `git switch main && make ci`
 
 ## 2026-09-20 / T-M2-01
 - Done: Lakeside Business API (`apps/biz`) — seed, availability, idempotent book, auth by

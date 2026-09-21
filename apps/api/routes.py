@@ -5,7 +5,7 @@ from __future__ import annotations
 from typing import Literal
 from uuid import UUID
 
-from fastapi import APIRouter, Depends, Response
+from fastapi import APIRouter, Depends, HTTPException, Response
 from fastapi.responses import JSONResponse
 from prometheus_client import CONTENT_TYPE_LATEST, Counter, generate_latest
 
@@ -15,6 +15,7 @@ from apps.api.ratelimit import SessionCapExceeded
 from apps.api.schemas import (
     EventsBatchRequest,
     EventsBatchResponse,
+    RecordingRegisterRequest,
     SessionRequest,
     SessionResponse,
     StatusOut,
@@ -135,6 +136,33 @@ async def events_batch(body: EventsBatchRequest, state: StateDep) -> EventsBatch
     if duplicates:
         EVENTS_BATCH_TOTAL.labels(result="duplicates").inc(duplicates)
     return EventsBatchResponse(accepted=accepted, duplicates=duplicates)
+
+
+@router.post(
+    "/v1/calls/{call_id}/recording",
+    status_code=204,
+    response_class=Response,
+    dependencies=[Depends(require_service_token)],
+)
+async def register_recording(
+    call_id: UUID,
+    body: RecordingRegisterRequest,
+    state: StateDep,
+) -> Response:
+    rec = state.store.get(call_id)
+    if rec is None:
+        raise HTTPException(status_code=404, detail="unknown call_id")
+    if not rec.consent_recording:
+        raise HTTPException(status_code=403, detail="recording requires consent")
+    ok = state.store.register_recording(
+        call_id,
+        mixed_uri=body.mixed_uri,
+        caller_uri=body.caller_uri,
+        agent_uri=body.agent_uri,
+    )
+    if not ok:
+        raise HTTPException(status_code=404, detail="unknown call_id")
+    return Response(status_code=204)
 
 
 @router.get("/metrics")

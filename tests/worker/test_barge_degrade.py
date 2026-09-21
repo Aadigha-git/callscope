@@ -164,7 +164,8 @@ async def test_filler_after_delay(tmp_path: Path) -> None:
     await session.start()
     await session.connect()
     turn_task = asyncio.create_task(session.process_pcm(_pcm()))
-    await asyncio.sleep(0.15)
+    # Real sleep so filler_watch (50 ms) fires before we release the hung brain.
+    await asyncio.sleep(0.25)
     hang.set()
     await turn_task
     if session.end_reason is None:

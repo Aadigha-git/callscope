@@ -14,6 +14,7 @@ from uuid import UUID
 from apps.worker.config import WorkerConfig
 from apps.worker.degrade import DegradeAction, DegradeController, FailureKind
 from apps.worker.interrupt import InterruptionGate
+from apps.worker.recorder import CallRecorder, RecordingUris
 from apps.worker.state import TurnEvent, TurnState, TurnStateMachine
 from callscope.events.clock import CallClock
 from callscope.events.models import Event, EventSource
@@ -76,6 +77,7 @@ class CallSession:
         stack_version_id: str | None = None,
         system_prompt: str = "You are a helpful receptionist. Keep replies short.",
         sleep: AsyncSleep | None = None,
+        recorder: CallRecorder | None = None,
     ) -> None:
         self.call_id = call_id
         self._stt = stt
@@ -88,6 +90,8 @@ class CallSession:
         self._stack_version_id = stack_version_id
         self._system_prompt = system_prompt
         self._sleep: AsyncSleep = sleep or asyncio.sleep
+        self._recorder = recorder
+        self.recording_uris: RecordingUris | None = None
         self.sm = TurnStateMachine()
         self.degrade = DegradeController()
         self.gate = InterruptionGate(
@@ -147,7 +151,9 @@ class CallSession:
                 "stack_version_id": self._stack_version_id,
             },
         )
-        await self._data({"type": "notice", "code": "recording_on", "text": "Recording on"})
+        if self._recorder is not None and self._recorder.enabled:
+            self._emit("call.consent", {"recording": True, "policy_version": "session"})
+            await self._data({"type": "notice", "code": "recording_on", "text": "Recording on"})
 
     async def run_greeting(self) -> None:
         """Speak the greeting while IDLE, then enter LISTENING."""
@@ -168,9 +174,16 @@ class CallSession:
 
     async def process_pcm(self, pcm: AsyncIterator[bytes]) -> None:
         """Stream mic PCM through STT until finals are handled or session ends."""
+
+        async def _tee() -> AsyncIterator[bytes]:
+            async for chunk in pcm:
+                if self._recorder is not None:
+                    self._recorder.append_caller(chunk)
+                yield chunk
+
         try:
             async for ev in self._stt.stream(
-                pcm,
+                _tee(),
                 sample_rate=self._config.sample_rate,
                 hotwords=self._config.hotwords or None,
             ):
@@ -467,6 +480,8 @@ class CallSession:
                         latency_s = (self._clock.t_ms() - self._speech_end_t_ms) / 1000.0
                         metrics.RESPONSE_LATENCY.observe(latency_s)
                 await self._media.publish_pcm(pcm)
+                if self._recorder is not None:
+                    self._recorder.append_agent(pcm)
             self._spoken_prefix = (self._spoken_prefix + " " + spoken).strip()
         except ProviderError as exc:
             await self._handle_tts_failure(exc, turn_id=turn_id, fallback_text=spoken)
@@ -622,6 +637,18 @@ class CallSession:
             elif self.sm.can(TurnEvent.CALL_END):
                 self.sm.handle(TurnEvent.CALL_END)
         duration_ms = self._clock.t_ms() if self._clock.started else 0
+        if self._recorder is not None:
+            uris = self._recorder.finalize()
+            self.recording_uris = uris
+            if uris is not None:
+                self._emit(
+                    "call.recording",
+                    {
+                        "mixed_uri": uris.mixed_uri,
+                        "caller_uri": uris.caller_uri,
+                        "agent_uri": uris.agent_uri,
+                    },
+                )
         self._emit(
             "call.end",
             {"end_reason": reason, "duration_ms": duration_ms},

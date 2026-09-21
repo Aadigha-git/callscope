@@ -48,6 +48,7 @@ def test_event_catalogue_covers_design_6_6() -> None:
         "call.start",
         "call.end",
         "call.consent",
+        "call.recording",
         "vad.speech_start",
         "vad.speech_end",
         "endpoint.decided",

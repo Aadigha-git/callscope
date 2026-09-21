@@ -23,6 +23,7 @@ EVENT_TYPES: frozenset[str] = frozenset(
         "call.start",
         "call.end",
         "call.consent",
+        "call.recording",
         "vad.speech_start",
         "vad.speech_end",
         "endpoint.decided",
