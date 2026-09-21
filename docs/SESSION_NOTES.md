@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-07
+- Done: CallScope API — status/sessions/end/events:batch, LiveKit tokens, session cap,
+  service-token ingest, RFC 7807, metrics; MemoryCallStore for CI.
+- Next: Open PR; after merge → **T-M1-08** web client.
+- Open questions: SQL-backed CallStore when demo needs Postgres persistence.
+- Commands to resume: `git switch feat/T-M1-07-callscope-api && make ci`
+
 ## 2026-09-20 / T-M1-06
 - Done: TTS FastAPI server (chunked PCM `/v1/tts/stream`, voices, health/metrics TTFB),
   FakeTTS + optional Piper/kokoro-onnx, `TTSClient`, `make tts`.
