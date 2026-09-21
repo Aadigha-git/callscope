@@ -50,3 +50,9 @@ class EventsBatchRequest(BaseModel):
 class EventsBatchResponse(BaseModel):
     accepted: int
     duplicates: int
+
+
+class RecordingRegisterRequest(BaseModel):
+    mixed_uri: str = Field(min_length=1)
+    caller_uri: str | None = None
+    agent_uri: str | None = None

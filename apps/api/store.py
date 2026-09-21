@@ -26,6 +26,11 @@ class SessionRecord:
     consent_policy_v: str = ""
     channel: str = "browser"
     end_reason: str | None = None
+    recording_uri: str | None = None
+    caller_uri: str | None = None
+    agent_uri: str | None = None
+    reviewed: bool = False
+    raw_purged_at: datetime | None = None
 
 
 class CallStore(Protocol):
@@ -45,6 +50,15 @@ class CallStore(Protocol):
 
     def insert_events(self, events: list[EventModel]) -> tuple[int, int]:
         """Return (accepted, duplicates)."""
+
+    def register_recording(
+        self,
+        call_id: UUID,
+        *,
+        mixed_uri: str,
+        caller_uri: str | None = None,
+        agent_uri: str | None = None,
+    ) -> bool: ...
 
 
 @dataclass
@@ -106,3 +120,22 @@ class MemoryCallStore:
                 self._events.append(ev.model_dump(mode="json"))
                 accepted += 1
         return accepted, duplicates
+
+    def register_recording(
+        self,
+        call_id: UUID,
+        *,
+        mixed_uri: str,
+        caller_uri: str | None = None,
+        agent_uri: str | None = None,
+    ) -> bool:
+        with self._lock:
+            rec = self._sessions.get(call_id)
+            if rec is None:
+                return False
+            if not rec.consent_recording:
+                return False
+            rec.recording_uri = mixed_uri
+            rec.caller_uri = caller_uri
+            rec.agent_uri = agent_uri
+            return True

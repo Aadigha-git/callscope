@@ -52,7 +52,7 @@ include = ["callscope*", "servers*", "apps*"]
 [tool.ruff]
 line-length = 100
 target-version = "py311"
-extend-exclude = ["docs", "prompts", "spikes"]
+extend-exclude = ["docs", "prompts", "spikes", "scripts"]
 
 [tool.ruff.lint]
 select = ["E", "F", "I", "B", "UP", "SIM", "ASYNC", "PT", "RUF", "S", "T20"]

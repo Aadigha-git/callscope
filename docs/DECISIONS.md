@@ -28,6 +28,21 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-34 - Local disk recordings + JSONL retention catalog
+- Date / Task: 2026-09-20 / T-M2-06
+- Context: Design §4.2/NFR-13 — consent-gated audio, 30-day purge, delete-by-call. Walking
+  skeleton API is in-memory (no Postgres required for CI).
+- Decision: `CallRecorder` writes 16 kHz mono WAV (caller/agent/mixed) under
+  `CALLSCOPE_RECORDINGS_DIR` only when `consent_recording`; register via
+  `POST /v1/calls/{id}/recording`. Retention uses a JSONL catalog + `callscope.devtools.retention_cli`
+  (`make purge` dry-run by default; `APPLY=1` to delete). Donated+reviewed rows are exempt.
+  Example systemd user timer under `infra/purge.{timer,service}`. MinIO upload remains optional
+  (URI can be file:// or s3:// once wired).
+- Alternatives considered: require MinIO always (rejected for CI); Postgres-only purge (later).
+- Consequences: Pure eligibility tests; no cloud retention job.
+- Design doc impact: none.
+- Status: accepted
+
 ### D-20260920-33 - Barge-in stop latency = decision→cancel (not VAD onset)
 - Date / Task: 2026-09-20 / T-M2-05
 - Context: Design §4.2 `barge_in.min_duration_ms=250` and NFR “stop within 250 ms p95”. Including

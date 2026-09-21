@@ -1,0 +1,17 @@
+# Example local timer for 30-day recording retention (T-M2-06).
+# Install (user unit):
+#   cp infra/purge.service infra/purge.timer ~/.config/systemd/user/
+#   systemctl --user daemon-reload && systemctl --user enable --now purge.timer
+#
+# macOS: use a LaunchAgent or cron:
+#   0 3 * * * cd /path/to/callscope && make purge APPLY=1
+
+[Unit]
+Description=CallScope recording purge (dry-run by default; set APPLY=1 in service)
+
+[Timer]
+OnCalendar=daily
+Persistent=true
+
+[Install]
+WantedBy=timers.target

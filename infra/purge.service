@@ -1,0 +1,13 @@
+[Unit]
+Description=CallScope purge eligible recordings (30-day retention)
+After=network.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/callscope
+Environment=CALLSCOPE_RECORDINGS_DIR=%h/callscope/data/recordings
+# Override with Environment=APPLY=1 for destructive runs after dry-run review.
+ExecStart=/usr/bin/env make -C %h/callscope purge
+
+[Install]
+WantedBy=default.target

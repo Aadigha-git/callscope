@@ -51,6 +51,15 @@ worker: ## Voice worker: MOCK=1 for smoke, else --serve metrics (:9100)
 		CALLSCOPE_METRICS_PORT=$${CALLSCOPE_METRICS_PORT:-9100} $(PY) -m apps.worker --serve; \
 	fi
 
+purge: ## Retention purge (DRY=1 default; APPLY=1 to delete). delete-call: make purge DELETE=<uuid>
+	@if [ -n "$(DELETE)" ]; then \
+		$(PY) -m callscope.devtools.retention_cli delete-call $(DELETE); \
+	elif [ "$(APPLY)" = "1" ]; then \
+		$(PY) -m callscope.devtools.retention_cli purge --apply; \
+	else \
+		$(PY) -m callscope.devtools.retention_cli purge --dry-run; \
+	fi
+
 hermes-selftest: ## Fail closed if Hermes toolset allowlist drifts (T-M1-09)
 	$(PY) infra/hermes/toolset_selftest.py --config infra/hermes/config.yaml
 
