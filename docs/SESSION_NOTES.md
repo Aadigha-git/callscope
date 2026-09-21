@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M3-01
+- Done: `callscope/eval/scenarios.py` Pydantic schema + seeded template expansion; 16 YAMLs
+  in `eval/scenarios/` (12 normal incl. barge-in/silence + 4 adversarial); CI tests for
+  validation, determinism, and `must_not_claim` ↔ `docs/kb_gaps.md`.
+- Next: Open PR; then T-M3-02 normaliser/scorers.
+- Commands to resume: `git switch feat/T-M3-01-scenarios && make ci`
+
 ## 2026-09-21 / M2 close
 - Done: All M2 tasks merged (#72–#78 except #74 retargeted as #78). Backlog 6/6 done.
   Milestone review: `docs/sprints/M2-review.md`.

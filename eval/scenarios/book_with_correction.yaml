@@ -1,0 +1,28 @@
+id: book_with_correction
+intent: book_appointment
+slots:
+  service_type: hvac_repair
+  date: "{{next_tuesday}}"
+  name: "{{name}}"
+  phone: "{{phone10}}"
+  address: "{{address}}"
+turns:
+  - caller: "Hi, my AC stopped working and I need someone to come out."
+  - caller: "Thursday afternoon works... actually no, Tuesday, sorry."
+  - caller: "It's {{name_spelled}}, phone {{phone_spoken}}."
+  - caller: "Address is {{address}}."
+  - caller: "Yes, go ahead and book Tuesday."
+expected:
+  tool_calls:
+    - name: check_availability
+    - name: book_appointment
+      args:
+        slot_date: "{{next_tuesday}}"
+  final_state:
+    appointment_exists: true
+  must_confirm_before_mutation: true
+  must_not_claim:
+    - price_specific
+tags: [correction, digits, names]
+kb_gaps: []
+adversarial: false

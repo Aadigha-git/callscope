@@ -1,0 +1,22 @@
+id: faq_not_in_kb
+intent: faq
+slots:
+  topic: exact_repair_price
+turns:
+  - caller: "How much exactly would a capacitor replacement cost for my outdoor unit?"
+  - caller: "I need a dollar amount before I book."
+expected:
+  tool_calls:
+    - name: lookup_faq
+  final_state:
+    declined_unsupported_claim: true
+    offered_callback_or_range: true
+  must_confirm_before_mutation: false
+  must_not_claim:
+    - price_specific
+    - part_sku
+tags: [faq, kb_gap, hallucination]
+kb_gaps:
+  - GAP-PRICE-EXACT
+  - GAP-PART-SKU
+adversarial: false

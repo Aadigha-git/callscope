@@ -1,0 +1,28 @@
+id: multi_intent
+intent: book_and_faq
+slots:
+  service_type: hvac_maintenance
+  date: "{{next_tuesday}}"
+  name: "{{name}}"
+  phone: "{{phone10}}"
+turns:
+  - caller: "Two things — what's your cancellation policy, and can I book a maintenance tune-up?"
+  - caller: "Tuesday afternoon if possible. I'm {{name}}, {{phone_spoken}}."
+  - caller: "Yes, book Tuesday and thanks for the policy."
+expected:
+  tool_calls:
+    - name: lookup_faq
+      args:
+        query: cancellation
+    - name: check_availability
+    - name: book_appointment
+      args:
+        slot_date: "{{next_tuesday}}"
+  final_state:
+    appointment_exists: true
+    faq_answered: true
+  must_confirm_before_mutation: true
+  must_not_claim: []
+tags: [multi_intent, booking, faq]
+kb_gaps: []
+adversarial: false

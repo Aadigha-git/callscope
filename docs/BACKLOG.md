@@ -9,7 +9,7 @@
 | M0 Setup and spikes | 7 | 0 | 7 | 0 |
 | M1 Walking skeleton | 13 | 0 | 13 | 0 |
 | M2 Receptionist behaviour | 6 | 0 | 6 | 0 |
-| M3 Eval core | 0 | 0 | 8 | 84 |
+| M3 Eval core | 0 | 1 | 8 | 84 |
 | M4 Review and caller-sim | 0 | 0 | 6 | 60 |
 | M5 Improvement and governance | 0 | 0 | 5 | 58 |
 | M6 Hardening and showcase | 0 | 0 | 4 (+1 dropped) | 38 |
@@ -74,7 +74,7 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M3-01 | Scenario spec schema and scenario library (12 + 4 adversarial) | FR-07, FR-08, FR-13 | T-M2-01 | 8 | BAG | backlog |  | #25 |
+| T-M3-01 | Scenario spec schema and scenario library (12 + 4 adversarial) | FR-07, FR-08, FR-13 | T-M2-01 | 8 | BAG | in_review |  | #25 |
 | T-M3-02 | Text normaliser and scorers (WER, entities, intent/slot, tools, task success) | FR-08 | T-M3-01 | 12 | BAG | backlog |  | #27 |
 | T-M3-03 | Dataset builder - synthetic caller audio (~120 calls) and C0-C5 | FR-07 | T-M3-01, T-M0-06 | 12 | BAG | backlog |  | #28 |
 | T-M3-04 | Data-quality checks, manifests, splits and dataset registry | FR-07, NFR-09, NFR-06 | T-M3-03, T-M1-02 | 8 | BAG | backlog |  | #29 |

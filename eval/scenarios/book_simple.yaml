@@ -1,0 +1,31 @@
+id: book_simple
+intent: book_appointment
+slots:
+  service_type: hvac_repair
+  date: "{{next_tuesday}}"
+  name: "{{name}}"
+  phone: "{{phone10}}"
+  address: "{{address}}"
+  zip: "{{zip}}"
+turns:
+  - caller: "Hi, my air conditioner stopped cooling and I need a repair visit."
+  - caller: "Tuesday works for me if you have something open."
+  - caller: "Name is {{name}}, phone {{phone_spoken}}, at {{address}}."
+  - caller: "Yes, please book that Tuesday slot."
+expected:
+  tool_calls:
+    - name: check_availability
+      args:
+        service_type: hvac_repair
+    - name: book_appointment
+      args:
+        slot_date: "{{next_tuesday}}"
+        customer_name: "{{name}}"
+        phone: "{{phone10}}"
+  final_state:
+    appointment_exists: true
+  must_confirm_before_mutation: true
+  must_not_claim: []
+tags: [booking, happy_path]
+kb_gaps: []
+adversarial: false

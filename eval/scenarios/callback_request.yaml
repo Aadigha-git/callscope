@@ -1,0 +1,23 @@
+id: callback_request
+intent: request_callback
+slots:
+  name: "{{name}}"
+  phone: "{{phone10}}"
+  reason: "prefer call back about scheduling"
+turns:
+  - caller: "I can't talk through the whole booking right now. Can someone call me back?"
+  - caller: "Name {{name}}, phone {{phone_spoken}}."
+  - caller: "Yes, please schedule that callback."
+expected:
+  tool_calls:
+    - name: request_callback
+      args:
+        customer_name: "{{name}}"
+        phone: "{{phone10}}"
+  final_state:
+    callback_created: true
+  must_confirm_before_mutation: true
+  must_not_claim: []
+tags: [callback]
+kb_gaps: []
+adversarial: false

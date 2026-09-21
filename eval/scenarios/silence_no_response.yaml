@@ -1,0 +1,27 @@
+id: silence_no_response
+intent: book_appointment
+slots:
+  service_type: plumbing_repair
+  date: "{{next_tuesday}}"
+  name: "{{name}}"
+  phone: "{{phone10}}"
+turns:
+  - caller: "Hello? I need a plumber."
+  - caller: ""
+    pause_ms: 3500
+  - caller: "Sorry, I was muted. Tuesday works. I'm {{name}}, {{phone_spoken}}."
+  - caller: "Yes, book that."
+expected:
+  tool_calls:
+    - name: check_availability
+    - name: book_appointment
+      args:
+        slot_date: "{{next_tuesday}}"
+  final_state:
+    appointment_exists: true
+    recovered_from_silence: true
+  must_confirm_before_mutation: true
+  must_not_claim: []
+tags: [silence, turn_taking, booking]
+kb_gaps: []
+adversarial: false

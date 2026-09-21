@@ -1,0 +1,25 @@
+id: reschedule
+intent: reschedule_appointment
+slots:
+  confirmation_code: "{{confirmation_code}}"
+  phone: "{{phone10}}"
+  new_date: "{{next_wednesday}}"
+turns:
+  - caller: "I need to move my appointment."
+  - caller: "Confirmation code {{confirmation_code}}, phone ending {{phone_spoken}}."
+  - caller: "Can we switch it to Wednesday instead?"
+  - caller: "Yes, please reschedule to Wednesday."
+expected:
+  tool_calls:
+    - name: check_availability
+    - name: reschedule_appointment
+      args:
+        confirmation_code: "{{confirmation_code}}"
+        slot_date: "{{next_wednesday}}"
+  final_state:
+    appointment_rescheduled: true
+  must_confirm_before_mutation: true
+  must_not_claim: []
+tags: [reschedule]
+kb_gaps: []
+adversarial: false
