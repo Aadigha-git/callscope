@@ -8,12 +8,18 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M3-02
+- Done: `callscope/eval/normalize.py` + scorers (asr/entities/nlu/tools/task), types aligned
+  to `cs.eval_item_results`, golden tests (≥40), 100% branch coverage on normalize+entities.
+- Next: PR merge; then T-M3-03 dataset builder.
+- Commands to resume: `git switch feat/T-M3-02-scorers && make ci`
+
 ## 2026-09-21 / T-M3-01
 - Done: `callscope/eval/scenarios.py` Pydantic schema + seeded template expansion; 16 YAMLs
   in `eval/scenarios/` (12 normal incl. barge-in/silence + 4 adversarial); CI tests for
-  validation, determinism, and `must_not_claim` ↔ `docs/kb_gaps.md`.
-- Next: Open PR; then T-M3-02 normaliser/scorers.
-- Commands to resume: `git switch feat/T-M3-01-scenarios && make ci`
+  validation, determinism, and `must_not_claim` ↔ `docs/kb_gaps.md`. **Merged** (#80).
+- Next: T-M3-02 normaliser/scorers.
+- Commands to resume: `git switch main && make status T=T-M3-02 S=in_progress`
 
 ## 2026-09-21 / M2 close
 - Done: All M2 tasks merged (#72–#78 except #74 retargeted as #78). Backlog 6/6 done.
