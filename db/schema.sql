@@ -165,6 +165,7 @@ CREATE TABLE cs.eval_runs (
   config            jsonb NOT NULL DEFAULT '{}',
   status            cs.run_status NOT NULL DEFAULT 'queued',
   mlflow_run_id     text,
+  estimated_usd     double precision,           -- projected Token Factory spend (T-M1-12)
   started_at        timestamptz,
   finished_at       timestamptz
 );

@@ -8,11 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M1-12
+- Done: `callscope/providers/budget.py` — catalog pricing × TF usage tokens; CLI `make budget`; refuse over-cap live; `eval_runs.estimated_usd` in schema/OpenAPI (D-20260920-21).
+- Next: After merge mark done; continue S2 with **T-M1-02** or **T-M1-03** (DEV_GUIDE).
+- Open questions: none; wiring into eval/Hermes backends lands with those tasks + T-M1-13.
+- Commands to resume: `git switch feat/T-M1-12-llm-budget && make ci`
+
 ## 2026-09-20 / T-M1-01
-- Done: Event envelope + CallClock + EventWriter (batch 100/250ms, spill/replay, dedupe, drop-oldest) + `instrument()`; unit tests under `tests/events/`; OpenAPI Event validation.
-- Next: After merge mark T-M1-01 done; S2 continues with **T-M1-12** (budget guard) then T-M1-02 / T-M1-03.
+- Done: Event envelope + CallClock + EventWriter + `instrument()`; merged #59; status done.
+- Next: **T-M1-12** (started).
 - Open questions: none for the envelope; sink stays injected until T-M1-02 ingest/repos.
-- Commands to resume: `git switch feat/T-M1-01-event-envelope && make ci`
+- Commands to resume: `git switch main && git pull`
 
 ## 2026-09-20 / T-M0-03
 - Done: S-2 Hermes vs TF TTFT — direct p50 884 ms, Hermes p50 2287 ms, overhead p50 **1385 ms** (FAIL ≤450); ~$0.006; D-20260920-20 adopts R-02 thin FAQ fast-path. Merged #58; status done.
