@@ -7,4 +7,5 @@ api: uv run python -m apps.api
 asr: uv run python -m servers.asr
 tts: uv run python -m servers.tts
 worker: uv run python -m apps.worker --serve
+biz: uv run python -m apps.biz
 web: sh -c 'cd apps/web && npm run dev -- --host 127.0.0.1 --port 5173'

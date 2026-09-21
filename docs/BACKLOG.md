@@ -63,7 +63,7 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M2-01 | Business API, deterministic seed data and knowledge base with gaps | FR-02 | T-M1-02 | 10 | BAG | in_progress |  | #19 |
+| T-M2-01 | Business API, deterministic seed data and knowledge base with gaps | FR-02 | T-M1-02 | 10 | BAG | in_review |  | #19 |
 | T-M2-02 | Hermes plugin skeleton and receptionist tools | FR-02, FR-13 | T-M0-02, T-M2-01 | 12 | BAG | backlog |  | #20 |
 | T-M2-03 | Policy hook and toolset lockdown self-test | FR-13, NFR-05 | T-M2-02 | 8 | BAG | backlog |  | #21 |
 | T-M2-04 | Receptionist skill, persona and confirmation protocol | FR-02, FR-13 | T-M2-02 | 8 | BAG | backlog |  | #22 |

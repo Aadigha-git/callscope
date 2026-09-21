@@ -51,6 +51,5 @@ def test_grafana_live_ops_dashboard_present() -> None:
 
 def test_procfile_lists_native_processes() -> None:
     text = (ROOT / "Procfile").read_text(encoding="utf-8")
-    for name in ("livekit:", "api:", "asr:", "tts:", "worker:", "web:"):
+    for name in ("livekit:", "api:", "asr:", "tts:", "worker:", "biz:", "web:"):
         assert name in text
-    assert "apps.biz" not in text  # biz deferred (D-20260920-30)

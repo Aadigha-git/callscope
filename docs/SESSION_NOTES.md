@@ -8,6 +8,13 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-20 / T-M2-01
+- Done: Lakeside Business API (`apps/biz`) — seed, availability, idempotent book, auth by
+  code+last4, KB search, callbacks, admin reset; `docs/kb_gaps.md`; `docs/api/biz.openapi.yaml`.
+- Next: PR merge → **T-M2-02** hermes-callscope plugin.
+- Open questions: Postgres-backed biz store deferred (D-20260920-31).
+- Commands to resume: `git switch feat/T-M2-01-biz-api && make biz && make ci`
+
 ## 2026-09-20 / T-M1-11
 - Done: Procfile + honcho, `scripts/demo_{start,stop}.sh`, Grafana Live-ops + Prometheus scrapes,
   compose image pins, `tests/infra/test_compose_config.py`, DEV_GUIDE ports table (D-20260920-30).

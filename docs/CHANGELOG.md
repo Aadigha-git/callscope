@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Lakeside Home Services Business API (`apps/biz`, `make biz`) with deterministic seed,
+  idempotent booking, KB search, and documented KB gaps (T-M2-01)
 - `make demo` / `make demo-stop`: Compose data plane + honcho Procfile, Grafana Live-ops
   dashboard, Prometheus scrapes for API/worker/ASR/TTS (T-M1-11, D-20260920-30)
 - Voice worker (`apps/worker`): TurnStateMachine, CallSession, §4.2→LiveKit config

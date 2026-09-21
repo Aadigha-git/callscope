@@ -1,0 +1,169 @@
+openapi: 3.1.0
+info:
+  title: Lakeside Home Services Business API
+  version: 0.1.0
+  description: Fictional HVAC/plumbing scheduling + FAQ backend for CallScope (design §6.4).
+servers:
+  - url: http://127.0.0.1:8100
+paths:
+  /healthz:
+    get:
+      summary: Liveness
+      responses:
+        "200":
+          description: OK
+  /availability:
+    get:
+      summary: List open slots
+      parameters:
+        - in: query
+          name: service_type
+          required: true
+          schema: { type: string }
+        - in: query
+          name: zip
+          schema: { type: string }
+        - in: query
+          name: from
+          schema: { type: string, format: date-time }
+        - in: query
+          name: to
+          schema: { type: string, format: date-time }
+      responses:
+        "200":
+          description: Open slots
+  /appointments:
+    post:
+      summary: Create appointment (idempotent)
+      parameters:
+        - in: header
+          name: Idempotency-Key
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/AppointmentCreate"
+      responses:
+        "201":
+          description: Created
+        "409":
+          description: Slot booked
+  /appointments/{code}:
+    get:
+      summary: Read appointment (code + phone last-4)
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema: { type: string }
+        - in: query
+          name: phone_last4
+          required: true
+          schema: { type: string, minLength: 4, maxLength: 4 }
+      responses:
+        "200":
+          description: Appointment
+        "403":
+          description: Auth failure
+    patch:
+      summary: Reschedule
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/RescheduleBody"
+      responses:
+        "200":
+          description: Updated
+    delete:
+      summary: Cancel
+      parameters:
+        - in: path
+          name: code
+          required: true
+          schema: { type: string }
+        - in: query
+          name: phone_last4
+          required: true
+          schema: { type: string }
+      responses:
+        "200":
+          description: Cancelled
+  /kb/search:
+    get:
+      summary: FAQ search
+      parameters:
+        - in: query
+          name: q
+          required: true
+          schema: { type: string }
+        - in: query
+          name: k
+          schema: { type: integer, default: 3 }
+      responses:
+        "200":
+          description: Ranked hits
+  /callbacks:
+    post:
+      summary: Create callback ticket
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CallbackCreate"
+      responses:
+        "201":
+          description: Created
+  /admin/reset:
+    post:
+      summary: Deterministic reseed (admin bearer)
+      parameters:
+        - in: query
+          name: seed
+          schema: { type: integer, default: 42 }
+      security:
+        - bearerAdmin: []
+      responses:
+        "200":
+          description: Reseeded
+components:
+  securitySchemes:
+    bearerAdmin:
+      type: http
+      scheme: bearer
+  schemas:
+    AppointmentCreate:
+      type: object
+      required: [customer_name, phone, address, service_type, slot_id]
+      properties:
+        customer_name: { type: string }
+        phone: { type: string, description: 10-digit US }
+        address: { type: string }
+        service_type: { type: string }
+        slot_id: { type: string }
+        notes: { type: string, nullable: true }
+        call_id: { type: string, nullable: true }
+    RescheduleBody:
+      type: object
+      required: [new_slot_id, phone_last4]
+      properties:
+        new_slot_id: { type: string }
+        phone_last4: { type: string }
+    CallbackCreate:
+      type: object
+      required: [customer_name, phone, reason]
+      properties:
+        customer_name: { type: string }
+        phone: { type: string }
+        reason: { type: string }
+        preferred_window: { type: string, nullable: true }
+        call_id: { type: string, nullable: true }
