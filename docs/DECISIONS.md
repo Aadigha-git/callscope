@@ -28,6 +28,21 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-24 - LLM cassettes: content-hash store + CassetteBrain wrapper
+- Date / Task: 2026-09-20 / T-M1-13
+- Context: ADR-016 / NFR-06 / NFR-11. HermesBackend (T-M1-09) not built yet; need a
+  replay surface CI can use now and Hermes can wrap later.
+- Decision: `CassetteStore` under `eval/cassettes/{hash[:2]}/{hash}.json`. Hash =
+  SHA-256 of messages (+ optional model), **excluding** call_id/turn_id. `CassetteBrain`
+  wraps any `BrainBackend`: default/`CI`/`CALLSCOPE_ENV=test` → replay-only (missing
+  fails closed); `--live` / `CALLSCOPE_LLM_MODE=live|record` requires `BudgetGuard` then
+  records. Fixtures redacted on save. Contract tests use MockBrain as the inner.
+- Alternatives considered: HTTP MITM proxy (heavier); hash including call_id (breaks
+  cross-call replay).
+- Consequences: T-M1-09 plugs Hermes as `inner`; eval runner (T-M3-*) defaults to replay.
+- Design doc impact: none (implements ADR-016).
+- Status: accepted
+
 ### D-20260920-23 - ASR server: fake default, EnergyVAD, mlx-whisper optional
 - Date / Task: 2026-09-20 / T-M1-05
 - Context: Design §4.3 + S-5 shortlist (D-20260920-19). Whisper-family is not natively
