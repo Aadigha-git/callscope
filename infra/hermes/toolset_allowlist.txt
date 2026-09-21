@@ -1,0 +1,3 @@
+# Allowed values for platform_toolsets.api_server (one per line).
+# Anything else → toolset_selftest fails closed.
+callscope-receptionist

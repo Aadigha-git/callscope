@@ -28,6 +28,23 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-28 - HermesBackend: SSE client + receptionist toolset lockdown
+- Date / Task: 2026-09-20 / T-M1-09
+- Context: Need BrainBackend over Hermes 0.19.0 API server; spikes T-M0-02/03/04 verified
+  `/v1/chat/completions` SSE, custom TF provider keys, and `platform_toolsets.api_server`.
+- Decision: `HermesBackend` uses httpx async SSE; CALL_CONTEXT + optional interruption note on
+  the last **user** message (D-20260920-04); `user`=call_id + X-Call-Id/X-Turn-Id headers
+  (informational only); first-token timeout default 8s; `cancel` closes the response stream.
+  Profile at `infra/hermes/config.yaml`: TF custom provider, `memory_enabled: false`,
+  `platform_toolsets.api_server: [callscope-receptionist]` only; `make hermes-selftest` fails
+  closed on drift. Live smoke behind `CALLSCOPE_HERMES_LIVE=1` + `@pytest.mark.gpu`.
+- Alternatives considered: sync requests (rejected: worker is async); put CALL_CONTEXT in system
+  (rejected: invisible to hooks); leave default Hermes toolsets (rejected: terminal/browser risk).
+- Consequences: T-M2 plugin must register toolset name `callscope-receptionist`. CassetteBrain
+  wraps Hermes as `inner` (hash is pre-CALL_CONTEXT messages).
+- Design doc impact: none (implements §4.2 / ADR-001 / ADR-016).
+- Status: accepted
+
 ### D-20260920-27 - Web client: Vite + vanilla TS + livekit-client
 - Date / Task: 2026-09-20 / T-M1-08
 - Context: Design §4.2 client; C1. Need consent-before-mic and XSS-safe transcript.

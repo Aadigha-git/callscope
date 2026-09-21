@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Hermes receptionist profile (`infra/hermes`) + `HermesBackend` SSE BrainBackend with CALL_CONTEXT,
+  first-token timeout, cancel, cassette wrap (T-M1-09, D-20260920-28)
 - Browser web client (`apps/web`, Vite + livekit-client) with consent gate and XSS-safe transcript (T-M1-08, D-20260920-27)
 - CallScope API (`apps/api`, `make api`): status, sessions (consent + LiveKit token), events batch (T-M1-07, D-20260920-26)
 - Native TTS server (`servers/tts`, `make tts`, `TTSClient`) with fake + optional Piper/Kokoro (T-M1-06, D-20260920-25)

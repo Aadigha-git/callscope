@@ -34,6 +34,7 @@ from callscope.providers.cassettes import (
     request_hash,
     resolve_mode,
 )
+from callscope.providers.hermes_backend import HermesBackend, inject_call_context
 from callscope.providers.mock import MockBrain, MockSTT, MockTTS
 from callscope.providers.tts_client import TTSClient
 
@@ -49,6 +50,7 @@ __all__ = [
     "CassetteMissingError",
     "CassetteMode",
     "CassetteStore",
+    "HermesBackend",
     "MockBrain",
     "MockSTT",
     "MockTTS",
@@ -66,6 +68,7 @@ __all__ = [
     "WordTiming",
     "cost_from_usage",
     "estimate_usd",
+    "inject_call_context",
     "request_hash",
     "resolve_mode",
 ]
