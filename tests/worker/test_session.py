@@ -101,7 +101,8 @@ async def test_empty_transcript(tmp_path: Path) -> None:
 
 
 @pytest.mark.asyncio
-async def test_asr_error(tmp_path: Path) -> None:
+async def test_asr_error_announces_first(tmp_path: Path) -> None:
+    """First ASR failure soft-degrades; call stays open (T-M2-05 matrix)."""
     events: list[Event] = []
     writer = await _writer(tmp_path, events)
     session = CallSession(
@@ -117,12 +118,14 @@ async def test_asr_error(tmp_path: Path) -> None:
     await session.start()
     await session.connect()
     await session.process_pcm(_pcm())
-    assert session.end_reason == "asr_error"
-    assert session.state is TurnState.ENDED
+    assert session.end_reason is None
+    assert session.state is TurnState.LISTENING
+    await session.end("client_end")
+    assert any(e.type == "provider.error" for e in events)
 
 
 @pytest.mark.asyncio
-async def test_brain_timeout(tmp_path: Path) -> None:
+async def test_brain_timeout_retries(tmp_path: Path) -> None:
     events: list[Event] = []
     writer = await _writer(tmp_path, events)
     session = CallSession(
@@ -138,11 +141,13 @@ async def test_brain_timeout(tmp_path: Path) -> None:
     await session.start()
     await session.connect()
     await session.process_pcm(_pcm())
-    assert session.end_reason == "brain_timeout"
+    assert session.end_reason is None
+    assert session.state is TurnState.LISTENING
+    await session.end("client_end")
 
 
 @pytest.mark.asyncio
-async def test_tts_error(tmp_path: Path) -> None:
+async def test_tts_error_text_only(tmp_path: Path) -> None:
     class BoomTTS:
         sample_rate = 24_000
 
@@ -166,7 +171,9 @@ async def test_tts_error(tmp_path: Path) -> None:
     await session.start()
     await session.connect()
     await session.process_pcm(_pcm())
-    assert session.end_reason == "tts_error"
+    assert session.text_only is True
+    if session.end_reason is None:
+        await session.end("client_end")
 
 
 @pytest.mark.asyncio

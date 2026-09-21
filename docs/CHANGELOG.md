@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Worker barge-in gate, filler (1.5 s), turn abort (8 s), and §4.11 degradation matrix
+  (`apps/worker/interrupt.py`, `degrade.py`) (T-M2-05, D-20260920-33)
 - Lakeside Home Services Business API (`apps/biz`, `make biz`) with deterministic seed,
   idempotent booking, KB search, and documented KB gaps (T-M2-01)
 - `make demo` / `make demo-stop`: Compose data plane + honcho Procfile, Grafana Live-ops

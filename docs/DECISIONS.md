@@ -28,6 +28,19 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260920-33 - Barge-in stop latency = decision→cancel (not VAD onset)
+- Date / Task: 2026-09-20 / T-M2-05
+- Context: Design §4.2 `barge_in.min_duration_ms=250` and NFR “stop within 250 ms p95”. Including
+  the min-duration wait in `stop_latency_ms` makes the p95 gate impossible (≥250 ms by definition).
+- Decision: `InterruptionGate` enforces min duration + grace; `CallSession.interrupt` measures
+  **worker-side** stop latency from barge-in *decision* to TTS/brain cancel. `speech_ms` remains
+  on `barge_in.applied` for review. Soft-degrade ASR/brain (2 strikes); TTS → text-only; biz →
+  callback stash; events → spill (`DegradeController`).
+- Alternatives considered: count VAD onset→stop (rejected: conflicts with min_duration).
+- Consequences: Scripted p95 test uses fake clock + injectable cancel delay.
+- Design doc impact: clarifies metric semantics for §4.10 histogram.
+- Status: accepted
+
 ### D-20260920-31 - Business API: in-memory deterministic store for CI
 - Date / Task: 2026-09-20 / T-M2-01
 - Context: Design §4.5/§6.4 + `biz` schema. Need identical seed→data in CI without requiring

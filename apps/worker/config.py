@@ -16,6 +16,10 @@ class WorkerConfig(BaseModel):
     barge_in_grace_ms_after_playback_start: int = Field(default=400, ge=0)
     chunker_min_chars: int = Field(default=24, ge=1)
     filler_after_ms: int = Field(default=1500, ge=0)
+    turn_abort_ms: int = Field(default=8000, ge=1000)
+    filler_text: str = "One moment."
+    filler_clip_id: str = "filler_one_moment"
+    apology_text: str = "Sorry, that took too long. How else can I help?"
     call_max_duration_s: float = Field(default=240.0, ge=1.0)
     call_silence_timeout_s: float = Field(default=20.0, ge=1.0)
     greeting_text: str = "Thanks for calling. How can I help you today?"
