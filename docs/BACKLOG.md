@@ -11,7 +11,7 @@
 | M2 Receptionist behaviour | 6 | 0 | 6 | 0 |
 | M3 Eval core | 8 | 0 | 8 | 0 |
 | M4 Review and caller-sim | 6 | 0 | 6 | 0 |
-| M5 Improvement and governance | 2 | 1 | 5 | 42 |
+| M5 Improvement and governance | 3 | 1 | 5 | 30 |
 | M6 Hardening and showcase | 0 | 0 | 4 (+1 dropped) | 38 |
 
 ## Sprint backlog
@@ -100,8 +100,8 @@
 |---|---|---|---|---|---|---|---|---|
 | T-M5-01 | MLflow tracking, model inventory and stack version registry | FR-11, NFR-06 | T-M4-02 | 8 | BAG | done |  | #42 |
 | T-M5-02 | Experiment E1: ASR hotword / prompt biasing | FR-10 | T-M3-07, T-M5-01 | 8 | BAG | done |  | #43 |
-| T-M5-03 | Experiment E3: endpointing / VAD tuning | FR-10 | T-M5-02, T-M4-03 | 12 | BAG | in_review |  | #44 |
-| T-M5-04 | Governance generator - model cards, validation reports, risk register, gates | FR-11, NFR-06 | T-M5-01, T-M3-06 | 14 | BAG | backlog |  | #45 |
+| T-M5-03 | Experiment E3: endpointing / VAD tuning | FR-10 | T-M5-02, T-M4-03 | 12 | BAG | done |  | #44 |
+| T-M5-04 | Governance generator - model cards, validation reports, risk register, gates | FR-11, NFR-06 | T-M5-01, T-M3-06 | 14 | BAG | in_progress |  | #45 |
 | T-M5-05 | Experiment E2 (optional): LoRA ASR adaptation on Mac | FR-10 | T-M5-02, T-M0-06 | 16 | BAG | backlog |  |  |
 
 ## M6 Hardening and showcase
