@@ -12,7 +12,7 @@
 | M3 Eval core | 8 | 0 | 8 | 0 |
 | M4 Review and caller-sim | 6 | 0 | 6 | 0 |
 | M5 Improvement and governance | 5 | 0 | 5 | 0 |
-| M6 Hardening and showcase | 0 | 0 | 4 (+1 dropped) | 38 |
+| M6 Hardening and showcase | 0 | 1 | 4 (+1 dropped) | 38 |
 
 ## Sprint backlog
 
@@ -108,7 +108,7 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M6-01 | Local concurrency and latency test (1-2 calls) | NFR-03, NFR-01 | T-M4-04 | 6 | BAG | backlog |  | #46 |
+| T-M6-01 | Local concurrency and latency test (1-2 calls) | NFR-03, NFR-01 | T-M4-04 | 6 | BAG | in_review |  | #46 |
 | T-M6-02 | Security test suite (local-demo scope) | NFR-05, NFR-13 | T-M2-03, T-M2-06, T-M1-07 | 8 | BAG | backlog |  | #47 |
 | T-M6-03 | Demo runbook + make demo + showcase site + demo video | NFR-07, FR-11 | T-M1-11, T-M5-04 | 12 | BAG | backlog |  | #48 |
 | T-M6-04 | SIP inbound via livekit-sip (stretch) — DROPPED | FR-15 |  | 0 | BAG | dropped |  | #49 |

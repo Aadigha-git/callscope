@@ -8,10 +8,16 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M6-01
+- Done: load harness + session-cap probe; report `load-694f5a9867b5`; D-20260922-45
+  (cap=2; NFR-01 projected gap).
+- Next: PR merge → T-M6-02 security suite.
+- Commands: `make load`; `make ci`
+
 ## 2026-09-22 / M5 close + T-M5-05
 - Done: E2 LoRA deferred (D-20260922-44); `docs/experiments/E2.md`; `docs/sprints/M5-review.md`;
-  version `0.5.0` prepared (tag pending approval). T-M5-01..05 closed.
-- Next: approve `git tag -a v0.5.0`; start M6 (T-M6-01).
+  version `0.5.0` tagged (`v0.5.0`).
+- Next: T-M6-01 concurrency/latency.
 - Commands: `git switch main && make status T=T-M6-01 S=in_progress`
 
 ## 2026-09-22 / T-M5-04

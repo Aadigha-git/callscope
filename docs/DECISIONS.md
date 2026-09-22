@@ -28,6 +28,23 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-45 - Local concurrency cap = 2; NFR-01 gap on projected Hermes hop
+- Date / Task: 2026-09-22 / T-M6-01
+- Context: Local-Mac NFR-03 = 1 required / 2 stretch concurrent calls. Ran mock
+  caller-sim load harness (`make load`) run_id `load-694f5a9867b5` at concurrency
+  1 and 2 (3 reps). SessionCapLimiter already defaults to 2.
+- Decision: **Public / demo session concurrency cap remains 2.** Mock-path response
+  latency p50=p95=500 ms (synthetic agent offset) meets NFR-01 structurally at both
+  levels; no knee at 1→2. **NFR-01 gap documented:** projected e2e p50 ≈ 3200 ms
+  (500 ms mock local + 2700 ms Hermes turn p50 from D-20260920-18) exceeds the
+  1800 ms hypothesis; TF TTFT p50 ≈ 699 ms (D-20260920-17) is a network floor.
+  Re-measure on live demo stack when available; do not claim live NFR-01 met.
+- Alternatives considered: raise cap above 2 (rejected — Mac memory + LLM budget);
+  claim mock 500 ms as live NFR-01 evidence (rejected — dishonest).
+- Consequences: `docs/reports/load/`; `make load`; keep `SessionCapLimiter(max_concurrent=2)`.
+- Design doc impact: none (confirms NFR-03 / ADR-010 local cap)
+- Status: accepted
+
 ### D-20260922-44 - Defer E2 LoRA ASR adaptation (no >2 GB train download)
 - Date / Task: 2026-09-22 / T-M5-05
 - Context: Optional E2 (T-M5-05). S-5 (D-20260920-19) found whisper-small/base-class

@@ -3,6 +3,10 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 
+### Added
+- Local concurrency/latency load harness (`make load`) with report under
+  `docs/reports/load/` (T-M6-01, D-20260922-45)
+
 ## [0.5.0] - 2026-09-22
 ### Added
 - Governance generator: model cards, validation reports (+DOCX), risk register,
