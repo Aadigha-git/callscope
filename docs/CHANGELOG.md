@@ -2,6 +2,8 @@
 Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0).
 
 ## [Unreleased]
+
+## [0.4.0] - 2026-09-22
 ### Added
 - Optional LangSmith tracing (default off; scrubbed fictional text only; no datasets)
   (T-M4-06, D-20260922-40)

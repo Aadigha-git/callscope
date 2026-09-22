@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "callscope"
-version = "0.0.1"
+version = "0.4.0"
 description = "Self-hosted Hermes-backed voice agent with a telephony-realistic eval, call-review and governance harness"
 readme = "README.md"
 requires-python = ">=3.11"
