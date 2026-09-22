@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M4-05
+- Done: quality-drift + cost Grafana dashboards, alerts.yml, eval Prometheus exporter.
+- Next: PR merge → T-M4-06 LangSmith optional.
+- Commands: `make ci`; open Grafana after `make demo`
+
 ## 2026-09-22 / T-M4-04
 - Done: `callscope/sim/{caller,oracle}`, `runner_sim`, `eval --mode caller_sim`, tests.
 - Next: PR merge → T-M4-05 dashboards.

@@ -8,7 +8,8 @@ info:
 
     Implemented: sessions/events (T-M1-07); review list/detail/audio/labels, labelled export,
     eval runs/compare, and model inventory (T-M4-02). Signed audio URLs expire in 5 minutes
-    (HMAC query token). Remaining governance report paths land in M5.
+    (HMAC query token). `/metrics` and `/metrics/eval` (eval FileEvalStore gauges, T-M4-05)
+    are Prometheus scrape targets. Remaining governance report paths land in M5.
 servers:
   - url: https://callscope.example.com
 security:

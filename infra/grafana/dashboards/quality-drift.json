@@ -1,0 +1,82 @@
+{
+  "annotations": { "list": [] },
+  "editable": true,
+  "uid": "callscope-quality-drift",
+  "title": "CallScope Quality & Drift",
+  "tags": ["callscope", "quality"],
+  "timezone": "browser",
+  "schemaVersion": 39,
+  "version": 1,
+  "panels": [
+    {
+      "id": 1,
+      "type": "timeseries",
+      "title": "ASR confidence (avg)",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "rate(callscope_asr_confidence_sum[5m]) / rate(callscope_asr_confidence_count[5m])",
+          "legendFormat": "avg_conf",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "type": "timeseries",
+      "title": "Tool error rate",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 0 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum(rate(callscope_tool_calls_total{status=\"error\"}[5m])) / clamp_min(sum(rate(callscope_tool_calls_total[5m])), 1e-9)",
+          "legendFormat": "tool_error_rate",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 3,
+      "type": "timeseries",
+      "title": "Policy denials",
+      "gridPos": { "h": 8, "w": 12, "x": 0, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum(rate(callscope_policy_denied_total[5m])) by (rule)",
+          "legendFormat": "{{rule}}",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 4,
+      "type": "stat",
+      "title": "Flagged-call rate (proxy: policy + tool errors)",
+      "gridPos": { "h": 8, "w": 12, "x": 12, "y": 8 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "sum(rate(callscope_policy_denied_total[5m])) + sum(rate(callscope_tool_calls_total{status=\"error\"}[5m]))",
+          "legendFormat": "flag_proxy",
+          "refId": "A"
+        }
+      ]
+    },
+    {
+      "id": 5,
+      "type": "timeseries",
+      "title": "Latest eval metrics (exporter)",
+      "gridPos": { "h": 8, "w": 24, "x": 0, "y": 16 },
+      "datasource": { "type": "prometheus", "uid": "prometheus" },
+      "targets": [
+        {
+          "expr": "callscope_eval_metric_value",
+          "legendFormat": "{{metric}}/{{slice}}",
+          "refId": "A"
+        }
+      ]
+    }
+  ]
+}
