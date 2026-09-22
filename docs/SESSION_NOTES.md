@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / M4 close
+- Done: T-M4-01..06 merged (#90–#95); `docs/sprints/M4-review.md`.
+- Next: M5 improvement/governance (T-M5-01); optional `v0.4.0` tag approval.
+- Open: Volunteer recorded WAVs (D-20260921-38); version tags held.
+- Commands: `git switch main && make status T=T-M5-01 S=in_progress`
+
 ## 2026-09-22 / T-M4-06
 - Done: optional LangSmith tracer + TracingBrain; decision to skip LS datasets for judge.
 - Next: PR merge; M4 close ceremony if all tasks done.
