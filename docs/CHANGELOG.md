@@ -2,6 +2,9 @@
 Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0).
 
 ## [Unreleased]
+### Fixed
+- Filler integration test waits for `filler.played` instead of a fixed sleep (load race)
+
 ### Added
 - Hallucination claim checks, calibration-gated LLM judge, and injection safety scorers
   (T-M3-08)

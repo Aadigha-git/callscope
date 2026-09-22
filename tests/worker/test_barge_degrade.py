@@ -164,8 +164,19 @@ async def test_filler_after_delay(tmp_path: Path) -> None:
     await session.start()
     await session.connect()
     turn_task = asyncio.create_task(session.process_pcm(_pcm()))
-    # Real sleep so filler_watch (50 ms) fires before we release the hung brain.
-    await asyncio.sleep(0.25)
+    # Wait until filler fires (do not release the hung brain early — under load
+    # STT/setup can delay filler_watch start past a fixed sleep).
+    deadline = asyncio.get_running_loop().time() + 3.0
+    while asyncio.get_running_loop().time() < deadline:
+        if any(e.type == "filler.played" for e in events):
+            break
+        await asyncio.sleep(0.02)
+    else:
+        hang.set()
+        await turn_task
+        if session.end_reason is None:
+            await session.end("client_end")
+        pytest.fail("filler.played never observed before timeout")
     hang.set()
     await turn_task
     if session.end_reason is None:
