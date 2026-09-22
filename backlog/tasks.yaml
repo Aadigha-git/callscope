@@ -859,7 +859,7 @@ tasks:
   owner: BAG
   estimate_h: 12
   priority: P1
-  status: in_review
+  status: done
   sprint: null
   issue: 35
   prompt: prompts/M3_eval_core.md#t-m3-08
