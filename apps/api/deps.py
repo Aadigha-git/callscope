@@ -10,6 +10,7 @@ from fastapi import Depends, Header, HTTPException, Request
 
 from apps.api.livekit_tokens import LiveKitTokenMinter, TokenMinter
 from apps.api.ratelimit import SessionCapLimiter
+from apps.api.review_store import ReviewStore
 from apps.api.store import CallStore, MemoryCallStore
 from callscope.config import Settings, get_settings
 
@@ -27,6 +28,7 @@ class WorkerStatus:
 class ApiState:
     settings: Settings
     store: CallStore
+    review: ReviewStore
     limiter: SessionCapLimiter
     tokens: TokenMinter
     worker: WorkerStatus
@@ -40,6 +42,7 @@ def build_api_state(
     *,
     settings: Settings | None = None,
     store: CallStore | None = None,
+    review: ReviewStore | None = None,
     limiter: SessionCapLimiter | None = None,
     tokens: TokenMinter | None = None,
     worker: WorkerStatus | None = None,
@@ -50,9 +53,12 @@ def build_api_state(
     service = os.environ.get("CALLSCOPE_SERVICE_TOKEN", "changeme-service-token")
     online_env = os.environ.get("CALLSCOPE_WORKER_ONLINE", "true").lower()
     online = online_env in {"1", "true", "yes"}
+    call_store = store or MemoryCallStore()
+    secret = os.environ.get("CALLSCOPE_AUDIO_SIGNING_SECRET", "callscope-audio-sign-dev")
     return ApiState(
         settings=s,
-        store=store or MemoryCallStore(),
+        store=call_store,
+        review=review or ReviewStore(calls=call_store, audio_hmac_key=secret),
         limiter=limiter or SessionCapLimiter(max_concurrent=max_c),
         tokens=tokens
         or LiveKitTokenMinter(s.livekit_api_key, s.livekit_api_secret.get_secret_value()),
