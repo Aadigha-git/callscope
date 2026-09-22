@@ -6,8 +6,9 @@ info:
     Session, ingest, review, evaluation and governance endpoints. Public endpoints are marked;
     all others require a service bearer token.
 
-    M1 walking skeleton (T-M1-07): `/v1/status`, `/v1/sessions`, `/v1/sessions/{callId}/end`,
-    and `/v1/events:batch` are implemented in `apps/api`. Remaining paths land in later milestones.
+    Implemented: sessions/events (T-M1-07); review list/detail/audio/labels, labelled export,
+    eval runs/compare, and model inventory (T-M4-02). Signed audio URLs expire in 5 minutes
+    (HMAC query token). Remaining governance report paths land in M5.
 servers:
   - url: https://callscope.example.com
 security:
