@@ -28,6 +28,23 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-41 - File-backed model/stack registry + optional Compose MLflow
+- Date / Task: 2026-09-22 / T-M5-01
+- Context: Design §4.9 / schema `cs.model_versions` + `cs.stack_versions` assume Postgres.
+  CI and local demos already use FileEvalStore / ReviewStore without a live DB.
+- Decision: Ship `ModelStackRegistry` under `artifacts/registry` (JSON) as the eval/API
+  inventory for local/CI; backfill M0 models + `local-mac-dev` production stack. Eval CLI
+  requires a registered stack (auto-backfill + CI aliases `mock`/`ci-mock`/…). Default MLflow
+  tracking URI is local SQLite (`artifacts/mlruns/mlflow.db`; MLflow 3 file-store is
+  maintenance-mode); Compose adds an optional `mlflow` service with MinIO artifact root.
+  Postgres tables remain the long-term SoT.
+- Alternatives considered: require Postgres for every eval (rejected — breaks cassette CI);
+  always-on MLflow server dependency (rejected — heavy for unit tests).
+- Consequences: `make governance ARGS=backfill`; `uv sync --extra governance` for MLflow;
+  promotion gates still land in T-M5-04.
+- Design doc impact: none (local-Mac adaptation of §4.9)
+- Status: accepted
+
 ### D-20260922-40 - Skip LangSmith datasets/experiments for judge eval
 - Date / Task: 2026-09-22 / T-M4-06
 - Context: T-M4-06 must decide whether LangSmith datasets/experiments earn a place for

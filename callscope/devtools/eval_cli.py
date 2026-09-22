@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import asyncio
 import json
+import os
 import sys
 from pathlib import Path
 from typing import Any
@@ -68,16 +69,75 @@ async def _instant(_s: float) -> None:
 
 async def cmd_caller_sim(args: argparse.Namespace) -> int:
     from callscope.eval.runner_sim import CallerSimConfig, run_caller_sim
+    from callscope.governance.registry import ModelStackRegistry, RegistryError, ensure_eval_stack
+
+    git_sha = resolve_git_sha(explicit=args.git_sha)
+    reg = ModelStackRegistry(root=Path(args.registry))
+    try:
+        stack = ensure_eval_stack(
+            reg,
+            str(args.stack),
+            git_sha=git_sha,
+            auto_backfill=not bool(args.require_registered_stack),
+        )
+    except RegistryError as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 2
 
     result = await run_caller_sim(
         CallerSimConfig(
             store_dir=Path(args.out),
-            stack_version_id=str(args.stack),
+            stack_version_id=str(stack.stack_version_id),
             seed=int(args.seed),
         )
     )
+    mlflow_run_id = _maybe_log_mlflow(
+        stack_label=stack.label,
+        stack_version_id=str(stack.stack_version_id),
+        dataset_id="caller_sim",
+        git_sha=git_sha,
+        metrics={
+            m["metric"]: float(m["value"])
+            for m in (result.get("metrics") or [])
+            if isinstance(m, dict) and "metric" in m and "value" in m
+        },
+        run_name=f"caller_sim-{result.get('run_id', 'unknown')}",
+    )
+    if mlflow_run_id:
+        result = {**result, "mlflow_run_id": mlflow_run_id, "stack_label": stack.label}
     print(json.dumps(result, indent=2))
     return 0
+
+
+def _maybe_log_mlflow(
+    *,
+    stack_label: str,
+    stack_version_id: str,
+    dataset_id: str,
+    git_sha: str,
+    metrics: dict[str, float],
+    run_name: str,
+) -> str | None:
+    try:
+        from callscope.governance.mlflow_utils import log_eval_run
+    except ImportError:
+        return None
+    try:
+        return log_eval_run(
+            experiment="callscope-eval",
+            run_name=run_name,
+            params={
+                "git_sha": git_sha,
+                "dataset_id": dataset_id,
+                "stack_label": stack_label,
+                "stack_version_id": stack_version_id,
+            },
+            metrics=metrics,
+            tags={"component": "eval"},
+        )
+    except Exception as exc:
+        print(f"WARN: MLflow log skipped: {exc}", file=sys.stderr)
+        return None
 
 
 async def cmd_run(args: argparse.Namespace) -> int:
@@ -97,6 +157,21 @@ async def cmd_run(args: argparse.Namespace) -> int:
             return 2
     items = load_golden_items(items_path)
     git_sha = resolve_git_sha(explicit=args.git_sha)
+
+    from callscope.governance.registry import ModelStackRegistry, RegistryError, ensure_eval_stack
+
+    reg = ModelStackRegistry(root=Path(args.registry))
+    try:
+        stack = ensure_eval_stack(
+            reg,
+            str(args.stack),
+            git_sha=git_sha,
+            auto_backfill=not bool(args.require_registered_stack),
+        )
+    except RegistryError as exc:
+        print(f"REFUSED: {exc}", file=sys.stderr)
+        return 2
+
     store = FileEvalStore(Path(args.out))
     cassette_root = Path(args.cassettes)
     cassette_store = CassetteStore(cassette_root)
@@ -170,7 +245,7 @@ async def cmd_run(args: argparse.Namespace) -> int:
     tts = MockTTS(sleep=_instant)
     config = EvalRunConfig(
         dataset_id=str(args.dataset),
-        stack_version_id=str(args.stack),
+        stack_version_id=str(stack.stack_version_id),
         mode=mode,  # type: ignore[arg-type]
         git_sha=git_sha,
         live=bool(args.live),
@@ -178,7 +253,10 @@ async def cmd_run(args: argparse.Namespace) -> int:
         concurrency=int(args.concurrency),
         thresholds_path=Path(args.thresholds) if args.thresholds else None,
         estimated_usd=estimated if args.live else 0.0,
-        config={"dataset_path": str(items_path)},
+        config={
+            "dataset_path": str(items_path),
+            "stack_label": stack.label,
+        },
     )
     result = await run_eval(
         items,
@@ -190,6 +268,19 @@ async def cmd_run(args: argparse.Namespace) -> int:
         stt_factory=stt_factory,
         budget=budget,
     )
+    metrics_map = {
+        str(m["metric"]): float(m["value"])
+        for m in result.metrics
+        if m.get("slice", "all") == "all" and "value" in m
+    }
+    mlflow_run_id = _maybe_log_mlflow(
+        stack_label=stack.label,
+        stack_version_id=str(stack.stack_version_id),
+        dataset_id=config.dataset_id,
+        git_sha=git_sha,
+        metrics=metrics_map,
+        run_name=f"eval-{result.run_id}",
+    )
     print(
         json.dumps(
             {
@@ -200,6 +291,8 @@ async def cmd_run(args: argparse.Namespace) -> int:
                 "git_sha": git_sha,
                 "dataset_id": config.dataset_id,
                 "stack_version_id": config.stack_version_id,
+                "stack_label": stack.label,
+                "mlflow_run_id": mlflow_run_id,
                 "estimated_usd": result.estimated_usd,
                 "metrics": result.metrics[:5],
                 "path": str(result.store_path),
@@ -300,7 +393,17 @@ def build_parser() -> argparse.ArgumentParser:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     run = sub.add_parser("run", help="Run stage_replay, text_replay, or caller_sim eval")
-    run.add_argument("--stack", required=True, help="Stack version label/id")
+    run.add_argument("--stack", required=True, help="Stack version label/id (must be registered)")
+    run.add_argument(
+        "--registry",
+        default=os.environ.get("CALLSCOPE_REGISTRY", "artifacts/registry"),
+        help="File-backed model/stack registry root",
+    )
+    run.add_argument(
+        "--require-registered-stack",
+        action="store_true",
+        help="Do not auto-backfill M0 / CI alias stacks when missing",
+    )
     run.add_argument(
         "--dataset",
         default="golden-eval@v1",

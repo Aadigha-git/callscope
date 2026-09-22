@@ -45,7 +45,10 @@ async def list_models(
 
 @router.post("/v1/models", response_model=ModelVersionOut, status_code=201)
 async def register_model(body: ModelVersionCreate, state: StateDep) -> ModelVersionOut:
-    rec = state.review.register_model(body.model_dump())
+    try:
+        rec = state.review.register_model(body.model_dump())
+    except ValueError as exc:
+        raise HTTPException(status_code=409, detail=str(exc)) from exc
     return _model_out(rec)
 
 
