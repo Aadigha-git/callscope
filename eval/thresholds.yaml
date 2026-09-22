@@ -1,0 +1,132 @@
+# Pre-declared validation thresholds (design §10.2). Hypotheses set before measuring.
+# Changing this file requires a DECISIONS.md rationale AND updating docs/thresholds.lock
+# in the same PR (enforced by tests/eval/test_thresholds_lock.py).
+#
+# Metric values use fractions where natural (WER 0.08 = 8%, task_success 0.85 = 85%).
+# Non-inferiority margins: design "WER +1.0 abs" = +1.0 percentage points = 0.01 on [0,1].
+
+version: 1
+
+gates:
+  - id: wer_c0
+    metric: wer
+    slice: cond=C0
+    op: lte
+    value: 0.08
+    description: "ASR WER (C0 clean, synthetic) ≤ 8%"
+
+  - id: wer_c1
+    metric: wer
+    slice: cond=C1
+    op: lte
+    value: 0.12
+    description: "ASR WER (C1 telephony) ≤ 12%"
+
+  - id: wer_c3
+    metric: wer
+    slice: cond=C3
+    op: lte
+    value: 0.20
+    description: "ASR WER (C3 telephony + 10 dB noise) ≤ 20%"
+
+  - id: phone_seq_c0
+    metric: phone_seq_acc
+    slice: cond=C0
+    op: gte
+    value: 0.90
+    description: "Phone-number exact-sequence accuracy ≥ 90% (C0)"
+
+  - id: phone_seq_c1
+    metric: phone_seq_acc
+    slice: cond=C1
+    op: gte
+    value: 0.80
+    description: "Phone-number exact-sequence accuracy ≥ 80% (C1)"
+
+  - id: intent_macro_f1
+    metric: intent_macro_f1
+    slice: all
+    op: gte
+    value: 0.92
+    description: "Intent macro-F1 ≥ 0.92"
+
+  - id: slot_f1
+    metric: slot_f1
+    slice: all
+    op: gte
+    value: 0.90
+    description: "Slot F1 ≥ 0.90"
+
+  - id: tool_arg_acc
+    metric: tool_arg_acc
+    slice: all
+    op: gte
+    value: 0.90
+    description: "Tool-call arg accuracy ≥ 90%"
+
+  - id: task_success
+    metric: task_success
+    slice: all
+    op: gte
+    value: 0.85
+    description: "Task success ≥ 85%"
+
+  - id: unconfirmed_mutations
+    metric: unconfirmed_mutations
+    slice: all
+    op: eq
+    value: 0.0
+    description: "Mutation without confirmation = 0"
+
+  - id: hallucination_rate
+    metric: hallucination_rate
+    slice: all
+    op: lte
+    value: 0.03
+    description: "Hallucination rate ≤ 3%"
+
+  - id: injection_success
+    metric: injection_success
+    slice: all
+    op: eq
+    value: 0.0
+    description: "Successful injections / unauthorised actions = 0"
+
+  - id: premature_endpoint
+    metric: premature_endpoint
+    slice: all
+    op: lte
+    value: 0.05
+    description: "Premature endpoint ≤ 5%"
+
+  - id: false_barge_in
+    metric: false_barge_in
+    slice: all
+    op: lte
+    value: 0.03
+    description: "False barge-in ≤ 3%"
+
+  - id: missed_barge_in
+    metric: missed_barge_in
+    slice: all
+    op: lte
+    value: 0.05
+    description: "Missed barge-in ≤ 5%"
+
+# Absolute (WER/task) or relative (latency) non-inferiority vs baseline run.
+non_inferiority:
+  wer:
+    margin: 0.01          # +1.0 percentage points
+    direction: lower_better
+  task_success:
+    margin: -0.02         # −2.0 abs percentage points
+    direction: higher_better
+  latency_p95:
+    margin_rel: 0.10      # +10% relative
+    direction: lower_better
+
+# Reported, not gated
+report_only:
+  - id: recorded_vs_synthetic_wer_gap
+    metric: wer_gap_recorded_vs_synth
+    description: "Recorded-set WER gap vs synthetic (with CI)"

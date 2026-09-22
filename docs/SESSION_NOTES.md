@@ -8,11 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M3-06
+- Done: `stats.py` / `compare.py` / `gate.py`, `eval/thresholds.yaml`, `docs/thresholds.lock`,
+  CLI gate/compare, CI-width note (D-20260921-37).
+- Next: PR merge; then T-M3-07 recorded set + baseline (or T-M3-08 in parallel if preferred).
+- Commands: `git switch feat/T-M3-06-stats-gate && make ci`
+
 ## 2026-09-21 / T-M3-05
 - Done: `callscope/eval/{runner,replay,persist}.py`, `devtools/eval_cli.py`, golden 20-item set,
-  cassette + budget estimate/refusal tests; file store (D-20260921-36).
-- Next: `make ci` → PR → merge; then T-M3-06 stats/compare/gate.
-- Commands: `git switch feat/T-M3-05-eval-runner && make ci`
+  cassette + budget estimate/refusal tests; file store (D-20260921-36). **Merged** (#84).
+- Next: T-M3-06 stats/compare/gate.
+- Commands: `git switch main && make status T=T-M3-06 S=in_progress`
 
 ## 2026-09-21 / T-M3-04
 - Done: `dq.py` / `splits.py` / `manifest.py` / `registry.py`; ORM Dataset models;
