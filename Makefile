@@ -32,6 +32,9 @@ compose-validate: ## Validate local Compose + Prometheus/Grafana demo wiring
 budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
 	$(PY) -m callscope.devtools.budget_cli $(ARGS)
 
+eval: ## Eval runner: make eval ARGS='run --stack mock --dataset golden-eval@v1'
+	$(PY) -m callscope.devtools.eval_cli $(ARGS)
+
 asr: ## Run native ASR server (fake backend by default; port 8200)
 	CALLSCOPE_ASR_BACKEND=$${CALLSCOPE_ASR_BACKEND:-fake} $(PY) -m servers.asr
 

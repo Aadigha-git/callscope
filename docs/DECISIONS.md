@@ -28,6 +28,21 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260921-36 - File-backed eval run store for stage/text-replay CI
+- Date / Task: 2026-09-21 / T-M3-05
+- Context: Design persists `cs.eval_runs` / `eval_item_results` / `eval_metrics` in Postgres.
+  ORM models for eval runs are not yet wired (M4 review API / M5 stack registry); CI must run
+  a 20-item golden eval with mocks + cassettes without a live DB.
+- Decision: Ship `FileEvalStore` under `artifacts/eval_runs/` mirroring the SQL column shapes
+  (`git_sha`, `dataset_id`, `stack_version_id`, `estimated_usd`, per-item rows, slice metrics).
+  Same `run_eval` / provider path for Mac live providers. Postgres dump of the same JSON is a
+  follow-up when eval API endpoints land (T-M4-02 / T-M5-01).
+- Alternatives considered: require Postgres in unit CI (rejected — slows PR gate); skip persist
+  until M4 (rejected — acceptance needs eval_runs fields).
+- Consequences: CLI `callscope.devtools.eval_cli`; golden set in `tests/golden/eval_items.json`.
+- Design doc impact: none (storage backend detail); ADR-007 unchanged.
+- Status: accepted
+
 ### D-20260920-35 - Receptionist skill registration + prompt hash
 - Date / Task: 2026-09-20 / T-M2-04
 - Context: Design §4.4 skill `callscope:receptionist`. Hermes 0.19 spike verified tools/hooks
