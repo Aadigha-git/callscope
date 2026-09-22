@@ -28,6 +28,21 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-40 - Skip LangSmith datasets/experiments for judge eval
+- Date / Task: 2026-09-22 / T-M4-06
+- Context: T-M4-06 must decide whether LangSmith datasets/experiments earn a place for
+  judge eval. Local SoT is already `eval/judge_calibration.jsonl` + FileEvalStore +
+  Postgres (ADR-006). LangSmith datasets retain indefinitely and would duplicate
+  scrubbed fictional text off-box.
+- Decision: **Do not** use LangSmith datasets/experiments for judge eval. Keep optional
+  tracing only (brain turns + eval item text spans) behind `CALLSCOPE_LANGSMITH_ENABLED`
+  (default off). Judge calibration and gates stay local.
+- Alternatives considered: mirror golden labels into LangSmith datasets (rejected —
+  retention + dual SoT); always-on OTEL export (rejected — privacy/cost).
+- Consequences: Documented; TracingBrain + NullTracer ship; enabling requires API key.
+- Design doc impact: closes open item from D-20260920-15
+- Status: accepted
+
 ### D-20260922-39 - Caller-sim uses livekit.rtc with MockTransport in CI
 - Date / Task: 2026-09-22 / T-M4-04
 - Context: Verified installed `livekit` (worker extra): `Room.connect`, `AudioSource`,

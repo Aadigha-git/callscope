@@ -160,6 +160,10 @@ async def cmd_run(args: argparse.Namespace) -> int:
             projected_usd=max(estimated / max(len(items), 1), 0.0),
         )
 
+    from callscope.observability.langsmith_trace import TracingBrain, build_tracer
+
+    brain = TracingBrain(inner=brain, tracer=build_tracer())
+
     def stt_factory(item: Any) -> MockSTT:
         return MockSTT(transcripts=[item.text], sleep=_instant)
 
