@@ -8,12 +8,18 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M3-08
+- Done: `claims.py` / `judge.py` / `safety.py`, `eval/judge_calibration.jsonl` (55 labels,
+  kappa≥0.8), tests for supported/unsupported/injection.
+- Next: PR merge; M3 close ceremony if all tasks done (recorded WAVs still volunteer-gated).
+- Commands: `git switch feat/T-M3-08-hallucination-safety && make ci`
+
 ## 2026-09-21 / T-M3-07
 - Done: `docs/recording_protocol.md`, `datasets/recorded.py` + CLI ingest/export/import/freeze,
-  `docs/reports/baseline.md` citing run `39692d2c-…` (mock golden); D-20260921-38.
-- Next: Volunteer recordings; then refresh baseline with recorded run_id + gap; T-M3-08.
+  `docs/reports/baseline.md` citing run `39692d2c-…` (mock golden); D-20260921-38. **Merged** (#86).
+- Next: Volunteer recordings; T-M3-08.
 - Open: Recorded 15/15 acceptance blocked on humans (tooling complete).
-- Commands: `git switch feat/T-M3-07-recorded-baseline && make ci`
+- Commands: `git switch main`
 
 ## 2026-09-21 / T-M3-06
 - Done: `stats.py` / `compare.py` / `gate.py`, `eval/thresholds.yaml`, `docs/thresholds.lock`,

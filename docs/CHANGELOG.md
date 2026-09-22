@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Hallucination claim checks, calibration-gated LLM judge, and injection safety scorers
+  (T-M3-08)
 - Recording protocol + recorded-set ingest/CSV correction/freeze tooling; draft baseline
   report with synthetic run_id (recorded half pending volunteers) (T-M3-07)
 - Eval statistics: call-level bootstrap CIs, paired compare, `eval/thresholds.yaml` + lock,
