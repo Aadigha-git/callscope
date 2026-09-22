@@ -32,6 +32,14 @@ def cmd_e1(args: argparse.Namespace) -> int:
     return 0 if result.get("decision") in {"adopt", "reject"} else 1
 
 
+def cmd_e3(args: argparse.Namespace) -> int:
+    from callscope.experiments.e3 import run_e3
+
+    result = run_e3(out_dir=Path(args.out), log_mlflow=not bool(args.no_mlflow))
+    print(json.dumps(result, indent=2))
+    return 0 if result.get("decision") in {"adopt", "reject"} else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="callscope-experiment")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -48,6 +56,11 @@ def build_parser() -> argparse.ArgumentParser:
     e1.add_argument("--max-words", type=int, default=64)
     e1.add_argument("--no-mlflow", action="store_true")
     e1.set_defaults(func=cmd_e1)
+
+    e3 = sub.add_parser("e3", help="Run E3 endpointing/VAD grid experiment")
+    e3.add_argument("--out", default="artifacts/experiments/e3")
+    e3.add_argument("--no-mlflow", action="store_true")
+    e3.set_defaults(func=cmd_e3)
 
     return p
 

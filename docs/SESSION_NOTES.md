@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M5-03
+- Done: Chose E3; hypothesis locked; grid + oracle proxy; adopt WorkerConfig defaults;
+  MLflow `cd36bba1573c46a182d703bd3024d6ca`.
+- Next: PR merge → T-M5-04 governance generator (then optional T-M5-05 defer).
+- Commands: `make experiment ARGS='e3 --out artifacts/experiments/e3'`
+
 ## 2026-09-22 / T-M5-02
 - Done: E1 hypothesis locked first; domain hotword vocab; offline proxy eval (adopt);
   worker `with_domain_hotwords`; `eval/hotwords.txt`; MLflow run logged.
