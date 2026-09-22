@@ -1,0 +1,40 @@
+groups:
+  - name: callscope.quality
+    rules:
+      - alert: CallScopeHighResponseLatencyP95
+        expr: |
+          histogram_quantile(
+            0.95,
+            sum(rate(callscope_response_latency_seconds_bucket[5m])) by (le)
+          ) > 2.0
+        for: 10m
+        labels:
+          severity: warning
+        annotations:
+          summary: "p95 response latency above NFR-01 (2s) for 10m"
+      - alert: CallScopeProviderErrorRateHigh
+        expr: |
+          sum(rate(callscope_provider_errors_total[5m]))
+            /
+          clamp_min(sum(rate(callscope_calls_total[5m])), 1e-9) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Provider error rate > 5%"
+      - alert: CallScopeLLMBudgetBurn
+        expr: callscope_llm_spend_usd > 20
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "LLM spend gauge exceeded $20 of $25 Token Factory credit"
+      # GPU idle-with-zero-sessions is N/A on local-Mac (ADR-015); kept as a documented
+      # no-op placeholder that never fires without an explicit gpu_up metric.
+      - alert: CallScopeGpuIdlePlaceholder
+        expr: callscope_gpu_up == 1 and callscope_active_calls == 0
+        for: 30m
+        labels:
+          severity: info
+        annotations:
+          summary: "Placeholder GPU idle rule (local Mac: metric unset → never fires)"

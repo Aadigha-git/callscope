@@ -168,3 +168,14 @@ async def register_recording(
 @router.get("/metrics")
 async def metrics() -> Response:
     return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)
+
+
+@router.get("/metrics/eval")
+async def metrics_eval() -> Response:
+    import os
+    from pathlib import Path
+
+    from callscope.observability.eval_exporter import render_metrics_text
+
+    store = Path(os.environ.get("CALLSCOPE_EVAL_STORE", "artifacts/eval_runs"))
+    return Response(render_metrics_text(store), media_type=CONTENT_TYPE_LATEST)
