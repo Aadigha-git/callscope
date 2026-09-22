@@ -133,6 +133,7 @@ async def test_false_trigger_short_burst(tmp_path: Path) -> None:
 @pytest.mark.asyncio
 async def test_filler_after_delay(tmp_path: Path) -> None:
     hang = asyncio.Event()
+    abort_park = asyncio.Event()
 
     class HangBrain:
         async def stream_reply(self, messages, *, call_id: str, turn_id: str):
@@ -144,12 +145,19 @@ async def test_filler_after_delay(tmp_path: Path) -> None:
             _ = turn_id
             hang.set()
 
+    async def sleep(seconds: float) -> None:
+        # Filler delay completes immediately; abort watch parks until cancelled.
+        if seconds < 1.0:
+            await asyncio.sleep(0)
+            return
+        await abort_park.wait()
+
     events: list[Event] = []
     writer = await _writer(tmp_path, events)
     session = CallSession(
         call_id=uuid.uuid4(),
-        stt=MockSTT(transcripts=["hi"]),
-        tts=MockTTS(ms_per_char=1.0),
+        stt=MockSTT(transcripts=["hi"], sleep=sleep),
+        tts=MockTTS(ms_per_char=1.0, sleep=sleep),
         brain=HangBrain(),
         writer=writer,
         clock=CallClock(),
@@ -160,12 +168,11 @@ async def test_filler_after_delay(tmp_path: Path) -> None:
             turn_abort_ms=30_000,
         ),
         media=NullMedia(),
+        sleep=sleep,
     )
     await session.start()
     await session.connect()
     turn_task = asyncio.create_task(session.process_pcm(_pcm()))
-    # Wait until filler fires (do not release the hung brain early — under load
-    # STT/setup can delay filler_watch start past a fixed sleep).
     deadline = asyncio.get_running_loop().time() + 3.0
     while asyncio.get_running_loop().time() < deadline:
         if any(e.type == "filler.played" for e in events):
@@ -173,11 +180,13 @@ async def test_filler_after_delay(tmp_path: Path) -> None:
         await asyncio.sleep(0.02)
     else:
         hang.set()
+        abort_park.set()
         await turn_task
         if session.end_reason is None:
             await session.end("client_end")
         pytest.fail("filler.played never observed before timeout")
     hang.set()
+    abort_park.set()
     await turn_task
     if session.end_reason is None:
         await session.end("client_end")
