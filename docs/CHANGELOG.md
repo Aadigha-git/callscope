@@ -2,6 +2,10 @@
 Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0).
 
 ## [Unreleased]
+### Added
+- Call review auto-flag rules, timeline builder, and first-pass root-cause attribution
+  (T-M4-01)
+
 ### Fixed
 - Filler integration test waits for `filler.played` instead of a fixed sleep (load race)
 

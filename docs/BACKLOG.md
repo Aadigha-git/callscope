@@ -10,7 +10,7 @@
 | M1 Walking skeleton | 13 | 0 | 13 | 0 |
 | M2 Receptionist behaviour | 6 | 0 | 6 | 0 |
 | M3 Eval core | 8 | 0 | 8 | 0 |
-| M4 Review and caller-sim | 0 | 0 | 6 | 60 |
+| M4 Review and caller-sim | 0 | 1 | 6 | 60 |
 | M5 Improvement and governance | 0 | 0 | 5 | 58 |
 | M6 Hardening and showcase | 0 | 0 | 4 (+1 dropped) | 38 |
 
@@ -87,7 +87,7 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M4-01 | Auto-flag rules and root-cause attribution heuristics | FR-09 | T-M1-02, T-M3-05 | 10 | BAG | backlog |  | #36 |
+| T-M4-01 | Auto-flag rules and root-cause attribution heuristics | FR-09 | T-M1-02, T-M3-05 | 10 | BAG | in_review |  | #36 |
 | T-M4-02 | Review, eval and governance-read API endpoints | FR-09, FR-11 | T-M4-01, T-M1-07 | 10 | BAG | backlog |  | #38 |
 | T-M4-03 | Call Review console (Streamlit) | FR-09 | T-M4-02 | 16 | BAG | backlog |  | #39 |
 | T-M4-04 | Caller simulator and caller-sim eval mode | FR-14, NFR-01, NFR-02 | T-M3-05, T-M1-10 | 14 | BAG | backlog |  | #40 |

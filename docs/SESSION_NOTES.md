@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M4-01
+- Done: `callscope/review/{timeline,flags,attribution}.py` + pos/neg tests per rule.
+- Next: PR merge → T-M4-02 review API endpoints.
+- Commands: `git switch feat/T-M4-01-review-flags && make ci`
+
 ## 2026-09-21 / M3 close + start M4
 - Done: M3 tasks #80–#88 merged; `docs/sprints/M3-review.md`; filler flake hardened.
 - Next: T-M4-01 auto-flag / attribution; optional `v0.3.0` tag approval.
