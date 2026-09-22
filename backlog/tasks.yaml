@@ -757,7 +757,7 @@ tasks:
   owner: BAG
   estimate_h: 8
   priority: P0
-  status: in_review
+  status: done
   sprint: null
   issue: 29
   prompt: prompts/M3_eval_core.md#t-m3-04
@@ -785,7 +785,7 @@ tasks:
   owner: BAG
   estimate_h: 14
   priority: P0
-  status: backlog
+  status: in_review
   sprint: null
   issue: 31
   prompt: prompts/M3_eval_core.md#t-m3-05

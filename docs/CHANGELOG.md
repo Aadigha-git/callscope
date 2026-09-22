@@ -3,7 +3,9 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
-- Dataset DQ checks, group-based splits, manifest hash, and file registry
+- Eval runner: stage_replay / text_replay via shared providers, resumable file-backed
+  `eval_runs` persist, golden 20-item CI path, `make eval` / `--estimate` budget gate (T-M3-05)
+- Dataset DQ checks, splits, manifest hash, and file registry
   (`validate`/`publish`/`freeze` CLI) (T-M3-04)
 - Synthetic dataset builder (~120 calls) with C0-C5 telephony augmentation
   (`callscope.datasets`, `dataset_cli`) (T-M3-03)
