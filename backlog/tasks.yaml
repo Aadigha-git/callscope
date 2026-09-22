@@ -1192,7 +1192,7 @@ tasks:
   owner: BAG
   estimate_h: 12
   priority: P0
-  status: in_review
+  status: done
   sprint: null
   issue: 48
   prompt: prompts/M6_hardening.md#t-m6-03
@@ -1236,7 +1236,7 @@ tasks:
   owner: BAG
   estimate_h: 12
   priority: P1
-  status: backlog
+  status: done
   sprint: null
   issue: 50
   prompt: prompts/M6_hardening.md#t-m6-05
