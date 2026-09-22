@@ -10,7 +10,7 @@
 | M1 Walking skeleton | 13 | 0 | 13 | 0 |
 | M2 Receptionist behaviour | 6 | 0 | 6 | 0 |
 | M3 Eval core | 8 | 0 | 8 | 0 |
-| M4 Review and caller-sim | 5 | 0 | 6 | 4 |
+| M4 Review and caller-sim | 5 | 1 | 6 | 4 |
 | M5 Improvement and governance | 0 | 0 | 5 | 58 |
 | M6 Hardening and showcase | 0 | 0 | 4 (+1 dropped) | 38 |
 
@@ -92,7 +92,7 @@
 | T-M4-03 | Call Review console (Streamlit) | FR-09 | T-M4-02 | 16 | BAG | done |  | #39 |
 | T-M4-04 | Caller simulator and caller-sim eval mode | FR-14, NFR-01, NFR-02 | T-M3-05, T-M1-10 | 14 | BAG | done |  | #40 |
 | T-M4-05 | Small quality/cost dashboards (Grafana/Streamlit) | FR-12, NFR-11 | T-M1-11, T-M4-01 | 6 | BAG | done |  | #41 |
-| T-M4-06 | Optional LangSmith tracing (fictional text only) | FR-12, NFR-05 | T-M1-09, T-M3-05 | 4 | BAG | backlog |  |  |
+| T-M4-06 | Optional LangSmith tracing (fictional text only) | FR-12, NFR-05 | T-M1-09, T-M3-05 | 4 | BAG | in_progress |  |  |
 
 ## M5 Improvement and governance
 
