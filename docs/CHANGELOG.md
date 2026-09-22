@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Eval statistics: call-level bootstrap CIs, paired compare, `eval/thresholds.yaml` + lock,
+  `callscope eval gate|compare` regression gate (T-M3-06)
 - Eval runner: stage_replay / text_replay via shared providers, resumable file-backed
   `eval_runs` persist, golden 20-item CI path, `make eval` / `--estimate` budget gate (T-M3-05)
 - Dataset DQ checks, splits, manifest hash, and file registry

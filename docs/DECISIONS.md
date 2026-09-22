@@ -28,6 +28,20 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260921-37 - Pre-declared thresholds + lockfile; WER margin units
+- Date / Task: 2026-09-21 / T-M3-06
+- Context: Design §10.2 gates and NI margins (WER +1.0 abs, task −2.0 abs, latency p95 +10%).
+  Scorers store WER on [0,1]; changing thresholds needs governance discipline (ADR-011).
+- Decision: Commit `eval/thresholds.yaml` (fraction units) and `docs/thresholds.lock` (sha256).
+  Design "+1.0 abs" WER = +1.0 percentage points = **0.01** on [0,1]. Bootstrap CIs over
+  *calls* (1,000 resamples, seed 42); `ci_width_note()` documents that n≈30 recorded sets
+  yield wider CIs (~1/sqrt(n)) than n≈120 synthetic. Changing thresholds.yaml without updating
+  the lock + a DECISIONS rationale fails CI.
+- Alternatives considered: percent-scale YAML (rejected — inconsistent with scorer floats).
+- Consequences: `callscope eval gate|compare`; stats/compare/gate modules.
+- Design doc impact: none (clarifies units only).
+- Status: accepted
+
 ### D-20260921-36 - File-backed eval run store for stage/text-replay CI
 - Date / Task: 2026-09-21 / T-M3-05
 - Context: Design persists `cs.eval_runs` / `eval_item_results` / `eval_metrics` in Postgres.

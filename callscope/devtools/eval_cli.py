@@ -216,6 +216,64 @@ def cmd_estimate(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_gate(args: argparse.Namespace) -> int:
+    from callscope.eval.gate import gate_run, gate_vs_baseline, load_thresholds
+    from callscope.eval.persist import FileEvalStore
+
+    store = FileEvalStore(Path(args.out))
+    thr = load_thresholds(Path(args.thresholds) if args.thresholds else None)
+    run = store.load(args.run)
+    if args.baseline:
+        baseline = store.load(args.baseline)
+        report = gate_vs_baseline(baseline, run, thr)
+    else:
+        report = gate_run(run, thr, require_metric=bool(args.require_metric))
+    print(report.to_table())
+    return 0 if report.passed else 1
+
+
+def cmd_compare(args: argparse.Namespace) -> int:
+    from callscope.eval.compare import paired_bootstrap
+    from callscope.eval.persist import FileEvalStore
+
+    store = FileEvalStore(Path(args.out))
+    a = store.load(args.baseline)
+    b = store.load(args.candidate)
+
+    # Compare mean WER from item_results when present
+    def _wers(run: Any) -> list[float]:
+        out: list[float] = []
+        for row in run.item_results.values():
+            if row.get("wer") is not None:
+                out.append(float(row["wer"]))
+        return out
+
+    wa, wb = _wers(a), _wers(b)
+    if len(wa) != len(wb) or not wa:
+        # Fall back to aggregate metric delta
+        from callscope.eval.gate import metric_lookup
+
+        va = metric_lookup(a, args.metric, "all")
+        vb = metric_lookup(b, args.metric, "all")
+        payload = {
+            "metric": args.metric,
+            "baseline": va,
+            "candidate": vb,
+            "delta": None if va is None or vb is None else vb - va,
+            "note": "unpaired aggregate (item counts differ or empty)",
+        }
+        print(json.dumps(payload, indent=2))
+        return 0
+    cmp = paired_bootstrap(
+        wa,
+        wb,
+        margin=float(args.margin),
+        direction=args.direction,
+    )
+    print(json.dumps(cmp.to_dict(), indent=2))
+    return 0 if cmp.non_inferior else 1
+
+
 def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="callscope-eval")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -252,6 +310,31 @@ def build_parser() -> argparse.ArgumentParser:
         help="Exit 1 if spend + estimate would exceed budget",
     )
     est.set_defaults(func=cmd_estimate)
+
+    gate = sub.add_parser("gate", help="Gate a run against eval/thresholds.yaml")
+    gate.add_argument("--run", required=True, help="Eval run id")
+    gate.add_argument("--baseline", default=None, help="Baseline run id for NI margins")
+    gate.add_argument("--out", default="artifacts/eval_runs")
+    gate.add_argument("--thresholds", default=None)
+    gate.add_argument(
+        "--require-metric",
+        action="store_true",
+        help="Fail when a gated metric is missing",
+    )
+    gate.set_defaults(func=cmd_gate)
+
+    cmp = sub.add_parser("compare", help="Paired bootstrap compare two runs")
+    cmp.add_argument("--baseline", required=True)
+    cmp.add_argument("--candidate", required=True)
+    cmp.add_argument("--out", default="artifacts/eval_runs")
+    cmp.add_argument("--metric", default="wer")
+    cmp.add_argument("--margin", type=float, default=0.01)
+    cmp.add_argument(
+        "--direction",
+        default="lower_better",
+        choices=["lower_better", "higher_better"],
+    )
+    cmp.set_defaults(func=cmd_compare)
 
     return p
 
