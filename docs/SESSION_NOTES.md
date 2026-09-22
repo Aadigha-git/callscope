@@ -8,9 +8,15 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M6-03
+- Done: demo runbook, showcase site, VIDEO script, Pages workflow; D-20260922-47
+  (mp4 operator follow-up).
+- Next: PR merge → T-M6-05 write-up / v1.0.0 (T-M6-04 dropped).
+- Commands: `open docs/showcase/index.html`; `make demo`
+
 ## 2026-09-22 / T-M6-02
-- Done: `tests/security/` §8.3 suite; scrub expanded; CI marker; D-20260922-46.
-- Next: PR merge → T-M6-03 demo runbook / showcase.
+- Done: `tests/security/` §8.3 suite; scrub expanded; CI marker; D-20260922-46. Merged #104.
+- Next: T-M6-03 demo runbook / showcase.
 - Commands: `make security-test`; `make ci`
 
 ## 2026-09-22 / T-M6-01

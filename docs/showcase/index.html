@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>CallScope — showcase</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,700&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-veil" aria-hidden="true"></div>
+    <div class="hero-copy">
+      <p class="brand">CallScope</p>
+      <h1>Voice agent eval you can run on a Mac.</h1>
+      <p class="lede">Live local demo, measured improvements, and governance artifacts — not a public GPU VM.</p>
+      <p class="cta-row">
+        <a class="cta" href="../runbooks/demo.md">Demo runbook</a>
+        <a class="cta ghost" href="VIDEO.md">Video script</a>
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <h2>Sample call (synthetic)</h2>
+      <p>Fictional Lakeside receptionist booking — no real personal data.</p>
+      <ol class="transcript">
+        <li><span class="who">Caller</span> I’d like an appointment Friday morning, please.</li>
+        <li><span class="who">Agent</span> I can check Friday mornings. Would 10:00 AM work?</li>
+        <li><span class="who">Caller</span> Yes — wait, make that 11:00.</li>
+        <li><span class="who">Agent</span> Confirmed: Friday at 11:00 AM under the name Avery Chen.</li>
+      </ol>
+      <p class="meta">Scenario family: <code>book_with_correction</code> · stack: local mock / cassette-safe</p>
+    </section>
+
+    <section>
+      <h2>Eval &amp; improvement</h2>
+      <ul class="links">
+        <li><a href="../reports/baseline.md">Baseline report</a> (synthetic; recorded half pending)</li>
+        <li><a href="../reports/load/README.md">Concurrency / latency load</a> — run <code>load-694f5a9867b5</code>, cap=2</li>
+        <li><a href="../experiments/E1.md">E1 hotwords</a> · <a href="../experiments/E3.md">E3 endpoint/VAD</a> · <a href="../experiments/E2.md">E2 deferred</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Governance</h2>
+      <ul class="links">
+        <li><a href="../model_cards/asr-mlx-whisper-tiny-9cc29594.md">Sample ASR model card</a></li>
+        <li><a href="../risk_assessment_template.md">Risk assessment template</a> (R-SEC-LOCAL)</li>
+        <li><a href="../DECISIONS.md">Decision log</a></li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>Reproduce offline</h2>
+      <pre class="code">make setup
+make eval ARGS='run --mode caller_sim --stack mock'
+make load
+make security-test
+make demo   # live local call — see runbook</pre>
+    </section>
+  </main>
+
+  <footer>
+    <p>CallScope local-Mac showcase · v0.5.0 · fictional business data only</p>
+  </footer>
+</body>
+</html>
