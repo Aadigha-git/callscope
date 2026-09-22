@@ -229,3 +229,70 @@ class RootCauseCode(Base):
     code: Mapped[str] = mapped_column(Text, primary_key=True)
     category: Mapped[str] = mapped_column(Text, nullable=False)
     description: Mapped[str] = mapped_column(Text, nullable=False)
+
+
+dataset_kind = _enum("dataset_kind", "synthetic", "recorded", "labelled_failures", "mixed")
+split_name = _enum("split_name", "train", "dev", "test")
+
+
+class DatasetItem(Base):
+    __tablename__ = "dataset_items"
+    __table_args__ = {"schema": "cs"}
+
+    item_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, server_default=sa_text("gen_random_uuid()")
+    )
+    dataset_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True),
+        ForeignKey("cs.datasets.dataset_id", ondelete="CASCADE"),
+        nullable=False,
+    )
+    split: Mapped[str] = mapped_column(split_name, nullable=False)
+    scenario_id: Mapped[str] = mapped_column(Text, nullable=False)
+    variant: Mapped[str | None] = mapped_column(Text)
+    turn_idx: Mapped[int | None] = mapped_column(Integer)
+    audio_uri: Mapped[str] = mapped_column(Text, nullable=False)
+    audio_sha256: Mapped[str] = mapped_column(Text, nullable=False)
+    condition_code: Mapped[str] = mapped_column(Text, nullable=False)
+    voice_profile: Mapped[str | None] = mapped_column(Text)
+    augmentation: Mapped[dict[str, Any]] = mapped_column(
+        JSONB, nullable=False, server_default=sa_text("'{}'")
+    )
+    ref_transcript: Mapped[str | None] = mapped_column(Text)
+    ref_intent: Mapped[str | None] = mapped_column(Text)
+    ref_slots: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    ref_expected: Mapped[dict[str, Any] | None] = mapped_column(JSONB)
+    source_call_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("cs.calls.call_id")
+    )
+
+    dataset: Mapped[Dataset] = relationship(back_populates="items")
+
+
+class Dataset(Base):
+    __tablename__ = "datasets"
+    __table_args__ = (
+        UniqueConstraint("name", "version"),
+        {"schema": "cs"},
+    )
+
+    dataset_id: Mapped[UUID] = mapped_column(
+        PGUUID(as_uuid=True), primary_key=True, server_default=sa_text("gen_random_uuid()")
+    )
+    name: Mapped[str] = mapped_column(Text, nullable=False)
+    version: Mapped[str] = mapped_column(Text, nullable=False)
+    kind: Mapped[str] = mapped_column(dataset_kind, nullable=False)
+    manifest_uri: Mapped[str] = mapped_column(Text, nullable=False)
+    manifest_sha256: Mapped[str] = mapped_column(Text, nullable=False)
+    n_items: Mapped[int] = mapped_column(Integer, nullable=False)
+    parent_dataset_id: Mapped[UUID | None] = mapped_column(
+        PGUUID(as_uuid=True), ForeignKey("cs.datasets.dataset_id")
+    )
+    dq_report: Mapped[dict[str, Any]] = mapped_column(JSONB, nullable=False)
+    dq_passed: Mapped[bool] = mapped_column(Boolean, nullable=False)
+    frozen: Mapped[bool] = mapped_column(Boolean, nullable=False, server_default=sa_text("false"))
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, server_default=sa_text("now()")
+    )
+
+    items: Mapped[list[DatasetItem]] = relationship(back_populates="dataset")

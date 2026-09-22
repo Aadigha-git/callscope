@@ -8,10 +8,17 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M3-04
+- Done: `dq.py` / `splits.py` / `manifest.py` / `registry.py`; ORM Dataset models;
+  CLI validate|publish|freeze; leakage + frozen + hash tests.
+- Next: PR merge; then T-M3-05 eval runner.
+- Commands: `git switch feat/T-M3-04-dq-registry && make ci`
+
 ## 2026-09-21 / T-M3-03
 - Done: `callscope/datasets` synth+augment C0-C5, Spec v1 (~120), CLI build; SNR/spectrum/determinism tests.
-- Next: PR; then T-M3-04 DQ/manifests.
-- Commands: `git switch feat/T-M3-03-dataset && make ci`
+  **Merged** (#82).
+- Next: T-M3-04 DQ/manifests.
+- Commands: `git switch main && make status T=T-M3-04 S=in_progress`
 
 ## 2026-09-21 / T-M3-02
 - Done: `callscope/eval/normalize.py` + scorers (asr/entities/nlu/tools/task), types aligned
