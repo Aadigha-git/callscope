@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Caller simulator + `caller_sim` eval mode (oracle turn-taking metrics; mock transport in CI)
+  (T-M4-04)
 - Streamlit Call Review console (`apps/review`), seed-demo CLI, timeline/diff helpers
   (T-M4-03)
 - Review/eval/governance-read API: `/v1/calls`, labels, export-labelled, eval runs/compare,

@@ -28,6 +28,22 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-39 - Caller-sim uses livekit.rtc with MockTransport in CI
+- Date / Task: 2026-09-22 / T-M4-04
+- Context: Verified installed `livekit` (worker extra): `Room.connect`, `AudioSource`,
+  `LocalAudioTrack.create_audio_track`, `LocalParticipant.publish_track`,
+  `AudioSource.capture_frame`. Full unattended LiveKit room runs need a live
+  livekit-server + worker (gpu marker).
+- Decision: Ship `LiveKitCallerTransport` against those APIs; CI/default
+  `run_caller_sim` uses `MockCallerTransport` + synthetic agent events + oracle
+  metrics into `FileEvalStore` so all 16 scenarios run offline. Real rtc path
+  remains available for local demo.
+- Alternatives considered: skip LiveKit wrappers until gpu CI (rejected — need
+  oracle + CLI mode now); require livekit in default deps (rejected — heavy).
+- Consequences: `make eval ARGS='run --mode caller_sim --stack mock'` works offline.
+- Design doc impact: none (ADR-007 extended with caller_sim mode in practice)
+- Status: accepted
+
 ### D-20260921-38 - Recorded baseline deferred to volunteer sessions
 - Date / Task: 2026-09-21 / T-M3-07
 - Context: Acceptance needs 15/15 (or 20/20) consented human recordings with verified

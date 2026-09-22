@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M4-04
+- Done: `callscope/sim/{caller,oracle}`, `runner_sim`, `eval --mode caller_sim`, tests.
+- Next: PR merge → T-M4-05 dashboards.
+- Commands: `make eval ARGS='run --mode caller_sim --stack mock'`
+
 ## 2026-09-21 / T-M4-03
 - Done: Streamlit review console, API client, seed-demo (40 planted calls), helpers/tests.
 - Next: PR merge → T-M4-04 caller-sim.
