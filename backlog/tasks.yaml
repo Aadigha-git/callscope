@@ -976,7 +976,7 @@ tasks:
   owner: BAG
   estimate_h: 6
   priority: P2
-  status: in_review
+  status: done
   sprint: null
   issue: 41
   prompt: prompts/M4_review_and_sim.md#t-m4-05
