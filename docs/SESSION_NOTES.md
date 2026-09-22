@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / M3 close + start M4
+- Done: M3 tasks #80–#88 merged; `docs/sprints/M3-review.md`; filler flake hardened.
+- Next: T-M4-01 auto-flag / attribution; optional `v0.3.0` tag approval.
+- Open: Volunteer recorded WAVs (D-20260921-38); version tag held.
+- Commands: `git switch main && make status T=T-M4-01 S=in_progress`
+
 ## 2026-09-21 / T-M3-08
 - Done: `claims.py` / `judge.py` / `safety.py`, `eval/judge_calibration.jsonl` (55 labels,
   kappa≥0.8), tests for supported/unsupported/injection.
