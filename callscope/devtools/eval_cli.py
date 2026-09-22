@@ -10,7 +10,6 @@ from pathlib import Path
 from typing import Any
 
 from callscope.eval.persist import FileEvalStore
-from callscope.eval.replay import ReplayMode
 from callscope.eval.runner import (
     EvalRunConfig,
     estimate_eval_usd,
@@ -29,11 +28,13 @@ from callscope.providers.cassettes import (
 from callscope.providers.mock import MockBrain, MockSTT, MockTTS
 
 
-def _parse_mode(raw: str) -> ReplayMode:
+def _parse_mode(raw: str) -> str:
     key = raw.replace("-", "_")
-    if key not in {"stage_replay", "text_replay"}:
-        raise argparse.ArgumentTypeError(f"mode must be stage_replay|text_replay, got {raw!r}")
-    return key  # type: ignore[return-value]
+    if key not in {"stage_replay", "text_replay", "caller_sim"}:
+        raise argparse.ArgumentTypeError(
+            f"mode must be stage_replay|text_replay|caller_sim, got {raw!r}"
+        )
+    return key
 
 
 async def _seed_cassettes(
@@ -65,7 +66,24 @@ async def _instant(_s: float) -> None:
     return None
 
 
+async def cmd_caller_sim(args: argparse.Namespace) -> int:
+    from callscope.eval.runner_sim import CallerSimConfig, run_caller_sim
+
+    result = await run_caller_sim(
+        CallerSimConfig(
+            store_dir=Path(args.out),
+            stack_version_id=str(args.stack),
+            seed=int(args.seed),
+        )
+    )
+    print(json.dumps(result, indent=2))
+    return 0
+
+
 async def cmd_run(args: argparse.Namespace) -> int:
+    mode = _parse_mode(args.mode)
+    if mode == "caller_sim":
+        return await cmd_caller_sim(args)
     items_path = Path(args.dataset) if args.dataset.endswith(".json") else None
     if items_path is None:
         # Treat as name@version label; load golden when name starts with golden
@@ -78,7 +96,6 @@ async def cmd_run(args: argparse.Namespace) -> int:
             )
             return 2
     items = load_golden_items(items_path)
-    mode = _parse_mode(args.mode)
     git_sha = resolve_git_sha(explicit=args.git_sha)
     store = FileEvalStore(Path(args.out))
     cassette_root = Path(args.cassettes)
@@ -150,7 +167,7 @@ async def cmd_run(args: argparse.Namespace) -> int:
     config = EvalRunConfig(
         dataset_id=str(args.dataset),
         stack_version_id=str(args.stack),
-        mode=mode,
+        mode=mode,  # type: ignore[arg-type]
         git_sha=git_sha,
         live=bool(args.live),
         seed=int(args.seed),
@@ -278,18 +295,18 @@ def build_parser() -> argparse.ArgumentParser:
     p = argparse.ArgumentParser(prog="callscope-eval")
     sub = p.add_subparsers(dest="cmd", required=True)
 
-    run = sub.add_parser("run", help="Run stage_replay or text_replay eval")
+    run = sub.add_parser("run", help="Run stage_replay, text_replay, or caller_sim eval")
     run.add_argument("--stack", required=True, help="Stack version label/id")
     run.add_argument(
         "--dataset",
-        required=True,
-        help="JSON items path or golden* label",
+        default="golden-eval@v1",
+        help="JSON items path or golden* label (ignored for caller_sim)",
     )
     run.add_argument(
         "--mode",
         default="stage_replay",
         type=_parse_mode,
-        help="stage_replay | text_replay",
+        help="stage_replay | text_replay | caller_sim",
     )
     run.add_argument("--out", default="artifacts/eval_runs", help="Eval run store root")
     run.add_argument("--cassettes", default="eval/cassettes", help="Cassette directory")

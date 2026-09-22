@@ -952,7 +952,7 @@ tasks:
   owner: BAG
   estimate_h: 14
   priority: P1
-  status: backlog
+  status: in_review
   sprint: null
   issue: 40
   prompt: prompts/M4_review_and_sim.md#t-m4-04
