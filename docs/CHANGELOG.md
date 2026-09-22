@@ -3,10 +3,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 
-### Fixed
-- Audio HMAC tokens: encode payload and signature as separate base64 parts so
-  recording URIs containing `.` (e.g. `.wav`) no longer break verification
-
+## [0.5.0] - 2026-09-22
 ### Added
 - Governance generator: model cards, validation reports (+DOCX), risk register,
   lifecycle gates on `/v1/models/{id}/transition` (409 + unmet) (T-M5-04)
@@ -17,6 +14,14 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 - MLflow helpers + file-backed model/stack registry; M0 inventory backfill; eval requires
   registered stack; Compose `mlflow` service (MinIO artifacts); `make governance`
   (T-M5-01, D-20260922-41)
+
+### Changed
+- Experiment E2 LoRA ASR adaptation deferred — no telephony train set / no >2 GB
+  download (D-20260922-44, T-M5-05)
+
+### Fixed
+- Audio HMAC tokens: encode payload and signature as separate base64 parts so
+  recording URIs containing `.` (e.g. `.wav`) no longer break verification
 
 ## [0.4.0] - 2026-09-22
 ### Added
