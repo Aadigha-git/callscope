@@ -83,7 +83,7 @@ async def cmd_run(args: argparse.Namespace) -> int:
     store = FileEvalStore(Path(args.out))
     cassette_root = Path(args.cassettes)
     cassette_store = CassetteStore(cassette_root)
-    budget = BudgetGuard.from_settings(model=args.model)
+    budget = BudgetGuard.from_settings(model=None if args.model == "mock" else args.model)
     estimated = estimate_eval_usd(len(items), model=budget.model)
 
     try:

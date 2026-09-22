@@ -28,6 +28,21 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260921-38 - Recorded baseline deferred to volunteer sessions
+- Date / Task: 2026-09-21 / T-M3-07
+- Context: Acceptance needs 15/15 (or 20/20) consented human recordings with verified
+  transcripts. Protocol and ingest tooling can ship without audio; inventing transcripts or
+  claiming a recorded run_id would violate eval integrity (T11).
+- Decision: Ship `docs/recording_protocol.md`, `callscope.datasets.recorded` + CLI, and
+  `docs/reports/baseline.md` with a **real** synthetic/golden run_id for the mock path.
+  Recorded half remains TBD until volunteers complete the protocol; update the baseline in a
+  follow-up commit with recorded `run_id` + gap table (do not mark recorded acceptance done
+  until then).
+- Alternatives considered: synthetic tones labelled as "recorded" (rejected — misleading).
+- Consequences: T-M3-07 PR documents partial acceptance; operator action required.
+- Design doc impact: none.
+- Status: accepted
+
 ### D-20260921-37 - Pre-declared thresholds + lockfile; WER margin units
 - Date / Task: 2026-09-21 / T-M3-06
 - Context: Design §10.2 gates and NI margins (WER +1.0 abs, task −2.0 abs, latency p95 +10%).

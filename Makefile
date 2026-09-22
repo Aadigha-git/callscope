@@ -35,6 +35,9 @@ budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
 eval: ## Eval runner: make eval ARGS='run --stack mock --dataset golden-eval@v1'
 	$(PY) -m callscope.devtools.eval_cli $(ARGS)
 
+dataset: ## Dataset CLI: make dataset ARGS='build|validate|ingest-recorded|...'
+	$(PY) -m callscope.devtools.dataset_cli $(ARGS)
+
 asr: ## Run native ASR server (fake backend by default; port 8200)
 	CALLSCOPE_ASR_BACKEND=$${CALLSCOPE_ASR_BACKEND:-fake} $(PY) -m servers.asr
 

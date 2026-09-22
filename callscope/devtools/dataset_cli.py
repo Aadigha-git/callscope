@@ -124,6 +124,53 @@ def cmd_freeze(args: argparse.Namespace) -> int:
     return 0
 
 
+def cmd_ingest_recorded(args: argparse.Namespace) -> int:
+    from callscope.datasets.recorded import ingest_recorded
+
+    root = Path(args.dir)
+    try:
+        man = ingest_recorded(root, consent_file=Path(args.consent_file))
+    except (FileNotFoundError, OSError) as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}))
+        return 1
+    print(
+        json.dumps({"ok": True, "n_calls": man["n_calls"], "manifest": str(root / "manifest.json")})
+    )
+    return 0
+
+
+def cmd_export_transcripts(args: argparse.Namespace) -> int:
+    from callscope.datasets.recorded import export_transcripts_csv
+
+    n = export_transcripts_csv(Path(args.dataset), Path(args.out))
+    print(json.dumps({"ok": True, "n": n, "out": args.out}))
+    return 0
+
+
+def cmd_import_corrections(args: argparse.Namespace) -> int:
+    from callscope.datasets.recorded import import_corrections_csv
+
+    try:
+        out = import_corrections_csv(Path(args.dataset), Path(args.csv))
+    except RuntimeError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}))
+        return 1
+    print(json.dumps({"ok": True, **out}))
+    return 0
+
+
+def cmd_freeze_recorded_test(args: argparse.Namespace) -> int:
+    from callscope.datasets.recorded import freeze_recorded_test
+
+    try:
+        out = freeze_recorded_test(Path(args.dataset), seed=int(args.seed))
+    except RuntimeError as exc:
+        print(json.dumps({"ok": False, "error": str(exc)}))
+        return 1
+    print(json.dumps({"ok": True, **out}))
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     p = argparse.ArgumentParser(prog="callscope-dataset")
     sub = p.add_subparsers(dest="cmd", required=True)
@@ -154,6 +201,26 @@ def main(argv: list[str] | None = None) -> int:
     fr.add_argument("--version", required=True)
     fr.add_argument("--registry", default="artifacts/datasets")
     fr.set_defaults(func=cmd_freeze)
+
+    ing = sub.add_parser("ingest-recorded", help="Ingest consented WAV batch (T-M3-07)")
+    ing.add_argument("--dir", required=True, help="Dataset root (contains audio/)")
+    ing.add_argument("--consent-file", required=True)
+    ing.set_defaults(func=cmd_ingest_recorded)
+
+    ex = sub.add_parser("export-transcripts", help="CSV for human transcript correction")
+    ex.add_argument("--dataset", required=True)
+    ex.add_argument("--out", required=True)
+    ex.set_defaults(func=cmd_export_transcripts)
+
+    im = sub.add_parser("import-corrections", help="Import corrected transcripts CSV")
+    im.add_argument("--dataset", required=True)
+    im.add_argument("--csv", required=True)
+    im.set_defaults(func=cmd_import_corrections)
+
+    frz = sub.add_parser("freeze-recorded-test", help="Freeze verified test half")
+    frz.add_argument("--dataset", required=True)
+    frz.add_argument("--seed", type=int, default=42)
+    frz.set_defaults(func=cmd_freeze_recorded_test)
 
     args = p.parse_args(argv)
     return int(args.func(args))
