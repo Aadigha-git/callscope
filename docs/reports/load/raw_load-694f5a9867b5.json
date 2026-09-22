@@ -1,0 +1,68 @@
+{
+  "run_id": "load-694f5a9867b5",
+  "seed": 42,
+  "session_cap": 2,
+  "public_concurrency_cap": 2,
+  "knee_concurrency": null,
+  "nfr01_p50_ms": 1800.0,
+  "nfr01_p95_ms": 3000.0,
+  "cap_probe": {
+    "max_concurrent": 2,
+    "acquired": 2,
+    "third_blocked": true,
+    "error": "max concurrent sessions (2) reached"
+  },
+  "levels": [
+    {
+      "concurrency": 1,
+      "n_calls": 3,
+      "reps": 3,
+      "response_latencies_ms": [
+        500.0,
+        500.0,
+        500.0
+      ],
+      "barge_stop_latencies_ms": [],
+      "wall_s": 0.0304309579951223,
+      "rss_delta_mb": 0.0,
+      "p50_ms": 500.0,
+      "p95_ms": 500.0,
+      "barge_p50_ms": null,
+      "barge_p95_ms": null,
+      "meets_nfr01_mock": true,
+      "projected_p50_ms": 3200.0,
+      "meets_nfr01_projected": false
+    },
+    {
+      "concurrency": 2,
+      "n_calls": 6,
+      "reps": 3,
+      "response_latencies_ms": [
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0,
+        500.0
+      ],
+      "barge_stop_latencies_ms": [],
+      "wall_s": 0.06144937500357628,
+      "rss_delta_mb": 0.0,
+      "p50_ms": 500.0,
+      "p95_ms": 500.0,
+      "barge_p50_ms": null,
+      "barge_p95_ms": null,
+      "meets_nfr01_mock": true,
+      "projected_p50_ms": 3200.0,
+      "meets_nfr01_projected": false
+    }
+  ],
+  "notes": [
+    "Transport: MockCallerTransport + synthetic agent events (CI-safe; not live demo).",
+    "Mock agent first-audio offset is fixed (~500 ms) in runner_sim; NFR-01 mock check is structural.",
+    "Projected e2e p50 adds Hermes turn p50 2700 ms (D-20260920-18) and cites TF TTFT p50 699 ms (D-20260920-17) as network floor.",
+    "SessionCapLimiter max_concurrent=2; third acquire blocked=True.",
+    "No latency knee at concurrency 1\u21922 on the mock path (oracle latencies are schedule-based, not CPU-bound).",
+    "NFR-01 gap: projected p50 (mock local + Hermes turn) exceeds 1800 ms hypothesis \u2014 live Mac re-measure when demo stack is up."
+  ]
+}

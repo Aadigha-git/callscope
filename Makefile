@@ -41,6 +41,9 @@ governance: ## Model/stack registry: make governance ARGS='backfill|list-models|
 experiment: ## Experiments: make experiment ARGS='e1|hotwords ...'
 	$(PY) -m callscope.devtools.experiment_cli $(ARGS)
 
+load: ## Local concurrency/latency load (T-M6-01): make load ARGS='--reps 3'
+	$(PY) -m callscope.devtools.load_cli $(ARGS)
+
 dataset: ## Dataset CLI: make dataset ARGS='build|validate|ingest-recorded|...'
 	$(PY) -m callscope.devtools.dataset_cli $(ARGS)
 
