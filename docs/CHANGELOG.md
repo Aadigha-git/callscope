@@ -3,6 +3,16 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 
+### Fixed
+- Compose MinIO image: use `quay.io/minio/minio` (Docker Hub `minio/minio` pull denied)
+- `make demo`: preflight frees/fails on occupied LiveKit `:7880`; fall back to `fake`
+  ASR/TTS only when mlx_whisper/piper packages or Piper voice file are missing
+
+### Added
+- LiveKit Agents worker wired to real CallScope ASR/TTS + Token Factory LLM
+  (`apps.worker --livekit`); session JWTs include `RoomAgentDispatch`
+- Optional extra `native` (mlx-whisper, piper-tts) for Apple Silicon demo calls
+
 ## [1.0.0] - 2026-09-22
 ### Added
 - README + `docs/WRITEUP.md` + interview one-pager; architecture SVGs under `docs/img/`

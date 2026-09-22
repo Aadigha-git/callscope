@@ -15,6 +15,7 @@ def test_compose_local_services() -> None:
     services = data["services"]
     for name in ("postgres", "minio", "prometheus", "grafana", "mlflow"):
         assert name in services
+    assert services["minio"]["image"].startswith("quay.io/minio/minio:")
     assert services["mlflow"]["depends_on"] == ["minio"]
     # Native Metal stack must NOT live in Compose.
     for forbidden in ("asr", "tts", "hermes", "worker", "livekit", "api"):

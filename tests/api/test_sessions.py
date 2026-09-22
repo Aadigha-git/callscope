@@ -90,6 +90,8 @@ def test_session_creates_token_ttl_5_min(client: TestClient) -> None:
     assert video["roomJoin"] is True
     assert video["canPublish"] is True
     assert video["canSubscribe"] is True
+    room_config = claims.get("roomConfig") or {}
+    assert room_config.get("agents"), "RoomAgentDispatch required for LiveKit Agents"
     exp = datetime.fromtimestamp(claims["exp"], tz=UTC)
     now = datetime.now(UTC)
     assert timedelta(seconds=250) <= (exp - now) <= timedelta(seconds=310)

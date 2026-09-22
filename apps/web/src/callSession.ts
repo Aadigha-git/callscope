@@ -34,8 +34,16 @@ export class CallSession {
 
     room.on(RoomEvent.TrackSubscribed, (track: RemoteTrack, _pub: RemoteTrackPublication, _p: RemoteParticipant) => {
       if (track.kind === Track.Kind.Audio) {
-        const stream = new MediaStream([track.mediaStreamTrack]);
-        handlers.onAgentAudio(stream);
+        // Prefer LiveKit attach() — more reliable than manually wrapping MediaStreamTrack.
+        const el = track.attach() as HTMLAudioElement;
+        el.autoplay = true;
+        el.setAttribute("playsinline", "true");
+        el.muted = false;
+        el.volume = 1;
+        void el.play().catch(() => {
+          /* gesture already happened on Start call; ignore autoplay races */
+        });
+        handlers.onAgentAudio(new MediaStream([track.mediaStreamTrack]));
       }
     });
 

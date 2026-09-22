@@ -109,15 +109,11 @@ def main(argv: list[str] | None = None) -> None:
         return
 
     if args.livekit:
-        from apps.worker.livekit_glue import require_livekit_agents
+        from apps.worker.livekit_agent import run_livekit_agent
 
-        require_livekit_agents()
-        logger.error(
-            "LiveKit Agents config mapping is ready (WorkerConfig / livekit_glue); "
-            "full AgentSession STT/TTS/Hermes adapters are not wired yet — use the "
-            "spike scaffold under spikes/T-M0-05/agent/worker.py for room smoke."
-        )
-        raise SystemExit(2)
+        logger.info("starting LiveKit Agents worker (real ASR/TTS + Token Factory)")
+        run_livekit_agent()
+        return
 
     if args.serve:
         logger.info("worker serving metrics; Ctrl-C to stop")

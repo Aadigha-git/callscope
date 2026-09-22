@@ -183,9 +183,12 @@ async function startCall(consent: ConsentChoice): Promise<void> {
     await session.connect(sess.livekit_url, sess.token, {
       onAgentAudio: (stream) => {
         agentAudio.srcObject = stream;
+        agentAudio.muted = false;
+        agentAudio.volume = 1;
         void agentAudio.play().catch(() => {
-          /* autoplay may require gesture; End/Start already user-driven */
+          /* LiveKit also attaches its own element; this is a backup sink */
         });
+        setText(agentStateEl, "Agent: speaking");
       },
       onMessage: handleMessage,
       onDisconnected: () => {
