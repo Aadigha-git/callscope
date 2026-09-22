@@ -93,6 +93,7 @@ class ReviewStore:
 
     calls: CallStore
     audio_hmac_key: str = "callscope-audio-sign-dev"
+    registry: Any | None = None  # optional ModelStackRegistry (T-M5-01)
     _labels: dict[UUID, list[LabelRecord]] = field(default_factory=dict)
     _flagged: dict[UUID, tuple[bool, list[str]]] = field(default_factory=dict)
     _root_causes: dict[UUID, list[str]] = field(default_factory=dict)
@@ -370,12 +371,93 @@ class ReviewStore:
             rows = [m for m in rows if m.status == status]
         return rows
 
+    def sync_models_from_registry(self) -> int:
+        """Copy registered inventory into the API-facing model map. Returns count added."""
+        if self.registry is None:
+            return 0
+        added = 0
+        for m in self.registry.list_models():
+            mid = m.model_version_id
+            with self._lock:
+                if mid in self._models:
+                    continue
+                self._models[mid] = ModelVersionRecord(
+                    model_version_id=mid,
+                    component=m.component,
+                    name=m.name,
+                    revision=m.revision,
+                    owner=m.owner,
+                    status=m.status,
+                    base_model=m.base_model,
+                    license=m.license,
+                    artifact_uri=m.artifact_uri,
+                    config=dict(m.config),
+                    intended_use=m.intended_use,
+                    out_of_scope_use=m.out_of_scope_use,
+                    mlflow_run_id=m.mlflow_run_id,
+                    created_at=m.created_at,
+                )
+                added += 1
+        return added
+
     def register_model(self, body: dict[str, Any]) -> ModelVersionRecord:
+        component = str(body["component"])
+        name = str(body["name"])
+        revision = str(body["revision"])
+        with self._lock:
+            for existing in self._models.values():
+                if (
+                    existing.component == component
+                    and existing.name == name
+                    and existing.revision == revision
+                ):
+                    raise ValueError(f"duplicate model {component}/{name}@{revision}")
+
+        if self.registry is not None:
+            from callscope.governance.registry import RegistryError
+
+            try:
+                g = self.registry.register_model(
+                    component=component,
+                    name=name,
+                    revision=revision,
+                    owner=str(body["owner"]),
+                    base_model=body.get("base_model"),
+                    license=body.get("license"),
+                    artifact_uri=body.get("artifact_uri"),
+                    config=dict(body.get("config") or {}),
+                    intended_use=body.get("intended_use"),
+                    out_of_scope_use=body.get("out_of_scope_use"),
+                    mlflow_run_id=body.get("mlflow_run_id"),
+                    status=str(body.get("status") or "candidate"),
+                )
+            except RegistryError as exc:
+                raise ValueError(str(exc)) from exc
+            rec = ModelVersionRecord(
+                model_version_id=g.model_version_id,
+                component=g.component,
+                name=g.name,
+                revision=g.revision,
+                owner=g.owner,
+                status=g.status,
+                base_model=g.base_model,
+                license=g.license,
+                artifact_uri=g.artifact_uri,
+                config=dict(g.config),
+                intended_use=g.intended_use,
+                out_of_scope_use=g.out_of_scope_use,
+                mlflow_run_id=g.mlflow_run_id,
+                created_at=g.created_at,
+            )
+            with self._lock:
+                self._models[rec.model_version_id] = rec
+            return rec
+
         rec = ModelVersionRecord(
             model_version_id=uuid4(),
-            component=str(body["component"]),
-            name=str(body["name"]),
-            revision=str(body["revision"]),
+            component=component,
+            name=name,
+            revision=revision,
             owner=str(body["owner"]),
             base_model=body.get("base_model"),
             license=body.get("license"),

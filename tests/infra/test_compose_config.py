@@ -13,8 +13,9 @@ def test_compose_local_services() -> None:
     data = yaml.safe_load((ROOT / "docker-compose.local.yml").read_text(encoding="utf-8"))
     assert data["name"] == "callscope-local"
     services = data["services"]
-    for name in ("postgres", "minio", "prometheus", "grafana"):
+    for name in ("postgres", "minio", "prometheus", "grafana", "mlflow"):
         assert name in services
+    assert services["mlflow"]["depends_on"] == ["minio"]
     # Native Metal stack must NOT live in Compose.
     for forbidden in ("asr", "tts", "hermes", "worker", "livekit", "api"):
         assert forbidden not in services

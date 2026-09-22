@@ -32,8 +32,11 @@ compose-validate: ## Validate local Compose + Prometheus/Grafana demo wiring
 budget: ## Show LLM spend vs CALLSCOPE_LLM_BUDGET_USD (T-M1-12)
 	$(PY) -m callscope.devtools.budget_cli $(ARGS)
 
-eval: ## Eval runner: make eval ARGS='run --stack mock --dataset golden-eval@v1'
+eval: ## Eval runner: make eval ARGS='run --stack local-mac-dev --dataset golden-eval@v1'
 	$(PY) -m callscope.devtools.eval_cli $(ARGS)
+
+governance: ## Model/stack registry: make governance ARGS='backfill|list-models|list-stacks'
+	$(PY) -m callscope.devtools.governance_cli $(ARGS)
 
 dataset: ## Dataset CLI: make dataset ARGS='build|validate|ingest-recorded|...'
 	$(PY) -m callscope.devtools.dataset_cli $(ARGS)

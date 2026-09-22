@@ -98,7 +98,7 @@
 
 | ID | Title | Req | Deps | Est (h) | Owner | Status | Sprint | Issue |
 |---|---|---|---|---|---|---|---|---|
-| T-M5-01 | MLflow tracking, model inventory and stack version registry | FR-11, NFR-06 | T-M4-02 | 8 | BAG | in_progress |  | #42 |
+| T-M5-01 | MLflow tracking, model inventory and stack version registry | FR-11, NFR-06 | T-M4-02 | 8 | BAG | in_review |  | #42 |
 | T-M5-02 | Experiment E1: ASR hotword / prompt biasing | FR-10 | T-M3-07, T-M5-01 | 8 | BAG | backlog |  | #43 |
 | T-M5-03 | Experiment E3: endpointing / VAD tuning | FR-10 | T-M5-02, T-M4-03 | 12 | BAG | backlog |  | #44 |
 | T-M5-04 | Governance generator - model cards, validation reports, risk register, gates | FR-11, NFR-06 | T-M5-01, T-M3-06 | 14 | BAG | backlog |  | #45 |

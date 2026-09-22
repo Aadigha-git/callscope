@@ -25,6 +25,25 @@ services:
       MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:-callscope_dev_secret}
     ports: ["127.0.0.1:9000:9000", "127.0.0.1:9001:9001"]
     volumes: [miniodata:/data]
+  # MLflow tracking (T-M5-01). Default local file store also works without this service.
+  # Artifacts land in MinIO when MLFLOW_S3_ENDPOINT_URL is set.
+  mlflow:
+    image: ghcr.io/mlflow/mlflow:v2.17.2
+    command: >
+      mlflow server
+      --host 0.0.0.0
+      --port 5000
+      --backend-store-uri sqlite:///mlflow/mlflow.db
+      --default-artifact-root s3://callscope/mlflow
+      --serve-artifacts
+    environment:
+      MLFLOW_S3_ENDPOINT_URL: http://minio:9000
+      AWS_ACCESS_KEY_ID: ${MINIO_ROOT_USER:-callscope}
+      AWS_SECRET_ACCESS_KEY: ${MINIO_ROOT_PASSWORD:-callscope_dev_secret}
+      AWS_DEFAULT_REGION: us-east-1
+    ports: ["127.0.0.1:5000:5000"]
+    volumes: [mlflowdata:/mlflow]
+    depends_on: [minio]
   prometheus:
     image: prom/prometheus:v2.54.1
     volumes:
@@ -47,3 +66,4 @@ volumes:
   pgdata: {}
   miniodata: {}
   grafanadata: {}
+  mlflowdata: {}

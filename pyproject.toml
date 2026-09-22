@@ -59,6 +59,9 @@ review = [
 tracing = [
     "langsmith>=0.14.0",
 ]
+governance = [
+    "mlflow>=3.16.1",
+]
 
 [tool.setuptools.packages.find]
 include = ["callscope*", "servers*", "apps*"]

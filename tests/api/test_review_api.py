@@ -29,10 +29,11 @@ def store() -> MemoryCallStore:
 
 
 @pytest.fixture
-def client(monkeypatch: pytest.MonkeyPatch, store: MemoryCallStore) -> TestClient:
+def client(monkeypatch: pytest.MonkeyPatch, store: MemoryCallStore, tmp_path) -> TestClient:
     monkeypatch.setenv("CALLSCOPE_POLICY_VERSION", POLICY)
     monkeypatch.setenv("CALLSCOPE_SERVICE_TOKEN", SERVICE)
     monkeypatch.setenv("CALLSCOPE_AUDIO_SIGNING_SECRET", "test-audio-secret")
+    monkeypatch.setenv("CALLSCOPE_REGISTRY", str(tmp_path / "registry"))
     settings = Settings(
         livekit_url="ws://127.0.0.1:7880",
         livekit_api_key="devkey",
@@ -142,6 +143,7 @@ def test_label_rejects_unknown_code(client: TestClient, store: MemoryCallStore) 
 
 def test_audio_signed_url_and_expiry(client: TestClient, store: MemoryCallStore) -> None:
     review = client.app.state.api.review  # type: ignore[attr-defined]
+    assert review.audio_hmac_key == "test-audio-secret"
     call_id = _seed_call(store, review)
     r = client.get(f"/v1/calls/{call_id}/audio", headers=AUTH)
     assert r.status_code == 200
@@ -150,11 +152,14 @@ def test_audio_signed_url_and_expiry(client: TestClient, store: MemoryCallStore)
     expires = datetime.fromisoformat(body["expires_at"].replace("Z", "+00:00"))
     assert expires - datetime.now(UTC) <= timedelta(minutes=5, seconds=5)
     assert expires > datetime.now(UTC)
-    # Expired token rejected by verifier
-    payload = ReviewStore.verify_audio_token(body["url"].split("token=", 1)[1], "test-audio-secret")
-    assert payload is not None
+    token = body["url"].split("token=", 1)[1]
+    payload = ReviewStore.verify_audio_token(token, review.audio_hmac_key)
+    assert payload is not None, (
+        f"token verify failed key={review.audio_hmac_key!r} "
+        f"token_len={len(token)} exp_hdr={body['expires_at']}"
+    )
     assert payload["call_id"] == call_id
-    bad = ReviewStore.verify_audio_token("not-a-token", "test-audio-secret")
+    bad = ReviewStore.verify_audio_token("not-a-token", review.audio_hmac_key)
     assert bad is None
 
 
@@ -251,6 +256,13 @@ def test_eval_runs_and_compare(client: TestClient) -> None:
 
 
 def test_models_inventory(client: TestClient) -> None:
+    listed0 = client.get("/v1/models", headers=AUTH)
+    assert listed0.status_code == 200
+    # M0 backfill seeds production inventory (licence + intended_use)
+    prod = [m for m in listed0.json() if m["status"] == "production"]
+    assert prod
+    assert all(m.get("license") for m in prod if m["component"] != "vad")
+    assert all(m.get("intended_use") for m in prod)
     r = client.post(
         "/v1/models",
         headers=AUTH,
@@ -268,6 +280,17 @@ def test_models_inventory(client: TestClient) -> None:
     listed = client.get("/v1/models", params={"component": "asr"}, headers=AUTH)
     assert listed.status_code == 200
     assert any(m["model_version_id"] == mid for m in listed.json())
+    dup = client.post(
+        "/v1/models",
+        headers=AUTH,
+        json={
+            "component": "asr",
+            "name": "whisper-tiny",
+            "revision": "1",
+            "owner": "bag",
+        },
+    )
+    assert dup.status_code == 409
     tr = client.post(
         f"/v1/models/{mid}/transition",
         headers=AUTH,

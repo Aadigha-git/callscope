@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M5-01
+- Done: `ModelStackRegistry` + `mlflow_utils`; M0 backfill; eval CLI stack gate + optional
+  MLflow log; API inventory sync; Compose `mlflow`; tests.
+- Next: PR merge → T-M5-02 E1 ASR hotword experiment.
+- Commands: `make ci`; `make governance ARGS=backfill`; `uv sync --extra governance`
+
 ## 2026-09-22 / v0.4.0
 - Done: version bump + CHANGELOG `[0.4.0]`; annotated tag after merge.
 - Next: T-M5-01 MLflow + model/stack registry.

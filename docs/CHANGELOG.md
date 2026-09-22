@@ -3,6 +3,11 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 
+### Added
+- MLflow helpers + file-backed model/stack registry; M0 inventory backfill; eval requires
+  registered stack; Compose `mlflow` service (MinIO artifacts); `make governance`
+  (T-M5-01, D-20260922-41)
+
 ## [0.4.0] - 2026-09-22
 ### Added
 - Optional LangSmith tracing (default off; scrubbed fictional text only; no datasets)
