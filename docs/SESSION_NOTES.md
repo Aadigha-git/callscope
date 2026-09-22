@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M4-03
+- Done: Streamlit review console, API client, seed-demo (40 planted calls), helpers/tests.
+- Next: PR merge → T-M4-04 caller-sim.
+- Commands: `make api` + `make review` / `make review-seed`
+
 ## 2026-09-21 / T-M4-02
 - Done: review/eval/model API routes, `ReviewStore`, signed audio URLs, contract tests.
 - Next: PR merge → T-M4-03 Streamlit review console.

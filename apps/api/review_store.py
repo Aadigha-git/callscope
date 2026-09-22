@@ -417,3 +417,98 @@ class ReviewStore:
                         other.status = "retired"
             m.status = to
             return m
+
+    def seed_review_demo(self, *, n: int = 40, reviewer: str = "seed-demo") -> dict[str, Any]:
+        """Create ``n`` synthetic calls with planted failures (and labels)."""
+        from callscope.events.models import Event as EventModel
+        from callscope.events.models import EventSource
+        from callscope.review.seed_demo import build_seed_specs
+
+        specs = build_seed_specs(n)
+        created: list[str] = []
+        labelled = 0
+        for i, spec in enumerate(specs):
+            rec = self.calls.create_session(
+                consent_recording=True,
+                consent_donate=False,
+                policy_version="2026-09-20",
+            )
+            live = self.calls.get(rec.call_id)
+            if live is not None:
+                live.channel = spec.channel
+            self.calls.end_session(rec.call_id, reason="seed")
+            self.calls.register_recording(
+                rec.call_id, mixed_uri=f"file:///tmp/seed-{rec.call_id}.wav"
+            )
+            self.set_call_meta(
+                rec.call_id,
+                flagged=spec.flagged,
+                flag_reasons=list(spec.flag_reasons),
+                root_causes=list(spec.root_causes),
+                stack_label="seed-demo",
+            )
+            turn_id = uuid4()
+            events = [
+                EventModel(
+                    event_id=uuid4(),
+                    call_id=rec.call_id,
+                    turn_id=turn_id,
+                    t_ms=100,
+                    ts=datetime.now(UTC),
+                    source=EventSource.SIM,
+                    type="stt.final",
+                    payload={
+                        "text": spec.transcript_caller,
+                        "avg_conf": 0.4 if spec.flagged else 0.9,
+                        "condition": spec.condition,
+                    },
+                ),
+                EventModel(
+                    event_id=uuid4(),
+                    call_id=rec.call_id,
+                    turn_id=turn_id,
+                    t_ms=800,
+                    ts=datetime.now(UTC),
+                    source=EventSource.WORKER,
+                    type="brain.first_token",
+                    payload={"text": spec.transcript_agent},
+                ),
+            ]
+            if "tool_error" in spec.flag_reasons:
+                events.append(
+                    EventModel(
+                        event_id=uuid4(),
+                        call_id=rec.call_id,
+                        turn_id=turn_id,
+                        t_ms=900,
+                        ts=datetime.now(UTC),
+                        source=EventSource.PLUGIN,
+                        type="tool.call",
+                        payload={"name": "book_slot", "args": {"phone": "555-0100"}},
+                    )
+                )
+            self.calls.insert_events(events)
+            # Pre-label planted failures so the demo starts with 30+ labels.
+            if spec.planted_rc is not None and i < max(32, n):
+                self.add_label(
+                    rec.call_id,
+                    {
+                        "root_cause_code": spec.planted_rc,
+                        "severity": spec.severity,
+                        "reviewer": reviewer,
+                        "notes": f"seed planted ({spec.condition})",
+                        "add_to_dataset": "train" if i % 2 == 0 else "dev",
+                    },
+                )
+                labelled += 1
+            created.append(str(rec.call_id))
+        with self._lock:
+            self._audit.append(
+                {
+                    "action": "seed_review",
+                    "n": n,
+                    "labelled": labelled,
+                    "at": datetime.now(UTC).isoformat(),
+                }
+            )
+        return {"created": len(created), "labelled": labelled, "call_ids": created}
