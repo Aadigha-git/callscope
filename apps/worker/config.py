@@ -11,11 +11,11 @@ from pydantic import BaseModel, Field
 class WorkerConfig(BaseModel):
     """Tunable turn-handling knobs stored with the stack version."""
 
-    endpoint_min_delay_s: float = Field(default=0.4, ge=0.0)
-    endpoint_max_delay_s: float = Field(default=1.2, ge=0.0)
-    vad_threshold: float = Field(default=0.5, ge=0.0, le=1.0)
+    endpoint_min_delay_s: float = Field(default=0.3, ge=0.0)
+    endpoint_max_delay_s: float = Field(default=0.9, ge=0.0)
+    vad_threshold: float = Field(default=0.65, ge=0.0, le=1.0)
     vad_min_speech_ms: int = Field(default=200, ge=0)
-    barge_in_min_duration_ms: int = Field(default=250, ge=0)
+    barge_in_min_duration_ms: int = Field(default=200, ge=0)
     barge_in_grace_ms_after_playback_start: int = Field(default=400, ge=0)
     chunker_min_chars: int = Field(default=24, ge=1)
     filler_after_ms: int = Field(default=1500, ge=0)

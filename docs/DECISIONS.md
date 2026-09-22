@@ -28,6 +28,20 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-43 - E3 adopt endpoint/VAD defaults (oracle-proxy grid)
+- Date / Task: 2026-09-22 / T-M5-03
+- Context: Seed-demo RC counts tie ASR vs turn-taking; E1 already adopted hotwords. T-M5-03
+  chooses E3. CI uses synthetic timelines + real turn-taking oracle (not live Silero/VAD).
+- Decision: **Adopt** WorkerConfig defaults `endpoint_min_delay_s=0.3`,
+  `endpoint_max_delay_s=0.9`, `vad_threshold=0.65`, `barge_in_min_duration_ms=200` after
+  grid search (81 points) with frozen-test Δ endpoint-error −100pp, latency p50 Δ −10 ms;
+  MLflow `cd36bba1573c46a182d703bd3024d6ca`. Re-validate on live caller-sim when demo stack is up.
+- Alternatives considered: E2 LoRA now (deferred to T-M5-05 / RAM); keep 0.4/1.2/0.5/250
+  (rejected — failed success criterion vs winner).
+- Consequences: Slightly snappier endpoint + stricter VAD threshold in demo worker.
+- Design doc impact: none (§4.8 E3)
+- Status: accepted
+
 ### D-20260922-42 - E1 adopt domain hotwords (offline proxy); real ASR pending
 - Date / Task: 2026-09-22 / T-M5-02
 - Context: Baseline mock WER=0; recorded set still pending (D-20260921-38). mlx-whisper

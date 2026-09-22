@@ -17,6 +17,7 @@ def test_turn_handling_mapping() -> None:
     cfg = WorkerConfig(
         endpoint_min_delay_s=0.4,
         endpoint_max_delay_s=1.2,
+        vad_threshold=0.5,
         barge_in_min_duration_ms=250,
         barge_in_grace_ms_after_playback_start=400,
         call_silence_timeout_s=20.0,
