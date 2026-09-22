@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M4-02
+- Done: review/eval/model API routes, `ReviewStore`, signed audio URLs, contract tests.
+- Next: PR merge → T-M4-03 Streamlit review console.
+- Commands: `git switch feat/T-M4-02-review-api && make ci`
+
 ## 2026-09-21 / T-M4-01
 - Done: `callscope/review/{timeline,flags,attribution}.py` + pos/neg tests per rule.
 - Next: PR merge → T-M4-02 review API endpoints.

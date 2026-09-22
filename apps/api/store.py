@@ -60,6 +60,10 @@ class CallStore(Protocol):
         agent_uri: str | None = None,
     ) -> bool: ...
 
+    def list_sessions(self) -> list[SessionRecord]: ...
+
+    def events_for_call(self, call_id: UUID) -> list[dict[str, Any]]: ...
+
 
 @dataclass
 class MemoryCallStore:
@@ -139,3 +143,12 @@ class MemoryCallStore:
             rec.caller_uri = caller_uri
             rec.agent_uri = agent_uri
             return True
+
+    def list_sessions(self) -> list[SessionRecord]:
+        with self._lock:
+            return list(self._sessions.values())
+
+    def events_for_call(self, call_id: UUID) -> list[dict[str, Any]]:
+        cid = str(call_id)
+        with self._lock:
+            return [e for e in self._events if e.get("call_id") == cid]
