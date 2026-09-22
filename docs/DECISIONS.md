@@ -28,6 +28,23 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-42 - E1 adopt domain hotwords (offline proxy); real ASR pending
+- Date / Task: 2026-09-22 / T-M5-02
+- Context: Baseline mock WER=0; recorded set still pending (D-20260921-38). mlx-whisper
+  already maps session `hotwords` → `initial_prompt` (verified in
+  `servers/asr/backends/mlx_whisper.py`). Need an E1 decision under CI constraints.
+- Decision: **Adopt** domain hotwords into default worker config via
+  `WorkerConfig.with_domain_hotwords` + committed `eval/hotwords.txt` (built from scenario
+  pools + Business seed only). Offline proxy showed NAME+ADDRESS +66.9pp
+  (bootstrap CI [0.54, 0.81]), C0 WER Δ=0; MLflow run `23f6d3731fd54dcbb1d576a76eb2835f`.
+  Re-confirm on real mlx-whisper + recorded/synth telephony audio when volunteer WAVs land.
+- Alternatives considered: defer E1 until recorded set (rejected — blocks M5 exit); claim
+  mock golden WER as evidence (rejected — not informative).
+- Consequences: Demo ASR sessions get initial_prompt bias; E3/E2 choice still driven by
+  review distribution after real baseline.
+- Design doc impact: none (§4.8 protocol followed with documented proxy)
+- Status: accepted
+
 ### D-20260922-41 - File-backed model/stack registry + optional Compose MLflow
 - Date / Task: 2026-09-22 / T-M5-01
 - Context: Design §4.9 / schema `cs.model_versions` + `cs.stack_versions` assume Postgres.

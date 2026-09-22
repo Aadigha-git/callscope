@@ -8,6 +8,12 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M5-02
+- Done: E1 hypothesis locked first; domain hotword vocab; offline proxy eval (adopt);
+  worker `with_domain_hotwords`; `eval/hotwords.txt`; MLflow run logged.
+- Next: PR merge → T-M5-03 (E3 vs E2 from review distribution; likely E3 if turn-taking).
+- Commands: `make experiment ARGS='e1 --out artifacts/experiments/e1'`
+
 ## 2026-09-22 / T-M5-01
 - Done: `ModelStackRegistry` + `mlflow_utils`; M0 backfill; eval CLI stack gate + optional
   MLflow log; API inventory sync; Compose `mlflow`; tests.
