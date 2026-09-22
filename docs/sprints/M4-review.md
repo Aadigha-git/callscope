@@ -7,7 +7,7 @@
 | Code reviewed and merged (PRs linked; self-review checklist completed) | Yes | #90–#95 |
 | Unit tests pass; CI green on main | Yes | Local `make ci` green through T-M4-06 (~406 passed); GitHub Actions green on #91–#95 |
 | Documentation updated (README, design deviations, API/schema docs, runbooks) | Partial | CHANGELOG/DECISIONS/SESSION_NOTES + OpenAPI notes. Public README still deferred to M6 |
-| Build artifact created (wheel/sdist/container tag) and attached to release | No | Version bump + tag **held for approval** (see below) |
+| Build artifact created (wheel/sdist/container tag) and attached to release | Yes | `pyproject.toml` → `0.4.0`; annotated tag `v0.4.0` (approved 2026-09-22) |
 | Sprint/milestone review completed (this document) | Yes | This file |
 
 ## Exit criterion from the design doc (section 12.3)
@@ -36,5 +36,5 @@ Evidence:
 - Real LiveKit unattended caller-sim needs gpu-marker / demo stack (mock covers CI).
 - Wire FileEvalStore / ReviewStore → Postgres in M5 governance.
 
-## Version bump proposal (needs approval before tagging)
-- Proposed: **v0.4.0** (M4 complete). Hold until you confirm.
+## Version bump
+- **v0.4.0** tagged 2026-09-22 (M4 complete).

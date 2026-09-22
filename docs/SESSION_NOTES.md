@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / v0.4.0
+- Done: version bump + CHANGELOG `[0.4.0]`; annotated tag after merge.
+- Next: T-M5-01 MLflow + model/stack registry.
+- Commands: `git switch main && make status T=T-M5-01 S=in_progress`
+
 ## 2026-09-22 / M4 close
 - Done: T-M4-01..06 merged (#90–#95); `docs/sprints/M4-review.md`.
 - Next: M5 improvement/governance (T-M5-01); optional `v0.4.0` tag approval.
