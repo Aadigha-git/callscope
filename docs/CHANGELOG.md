@@ -3,6 +3,10 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 
+### Fixed
+- Audio HMAC tokens: encode payload and signature as separate base64 parts so
+  recording URIs containing `.` (e.g. `.wav`) no longer break verification
+
 ### Added
 - Governance generator: model cards, validation reports (+DOCX), risk register,
   lifecycle gates on `/v1/models/{id}/transition` (409 + unmet) (T-M5-04)

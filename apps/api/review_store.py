@@ -285,16 +285,24 @@ class ReviewStore:
         }
         raw = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
         sig = hmac.new(self.audio_hmac_key.encode(), raw, hashlib.sha256).digest()
-        token = base64.urlsafe_b64encode(raw + b"." + sig).decode().rstrip("=")
+        # Dot-separate *encoded* parts so URIs with ".wav" cannot break parsing.
+        raw_b64 = base64.urlsafe_b64encode(raw).decode().rstrip("=")
+        sig_b64 = base64.urlsafe_b64encode(sig).decode().rstrip("=")
+        token = f"{raw_b64}.{sig_b64}"
         url = f"http://127.0.0.1:8000/v1/internal/audio?token={token}"
         return url, expires
 
     @staticmethod
     def verify_audio_token(token: str, audio_hmac_key: str) -> dict[str, Any] | None:
         try:
-            pad = "=" * (-len(token) % 4)
-            blob = base64.urlsafe_b64decode(token + pad)
-            raw, sig = blob.rsplit(b".", 1)
+            raw_b64, sig_b64 = token.split(".", 1)
+
+            def _b64(s: str) -> bytes:
+                pad = "=" * (-len(s) % 4)
+                return base64.urlsafe_b64decode(s + pad)
+
+            raw = _b64(raw_b64)
+            sig = _b64(sig_b64)
             expect = hmac.new(audio_hmac_key.encode(), raw, hashlib.sha256).digest()
             if not hmac.compare_digest(sig, expect):
                 return None
