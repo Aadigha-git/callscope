@@ -8,11 +8,18 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-21 / T-M3-07
+- Done: `docs/recording_protocol.md`, `datasets/recorded.py` + CLI ingest/export/import/freeze,
+  `docs/reports/baseline.md` citing run `39692d2c-…` (mock golden); D-20260921-38.
+- Next: Volunteer recordings; then refresh baseline with recorded run_id + gap; T-M3-08.
+- Open: Recorded 15/15 acceptance blocked on humans (tooling complete).
+- Commands: `git switch feat/T-M3-07-recorded-baseline && make ci`
+
 ## 2026-09-21 / T-M3-06
 - Done: `stats.py` / `compare.py` / `gate.py`, `eval/thresholds.yaml`, `docs/thresholds.lock`,
-  CLI gate/compare, CI-width note (D-20260921-37).
-- Next: PR merge; then T-M3-07 recorded set + baseline (or T-M3-08 in parallel if preferred).
-- Commands: `git switch feat/T-M3-06-stats-gate && make ci`
+  CLI gate/compare, CI-width note (D-20260921-37). **Merged** (#85).
+- Next: T-M3-07 recorded set + baseline.
+- Commands: `git switch main && make status T=T-M3-07 S=in_progress`
 
 ## 2026-09-21 / T-M3-05
 - Done: `callscope/eval/{runner,replay,persist}.py`, `devtools/eval_cli.py`, golden 20-item set,
