@@ -5,10 +5,12 @@ from __future__ import annotations
 from uuid import UUID
 
 from fastapi import APIRouter, Depends, HTTPException
+from fastapi.responses import JSONResponse
 
 from apps.api.deps import StateDep, require_service_token
 from apps.api.review_store import ModelVersionRecord
 from apps.api.schemas import ModelTransitionRequest, ModelVersionCreate, ModelVersionOut
+from callscope.governance.lifecycle import GateError
 
 router = APIRouter(dependencies=[Depends(require_service_token)])
 
@@ -57,9 +59,27 @@ async def transition_model(
     model_version_id: UUID,
     body: ModelTransitionRequest,
     state: StateDep,
-) -> ModelVersionOut:
+) -> ModelVersionOut | JSONResponse:
     try:
-        rec = state.review.transition_model(model_version_id, to=body.to, report_id=body.report_id)
+        rec = state.review.transition_model(
+            model_version_id,
+            to=body.to,
+            report_id=body.report_id,
+            report_passed=body.report_passed,
+            monitoring_on=body.monitoring_on,
+            rollback_stack_id=body.rollback_stack_id,
+        )
+    except GateError as exc:
+        return JSONResponse(
+            status_code=409,
+            content={
+                "type": "about:blank",
+                "title": "Lifecycle gate failed",
+                "status": 409,
+                "detail": str(exc),
+                "unmet": exc.unmet,
+            },
+        )
     except ValueError as exc:
         raise HTTPException(status_code=409, detail=str(exc)) from exc
     if rec is None:

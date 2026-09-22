@@ -11,7 +11,8 @@ info:
     (HMAC query token). `/metrics` and `/metrics/eval` (eval FileEvalStore gauges, T-M4-05)
     are Prometheus scrape targets. T-M5-01: GET/POST /v1/models is seeded from the file-backed
     ModelStackRegistry (M0 backfill) and lists licence, status, intended use; transition gates
-    land in T-M5-04.
+    land in T-M5-04. T-M5-04: lifecycle gates on POST /v1/models/{id}/transition return 409 with
+    an ``unmet`` gate list when reports/cards/risks/monitoring/rollback are incomplete.
 servers:
   - url: https://callscope.example.com
 security:
@@ -288,6 +289,9 @@ paths:
               properties:
                 to: { type: string, enum: [validated, production, retired, rejected] }
                 report_id: { type: string, format: uuid }
+                report_passed: { type: boolean }
+                monitoring_on: { type: boolean, default: true }
+                rollback_stack_id: { type: string }
                 rationale: { type: string }
       responses:
         '200':

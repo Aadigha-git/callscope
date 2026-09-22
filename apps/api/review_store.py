@@ -8,6 +8,7 @@ import hmac
 import json
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from threading import Lock
 from typing import Any
 from uuid import UUID, uuid4
@@ -284,16 +285,24 @@ class ReviewStore:
         }
         raw = json.dumps(payload, separators=(",", ":"), sort_keys=True).encode()
         sig = hmac.new(self.audio_hmac_key.encode(), raw, hashlib.sha256).digest()
-        token = base64.urlsafe_b64encode(raw + b"." + sig).decode().rstrip("=")
+        # Dot-separate *encoded* parts so URIs with ".wav" cannot break parsing.
+        raw_b64 = base64.urlsafe_b64encode(raw).decode().rstrip("=")
+        sig_b64 = base64.urlsafe_b64encode(sig).decode().rstrip("=")
+        token = f"{raw_b64}.{sig_b64}"
         url = f"http://127.0.0.1:8000/v1/internal/audio?token={token}"
         return url, expires
 
     @staticmethod
     def verify_audio_token(token: str, audio_hmac_key: str) -> dict[str, Any] | None:
         try:
-            pad = "=" * (-len(token) % 4)
-            blob = base64.urlsafe_b64decode(token + pad)
-            raw, sig = blob.rsplit(b".", 1)
+            raw_b64, sig_b64 = token.split(".", 1)
+
+            def _b64(s: str) -> bytes:
+                pad = "=" * (-len(s) % 4)
+                return base64.urlsafe_b64decode(s + pad)
+
+            raw = _b64(raw_b64)
+            sig = _b64(sig_b64)
             expect = hmac.new(audio_hmac_key.encode(), raw, hashlib.sha256).digest()
             if not hmac.compare_digest(sig, expect):
                 return None
@@ -476,22 +485,37 @@ class ReviewStore:
             return self._models.get(model_version_id)
 
     def transition_model(
-        self, model_version_id: UUID, *, to: str, report_id: UUID | None = None
+        self,
+        model_version_id: UUID,
+        *,
+        to: str,
+        report_id: UUID | None = None,
+        report_passed: bool | None = None,
+        monitoring_on: bool = True,
+        rollback_stack_id: str | None = None,
+        risk_register: Any | None = None,
+        card_dir: Path | None = None,
     ) -> ModelVersionRecord | None:
-        _ = report_id
+        from callscope.governance.lifecycle import TransitionContext, check_transition
+
         with self._lock:
             m = self._models.get(model_version_id)
             if m is None:
                 return None
-            allowed = {
-                "candidate": {"validated", "rejected"},
-                "validated": {"production", "retired", "rejected"},
-                "production": {"retired"},
-                "retired": set(),
-                "rejected": set(),
-            }
-            if to not in allowed.get(m.status, set()):
-                raise ValueError(f"cannot transition {m.status} -> {to}")
+            check_transition(
+                status=m.status,
+                to=to,
+                model_version_id=model_version_id,
+                ctx=TransitionContext(
+                    report_passed=report_passed,
+                    report_id=report_id,
+                    card_dir=card_dir or Path("docs/model_cards"),
+                    risk_register=risk_register,
+                    monitoring_on=monitoring_on,
+                    rollback_stack_id=rollback_stack_id,
+                    intended_use=m.intended_use,
+                ),
+            )
             if to == "production":
                 for other in self._models.values():
                     same = other.model_version_id == m.model_version_id

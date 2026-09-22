@@ -174,6 +174,9 @@ class ModelTransitionRequest(BaseModel):
     to: Literal["validated", "production", "retired", "rejected"]
     report_id: UUID | None = None
     rationale: str | None = None
+    report_passed: bool | None = None
+    monitoring_on: bool = True
+    rollback_stack_id: str | None = None
 
 
 class ValidationReportOut(BaseModel):
