@@ -1095,7 +1095,7 @@ tasks:
   owner: BAG
   estimate_h: 14
   priority: P0
-  status: in_review
+  status: done
   sprint: null
   issue: 45
   prompt: prompts/M5_improvement_governance.md#t-m5-04
@@ -1118,7 +1118,7 @@ tasks:
   owner: BAG
   estimate_h: 16
   priority: P2
-  status: backlog
+  status: done
   sprint: null
   issue: null
   prompt: prompts/M5_improvement_governance.md#t-m5-05

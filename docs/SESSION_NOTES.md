@@ -8,9 +8,16 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / M5 close + T-M5-05
+- Done: E2 LoRA deferred (D-20260922-44); `docs/experiments/E2.md`; `docs/sprints/M5-review.md`;
+  version `0.5.0` prepared (tag pending approval). T-M5-01..05 closed.
+- Next: approve `git tag -a v0.5.0`; start M6 (T-M6-01).
+- Commands: `git switch main && make status T=T-M6-01 S=in_progress`
+
 ## 2026-09-22 / T-M5-04
-- Done: cards/reports/risk/lifecycle; transition gates; sample model card; tests.
-- Next: PR merge → T-M5-05 (likely defer E2 LoRA) → M5 close.
+- Done: cards/reports/risk/lifecycle; transition gates; sample model card; tests; #101 merged
+  (audio HMAC dotted-URI fix).
+- Next: T-M5-05 defer → M5 close.
 - Commands: `make ci`; inspect `docs/model_cards/`
 
 ## 2026-09-22 / T-M5-03

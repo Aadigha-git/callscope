@@ -28,6 +28,23 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-44 - Defer E2 LoRA ASR adaptation (no >2 GB train download)
+- Date / Task: 2026-09-22 / T-M5-05
+- Context: Optional E2 (T-M5-05). S-5 (D-20260920-19) found whisper-small/base-class
+  models fit remaining unified memory on this Mac, but **no real telephony train set**
+  exists yet (volunteer WAVs still deferred — D-20260921-38). E1 hotwords and E3
+  endpoint/VAD already delivered the protected M5 “one measured improvement” exit.
+  Any LoRA path would need a >2 GB base-weight download and a labelled train split.
+- Decision: **Defer E2 LoRA.** Do not download training weights or run adaptation in M5.
+  Revisit only after a frozen telephony train/eval split lands and RAM headroom is
+  re-checked with the live ASR stack paused.
+- Alternatives considered: train on synthetic `say` probe audio (rejected — domain mismatch /
+  orthography artifacts); claim feasibility-only as “done” without DECISIONS (rejected —
+  AC requires explicit deferral entry).
+- Consequences: T-M5-05 closed as deferred; M5 exit relies on E1+E3 + governance (T-M5-01..04).
+- Design doc impact: none (§4.8 E2 remains optional; §9.5 training note already deferred)
+- Status: accepted
+
 ### D-20260922-43 - E3 adopt endpoint/VAD defaults (oracle-proxy grid)
 - Date / Task: 2026-09-22 / T-M5-03
 - Context: Seed-demo RC counts tie ASR vs turn-taking; E1 already adopted hotwords. T-M5-03
