@@ -307,6 +307,29 @@ paths:
           content:
             application/json:
               schema: { $ref: '#/components/schemas/ValidationReport' }
+  /v1/devtools/seed-review:
+    post:
+      summary: Seed synthetic flagged/labelled calls for the review console demo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                n: { type: integer, default: 40, minimum: 1, maximum: 200 }
+                reviewer: { type: string, default: seed-demo }
+      responses:
+        '201':
+          description: Seeded
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  created: { type: integer }
+                  labelled: { type: integer }
+                  call_ids: { type: array, items: { type: string } }
 components:
   securitySchemes:
     serviceToken:

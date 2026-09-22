@@ -52,6 +52,10 @@ worker = [
   "livekit==1.1.18",
   "numpy>=2.0",
 ]
+review = [
+    "altair>=6.3.0",
+    "streamlit>=1.64.0",
+]
 
 [tool.setuptools.packages.find]
 include = ["callscope*", "servers*", "apps*"]
@@ -68,6 +72,7 @@ ignore = ["S603", "S607"]  # subprocess use is limited to devtools calling git/g
 [tool.ruff.lint.per-file-ignores]
 "tests/**" = ["S101", "S105", "S106", "PT018"]
 "callscope/devtools/**" = ["T201"]  # CLI tools print to the terminal
+"apps/review/app.py" = ["T20", "BLE001", "E501"]
 "apps/biz/seed.py" = ["T201"]
 "apps/biz/store.py" = ["S311", "E501"]  # deterministic seed RNG; long FAQ strings
 "apps/biz/routes.py" = ["B008"]  # FastAPI Query defaults
@@ -95,6 +100,12 @@ module = [
   "kokoro_onnx.*",
   "livekit",
   "livekit.*",
+  "streamlit",
+  "streamlit.*",
+  "altair",
+  "altair.*",
+  "pandas",
+  "pandas.*",
 ]
 ignore_missing_imports = true
 follow_imports = "skip"

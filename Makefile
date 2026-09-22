@@ -47,6 +47,12 @@ tts: ## Run native TTS server (fake backend by default; port 8300)
 api: ## Run CallScope API (port 8000)
 	$(PY) -m apps.api
 
+review: ## Streamlit Call Review console (port 8501); needs `make api`
+	uv run --extra review streamlit run apps/review/app.py --server.port 8501
+
+review-seed: ## Seed 40 synthetic review calls via API
+	$(PY) -m callscope.devtools.review_cli seed-demo --n 40
+
 biz: ## Run Lakeside Business API (port 8100)
 	$(PY) -m apps.biz
 
