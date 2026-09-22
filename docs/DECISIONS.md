@@ -28,6 +28,22 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-47 - Showcase site + demo video binary path
+- Date / Task: 2026-09-22 / T-M6-03
+- Context: ADR-017 deliverable = `make demo` + recorded video + static site. Runbook and
+  `docs/showcase/` ship in-repo. Capturing `demo.mp4` needs a human screen+audio session
+  on this Mac (cannot invent a recording).
+- Decision: Publish static showcase under `docs/showcase/` (optional Pages workflow).
+  Interviewer runbook at `docs/runbooks/demo.md`. Video **script** at
+  `docs/showcase/VIDEO.md`; binary at `docs/showcase/assets/demo.mp4` or a GitHub Release
+  asset after an operator records a real `make demo` run. Do not commit personal audio.
+- Alternatives considered: skip video AC (rejected — ADR-017); commit a silent placeholder
+  mp4 (rejected — misleading).
+- Consequences: AC “video recorded” remains operator follow-up; showcase + runbook satisfy
+  the static/site and live-call path.
+- Design doc impact: none (ADR-017 packaging)
+- Status: accepted
+
 ### D-20260922-46 - Security suite consolidates §8.3 under pytest marker
 - Date / Task: 2026-09-22 / T-M6-02
 - Context: Local-demo security AC: consent, toolset lockdown, injection scorers,

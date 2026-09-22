@@ -26,6 +26,9 @@ demo-stop: ## Stop honcho natives + Compose data plane
 	@chmod +x scripts/demo_start.sh scripts/demo_stop.sh
 	@./scripts/demo_stop.sh
 
+showcase: ## Open static showcase (T-M6-03)
+	@open docs/showcase/index.html || xdg-open docs/showcase/index.html
+
 compose-validate: ## Validate local Compose + Prometheus/Grafana demo wiring
 	uv run pytest tests/infra/test_compose_config.py -q --no-cov
 

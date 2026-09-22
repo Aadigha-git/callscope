@@ -4,10 +4,15 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 ## [Unreleased]
 
 ### Added
+- Demo runbook (`docs/runbooks/demo.md`), static showcase (`docs/showcase/`), video
+  recording script, optional Pages workflow (T-M6-03, D-20260922-47)
 - Local-demo security suite (`tests/security/`, `pytest.mark.security`) covering
   design §8.3.1–§8.3.6; scrub covers service/LiveKit/Biz tokens (T-M6-02, D-20260922-46)
 - Local concurrency/latency load harness (`make load`) with report under
   `docs/reports/load/` (T-M6-01, D-20260922-45)
+
+### Changed
+- `scripts/demo_start.sh` banners point at runbook, review, biz, and showcase
 
 ## [0.5.0] - 2026-09-22
 ### Added

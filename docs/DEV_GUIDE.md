@@ -112,7 +112,9 @@ make demo-stop
 ```
 
 Startup order: Compose (wait for Postgres) → honcho (livekit, api, asr, tts, worker, web).
-Hermes is **optional** (`infra/hermes/` + `hermes gateway run`); Biz API is not in M1.
+Hermes is **optional** (`infra/hermes/` + `hermes gateway run`). Biz: `make biz`. Review:
+`make review`. Full interviewer steps: **`docs/runbooks/demo.md`**. Static showcase:
+`docs/showcase/index.html` (`make showcase`).
 Logs: `.demo/honcho.log`. Target: fresh clone → working demo under ~20 minutes (NFR-07).
 
 `make asr` / `make tts` / `make api` / `make worker MOCK=1` still work standalone. Hermes:
