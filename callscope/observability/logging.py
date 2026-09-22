@@ -24,7 +24,9 @@ _EMAIL = re.compile(r"[\w.+-]+@[\w-]+\.[\w.-]+")
 # Common secret assignment shapes (Token Factory / LangSmith / Toloka / Hermes).
 _SECRET = re.compile(
     r"(?i)((?:TOKEN_FACTORY_API_KEY|NEBIUS_API_KEY|LANGSMITH_API_KEY|TOLOKA_API_KEY|"
-    r"CALLSCOPE_HERMES_API_KEY|api[_-]?key)\s*[=:]\s*)(\S+)"
+    r"CALLSCOPE_HERMES_API_KEY|CALLSCOPE_SERVICE_TOKEN|CALLSCOPE_BIZ_ADMIN_TOKEN|"
+    r"CALLSCOPE_LIVEKIT_API_SECRET|LIVEKIT_API_SECRET|CALLSCOPE_AUDIO_HMAC_KEY|"
+    r"api[_-]?key)\s*[=:]\s*)(\S+)"
 )
 _RESERVED = set(logging.LogRecord("", 0, "", 0, "", (), None).__dict__) | {"message", "asctime"}
 

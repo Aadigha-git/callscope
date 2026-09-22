@@ -8,10 +8,15 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M6-02
+- Done: `tests/security/` §8.3 suite; scrub expanded; CI marker; D-20260922-46.
+- Next: PR merge → T-M6-03 demo runbook / showcase.
+- Commands: `make security-test`; `make ci`
+
 ## 2026-09-22 / T-M6-01
 - Done: load harness + session-cap probe; report `load-694f5a9867b5`; D-20260922-45
-  (cap=2; NFR-01 projected gap).
-- Next: PR merge → T-M6-02 security suite.
+  (cap=2; NFR-01 projected gap). Merged #103.
+- Next: T-M6-02 security suite.
 - Commands: `make load`; `make ci`
 
 ## 2026-09-22 / M5 close + T-M5-05

@@ -50,7 +50,7 @@ jobs:
       - uses: astral-sh/setup-uv@v5
         with: { python-version: "3.11", enable-cache: true }
       - run: uv sync --extra dev
-      - run: uv run pytest -m "unit or contract or integration" --junitxml=junit.xml
+      - run: uv run pytest -m "unit or contract or integration or security" --junitxml=junit.xml
       - name: Validate Compose / Prometheus / Grafana demo wiring
         run: uv run pytest tests/infra/test_compose_config.py -q --no-cov
       - uses: actions/upload-artifact@v4

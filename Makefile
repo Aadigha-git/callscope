@@ -119,6 +119,9 @@ typecheck: ## mypy (strict) on callscope/ + servers/
 test: ## Unit + contract tests with coverage gate
 	uv run pytest
 
+security-test: ## Design §8.3 local-demo security suite (T-M6-02)
+	uv run pytest -m security --cov-fail-under=0
+
 test-integration: ## Also run tests needing services (set CALLSCOPE_TEST_DATABASE_URL)
 	uv run pytest -m "integration or not integration"
 

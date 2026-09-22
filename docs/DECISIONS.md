@@ -28,6 +28,21 @@ ADR-016 Budget guard + cassettes | ADR-017 Showcase deliverable
 
 ## Entries
 
+### D-20260922-46 - Security suite consolidates §8.3 under pytest marker
+- Date / Task: 2026-09-22 / T-M6-02
+- Context: Local-demo security AC: consent, toolset lockdown, injection scorers,
+  secrets hygiene, session cap, retention purge. Public-abuse controls N/A (ADR-017).
+  gitleaks + pip-audit already gate CI.
+- Decision: Ship `tests/security/` with `pytest.mark.security` (+ `unit`) covering
+  design §8.3.1–§8.3.6. Expand `scrub()` for `CALLSCOPE_SERVICE_TOKEN`,
+  LiveKit/Biz admin secrets. CI pytest selector includes `security`. Compose retains
+  local-only `${VAR:-dev}` defaults (not cloud API keys).
+- Alternatives considered: re-implement checks only in CI shell (rejected — less
+  portable); require live Hermes for injection gate (rejected — cassette/scorer path).
+- Consequences: `make security-test`; risk note R-SEC-LOCAL in DECISIONS consequences.
+- Design doc impact: none
+- Status: accepted
+
 ### D-20260922-45 - Local concurrency cap = 2; NFR-01 gap on projected Hermes hop
 - Date / Task: 2026-09-22 / T-M6-01
 - Context: Local-Mac NFR-03 = 1 required / 2 stretch concurrent calls. Ran mock
