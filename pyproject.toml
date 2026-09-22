@@ -139,6 +139,7 @@ markers = [
   "contract: validates API/schema contracts",
   "integration: needs services (Postgres etc.)",
   "gpu: needs Apple Silicon / real model weights",
+  "security: design §8.3 / local-demo security controls (T-M6-02)",
 ]
 
 [tool.coverage.run]

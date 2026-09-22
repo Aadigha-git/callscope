@@ -33,7 +33,7 @@ Add rows via `RiskRegister.add(...)` (or API when exposed). Each promotion requi
 
 | risk_id | category | likelihood | impact | mitigation | status |
 |---------|----------|------------|--------|------------|--------|
-| | | | | | |
+| R-SEC-LOCAL | security | L | H | Consent + toolset self-test + scrub + session cap + purge (`tests/security/`, T-M6-02) | mitigated |
 
 ## Sign-off
 

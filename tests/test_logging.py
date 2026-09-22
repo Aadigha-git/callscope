@@ -22,13 +22,17 @@ def test_scrub_masks_token_factory_and_related_secrets() -> None:
         "TOKEN_FACTORY_API_KEY=fake-tf-key-for-scrub-test "
         "LANGSMITH_API_KEY=fake-ls-key-for-scrub-test "
         "api_key: fake-generic-key-for-scrub-test "
-        "TOLOKA_API_KEY=fake-toloka-key-for-scrub-test"
+        "TOLOKA_API_KEY=fake-toloka-key-for-scrub-test "
+        "CALLSCOPE_SERVICE_TOKEN=fake-svc-token-for-scrub-test "
+        "CALLSCOPE_LIVEKIT_API_SECRET=fake-lk-secret-for-scrub-test"
     )
     assert "fake-tf-key-for-scrub-test" not in out
     assert "fake-ls-key-for-scrub-test" not in out
     assert "fake-generic-key-for-scrub-test" not in out
     assert "fake-toloka-key-for-scrub-test" not in out
-    assert out.count("[redacted]") >= 4
+    assert "fake-svc-token-for-scrub-test" not in out
+    assert "fake-lk-secret-for-scrub-test" not in out
+    assert out.count("[redacted]") >= 6
 
 
 def test_json_lines_carry_call_id_and_scrub(capsys: pytest.CaptureFixture[str]) -> None:
