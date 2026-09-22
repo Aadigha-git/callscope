@@ -26,6 +26,7 @@ dependencies = [
   "jiwer>=4.0.0",
   "numpy>=2.4.6",
   "scipy>=1.17.1",
+  "jinja2>=3.1",
 ]
 
 [tool.uv.sources]
@@ -60,11 +61,16 @@ tracing = [
     "langsmith>=0.14.0",
 ]
 governance = [
+    "jinja2>=3.1",
     "mlflow>=3.16.1",
+    "python-docx>=1.1",
 ]
 
 [tool.setuptools.packages.find]
 include = ["callscope*", "servers*", "apps*"]
+
+[tool.setuptools.package-data]
+callscope = ["governance/templates/*.j2"]
 
 [tool.ruff]
 line-length = 100
@@ -116,6 +122,10 @@ module = [
   "langsmith.*",
   "mlflow",
   "mlflow.*",
+  "jinja2",
+  "jinja2.*",
+  "docx",
+  "docx.*",
 ]
 ignore_missing_imports = true
 follow_imports = "skip"

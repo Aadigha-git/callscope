@@ -1,0 +1,44 @@
+# Validation report — {{ name }} @ {{ revision }}
+
+| Field | Value |
+|-------|-------|
+| Report ID | {{ report_id }} |
+| Model version ID | {{ model_version_id }} |
+| Eval run ID | {{ eval_run_id }} |
+| Passed | **{{ "yes" if passed else "no" }}** |
+| Git SHA | {{ git_sha }} |
+| Dataset | {{ dataset_id }} |
+| Stack | {{ stack_version_id }} |
+| Thresholds SHA-256 | {{ thresholds_sha256 }} |
+| Signed off by | {{ signed_off_by or "pending" }} |
+
+## Thresholds snapshot
+
+```yaml
+{{ thresholds_yaml }}
+```
+
+## Results
+
+{{ results_md }}
+
+## Slice analysis
+
+{{ slices_md }}
+
+## Comparison to incumbent
+
+{{ comparison_md }}
+
+## Open risks
+
+{{ risks_md }}
+
+## Reproduction
+
+```bash
+{{ reproduction_cmd }}
+```
+
+---
+_Generated {{ generated_at }} · CallScope governance (T-M5-04)_

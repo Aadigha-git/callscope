@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M5-04
+- Done: cards/reports/risk/lifecycle; transition gates; sample model card; tests.
+- Next: PR merge → T-M5-05 (likely defer E2 LoRA) → M5 close.
+- Commands: `make ci`; inspect `docs/model_cards/`
+
 ## 2026-09-22 / T-M5-03
 - Done: Chose E3; hypothesis locked; grid + oracle proxy; adopt WorkerConfig defaults;
   MLflow `cd36bba1573c46a182d703bd3024d6ca`.

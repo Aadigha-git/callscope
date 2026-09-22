@@ -8,6 +8,7 @@ import hmac
 import json
 from dataclasses import dataclass, field
 from datetime import UTC, datetime, timedelta
+from pathlib import Path
 from threading import Lock
 from typing import Any
 from uuid import UUID, uuid4
@@ -476,22 +477,37 @@ class ReviewStore:
             return self._models.get(model_version_id)
 
     def transition_model(
-        self, model_version_id: UUID, *, to: str, report_id: UUID | None = None
+        self,
+        model_version_id: UUID,
+        *,
+        to: str,
+        report_id: UUID | None = None,
+        report_passed: bool | None = None,
+        monitoring_on: bool = True,
+        rollback_stack_id: str | None = None,
+        risk_register: Any | None = None,
+        card_dir: Path | None = None,
     ) -> ModelVersionRecord | None:
-        _ = report_id
+        from callscope.governance.lifecycle import TransitionContext, check_transition
+
         with self._lock:
             m = self._models.get(model_version_id)
             if m is None:
                 return None
-            allowed = {
-                "candidate": {"validated", "rejected"},
-                "validated": {"production", "retired", "rejected"},
-                "production": {"retired"},
-                "retired": set(),
-                "rejected": set(),
-            }
-            if to not in allowed.get(m.status, set()):
-                raise ValueError(f"cannot transition {m.status} -> {to}")
+            check_transition(
+                status=m.status,
+                to=to,
+                model_version_id=model_version_id,
+                ctx=TransitionContext(
+                    report_passed=report_passed,
+                    report_id=report_id,
+                    card_dir=card_dir or Path("docs/model_cards"),
+                    risk_register=risk_register,
+                    monitoring_on=monitoring_on,
+                    rollback_stack_id=rollback_stack_id,
+                    intended_use=m.intended_use,
+                ),
+            )
             if to == "production":
                 for other in self._models.values():
                     same = other.model_version_id == m.model_version_id

@@ -294,10 +294,17 @@ def test_models_inventory(client: TestClient) -> None:
     tr = client.post(
         f"/v1/models/{mid}/transition",
         headers=AUTH,
-        json={"to": "validated"},
+        json={"to": "validated", "report_id": str(uuid4()), "report_passed": True},
     )
     assert tr.status_code == 200
     assert tr.json()["status"] == "validated"
+    gated = client.post(
+        f"/v1/models/{mid}/transition",
+        headers=AUTH,
+        json={"to": "production", "monitoring_on": True},
+    )
+    assert gated.status_code == 409
+    assert "unmet" in gated.json()
     bad = client.post(
         f"/v1/models/{mid}/transition",
         headers=AUTH,

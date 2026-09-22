@@ -1,0 +1,62 @@
+# CallScope model card — {{ name }} @ {{ revision }}
+
+## Purpose and intended use
+
+{{ intended_use or "_not specified_" }}
+
+## Out of scope
+
+{{ out_of_scope_use or "_not specified_" }}
+
+## Component
+
+| Field | Value |
+|-------|-------|
+| Component | {{ component }} |
+| Name | {{ name }} |
+| Revision | {{ revision }} |
+| Base model | {{ base_model or "n/a" }} |
+| Licence | {{ license or "n/a" }} |
+| Owner | {{ owner }} |
+| Status | {{ status }} |
+| Artifact URI | {{ artifact_uri or "n/a" }} |
+| Config SHA-256 | {{ config_sha256 or "n/a" }} |
+| MLflow run | {{ mlflow_run_id or "n/a" }} |
+| Model version ID | {{ model_version_id }} |
+
+## Training / adaptation data
+
+{{ training_data_md }}
+
+## Evaluation data
+
+{{ evaluation_data_md }}
+
+## Metrics (with CIs by slice)
+
+{{ metrics_md }}
+
+## Known limitations
+
+- Synthetic-vs-real gap: recorded human set may still be pending (see baseline report).
+- Accent / voice / noise coverage limited to demo synthetic + optional volunteer WAVs.
+{% for lim in limitations %}- {{ lim }}
+{% endfor %}
+
+## Safety and privacy
+
+- Caller speech is untrusted input; no shell/SQL/path construction from transcripts.
+- Third-party exports (Token Factory / LangSmith / Toloka) receive fictional scrubbed text only — never raw audio.
+
+## Monitoring plan
+
+- Live-ops Grafana: latency, errors, active calls.
+- Quality/drift: ASR confidence, flagged-call rate, latest eval metrics.
+- Alerts: p95 latency, provider errors, LLM budget burn.
+
+## Change log
+
+{{ changelog_md }}
+
+---
+_Generated {{ generated_at }} · CallScope governance (T-M5-04)_
