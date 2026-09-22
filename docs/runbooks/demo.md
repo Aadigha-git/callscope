@@ -20,11 +20,14 @@ Optional (full brain path): install Hermes API server + `infra/hermes` profile;
 ## Start
 
 ```bash
-make demo                   # Compose data plane + honcho Procfile
-# Wait ~15–30s; check .demo/honcho.log if something fails
+make demo                   # Compose + honcho — **leave this terminal open**
+# Wait until you see "registered worker" in the honcho output
 open http://127.0.0.1:5173  # web client
 open http://127.0.0.1:3000  # Grafana (admin / $GRAFANA_ADMIN_PASSWORD)
 ```
+
+`make demo` now runs **in the foreground**. Do not Ctrl-C until you are done —
+backgrounding used to drop LiveKit (`:7880`) while the UI still looked "online".
 
 | URL | What |
 |-----|------|
@@ -33,12 +36,21 @@ open http://127.0.0.1:3000  # Grafana (admin / $GRAFANA_ADMIN_PASSWORD)
 | http://127.0.0.1:8501 | Review console (`make review` separately) |
 | http://127.0.0.1:3000 | Live-ops + quality dashboards |
 
-Default ASR/TTS backends are **fake** for a fast smoke. For Metal ASR/TTS:
+Default ASR/TTS use **mlx_whisper + piper** when `uv sync --extra native` is installed and
+the Piper voice exists under `data/models/piper/`. Otherwise `make demo` falls back to fake
+(so honcho does not tear down the UI).
 
 ```bash
-export CALLSCOPE_ASR_BACKEND=mlx_whisper
-export CALLSCOPE_TTS_BACKEND=piper   # or kokoro_onnx — see S-5 / D-20260920-19
-make demo-stop && make demo
+uv sync --extra native --extra worker --extra dev
+# Piper voice (~61 MB, once):
+mkdir -p data/models/piper
+curl -L -o data/models/piper/en_US-lessac-medium.onnx \
+  https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx
+curl -L -o data/models/piper/en_US-lessac-medium.onnx.json \
+  https://huggingface.co/rhasspy/piper-voices/resolve/main/en/en_US/lessac/medium/en_US-lessac-medium.onnx.json
+# .env: TOKEN_FACTORY_API_KEY=…  CALLSCOPE_ASR_BACKEND=mlx_whisper  CALLSCOPE_TTS_BACKEND=piper
+# CALLSCOPE_LIVEKIT_API_SECRET=secret   # must match livekit-server --dev
+make demo
 ```
 
 ## Interviewer script (≈3 minutes)

@@ -53,6 +53,12 @@ class LiveKitTokenMinter:
                     # Audio-only publish intent: video publish not required for grants API.
                 )
             )
+            # Required for unnamed LiveKit Agents workers (spike T-M0-05 / D-20260920-05).
+            .with_room_config(
+                api.RoomConfiguration(
+                    agents=[api.RoomAgentDispatch(agent_name="")],
+                )
+            )
             .to_jwt()
         )
         return token, expires
