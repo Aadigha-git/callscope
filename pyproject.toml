@@ -56,6 +56,9 @@ review = [
     "altair>=6.3.0",
     "streamlit>=1.64.0",
 ]
+tracing = [
+    "langsmith>=0.14.0",
+]
 
 [tool.setuptools.packages.find]
 include = ["callscope*", "servers*", "apps*"]
@@ -106,6 +109,8 @@ module = [
   "altair.*",
   "pandas",
   "pandas.*",
+  "langsmith",
+  "langsmith.*",
 ]
 ignore_missing_imports = true
 follow_imports = "skip"

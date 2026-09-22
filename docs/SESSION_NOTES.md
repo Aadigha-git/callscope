@@ -8,6 +8,11 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M4-06
+- Done: optional LangSmith tracer + TracingBrain; decision to skip LS datasets for judge.
+- Next: PR merge; M4 close ceremony if all tasks done.
+- Commands: `CALLSCOPE_LANGSMITH_ENABLED=false make ci`
+
 ## 2026-09-22 / T-M4-05
 - Done: quality-drift + cost Grafana dashboards, alerts.yml, eval Prometheus exporter.
 - Next: PR merge → T-M4-06 LangSmith optional.

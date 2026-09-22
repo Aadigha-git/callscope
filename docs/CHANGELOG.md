@@ -3,6 +3,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 ### Added
+- Optional LangSmith tracing (default off; scrubbed fictional text only; no datasets)
+  (T-M4-06, D-20260922-40)
 - Quality/cost Grafana dashboards, Prometheus alert rules, eval metrics exporter
   (T-M4-05)
 - Caller simulator + `caller_sim` eval mode (oracle turn-taking metrics; mock transport in CI)

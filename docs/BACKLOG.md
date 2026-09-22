@@ -92,7 +92,7 @@
 | T-M4-03 | Call Review console (Streamlit) | FR-09 | T-M4-02 | 16 | BAG | done |  | #39 |
 | T-M4-04 | Caller simulator and caller-sim eval mode | FR-14, NFR-01, NFR-02 | T-M3-05, T-M1-10 | 14 | BAG | done |  | #40 |
 | T-M4-05 | Small quality/cost dashboards (Grafana/Streamlit) | FR-12, NFR-11 | T-M1-11, T-M4-01 | 6 | BAG | done |  | #41 |
-| T-M4-06 | Optional LangSmith tracing (fictional text only) | FR-12, NFR-05 | T-M1-09, T-M3-05 | 4 | BAG | in_progress |  |  |
+| T-M4-06 | Optional LangSmith tracing (fictional text only) | FR-12, NFR-05 | T-M1-09, T-M3-05 | 4 | BAG | in_review |  |  |
 
 ## M5 Improvement and governance
 
