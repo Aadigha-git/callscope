@@ -38,6 +38,9 @@ eval: ## Eval runner: make eval ARGS='run --stack local-mac-dev --dataset golden
 governance: ## Model/stack registry: make governance ARGS='backfill|list-models|list-stacks'
 	$(PY) -m callscope.devtools.governance_cli $(ARGS)
 
+experiment: ## Experiments: make experiment ARGS='e1|hotwords ...'
+	$(PY) -m callscope.devtools.experiment_cli $(ARGS)
+
 dataset: ## Dataset CLI: make dataset ARGS='build|validate|ingest-recorded|...'
 	$(PY) -m callscope.devtools.dataset_cli $(ARGS)
 

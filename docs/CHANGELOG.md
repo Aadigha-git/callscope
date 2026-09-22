@@ -4,6 +4,8 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 ## [Unreleased]
 
 ### Added
+- Experiment E1: domain ASR hotwords (`eval/hotwords.txt`), offline entity-bias harness,
+  `make experiment`; adopt decision (D-20260922-42) (T-M5-02)
 - MLflow helpers + file-backed model/stack registry; M0 inventory backfill; eval requires
   registered stack; Compose `mlflow` service (MinIO artifacts); `make governance`
   (T-M5-01, D-20260922-41)

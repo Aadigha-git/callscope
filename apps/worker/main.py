@@ -30,7 +30,9 @@ logger = logging.getLogger("callscope.worker")
 
 async def run_mock_call(*, max_duration_s: float = 5.0) -> list[Event]:
     """Headless one-turn smoke using mock providers (no LiveKit)."""
-    cfg = WorkerConfig(call_max_duration_s=max_duration_s, call_silence_timeout_s=30.0)
+    cfg = WorkerConfig.with_domain_hotwords(
+        call_max_duration_s=max_duration_s, call_silence_timeout_s=30.0
+    )
     collected: list[Event] = []
 
     async def sink(events: list[Event]) -> None:

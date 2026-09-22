@@ -307,6 +307,16 @@ def validate_library(
     return scenarios
 
 
+def domain_name_pool() -> tuple[str, ...]:
+    """Hard-name population for hotwords / synth (not a test transcript)."""
+    return _HARD_NAMES
+
+
+def domain_street_pool() -> tuple[str, ...]:
+    """Street population for hotwords / synth (not a test transcript)."""
+    return _STREETS
+
+
 __all__ = [
     "MUST_NOT_CLAIM_TO_GAP",
     "ExpandedScenario",
@@ -314,6 +324,8 @@ __all__ = [
     "Scenario",
     "ScenarioExpected",
     "ScenarioTurn",
+    "domain_name_pool",
+    "domain_street_pool",
     "expand_scenario",
     "load_all_scenarios",
     "load_kb_gap_ids",

@@ -2,6 +2,9 @@
 
 from __future__ import annotations
 
+from pathlib import Path
+from typing import Any
+
 from pydantic import BaseModel, Field
 
 
@@ -26,7 +29,26 @@ class WorkerConfig(BaseModel):
     tts_voice: str = "default"
     tts_speed: float = Field(default=1.0, gt=0.0)
     sample_rate: int = Field(default=16_000, ge=8_000)
+    # Domain vocabulary for Whisper initial_prompt (E1 / T-M5-02).
     hotwords: list[str] = Field(default_factory=list)
+
+    @classmethod
+    def with_domain_hotwords(
+        cls,
+        *,
+        hotwords_path: str | Path | None = "eval/hotwords.txt",
+        **kwargs: Any,
+    ) -> WorkerConfig:
+        """Build config with E1 domain vocabulary when ``hotwords`` not supplied."""
+        from callscope.experiments.hotwords import build_hotword_list, load_hotwords_file
+
+        if "hotwords" not in kwargs:
+            path = Path(hotwords_path) if hotwords_path else None
+            if path is not None and path.is_file():
+                kwargs["hotwords"] = load_hotwords_file(path)
+            else:
+                kwargs["hotwords"] = build_hotword_list(max_words=64)
+        return cls(**kwargs)
 
     def turn_handling_options(self) -> dict[str, object]:
         """Map to livekit-agents 1.8.2 ``TurnHandlingOptions`` (D-20260920-05)."""
