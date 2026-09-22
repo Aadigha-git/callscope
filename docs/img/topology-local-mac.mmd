@@ -1,0 +1,39 @@
+flowchart TB
+  subgraph Browser
+    U["Interviewer / volunteer browser"]
+  end
+  subgraph Native["Native macOS processes"]
+    LK["livekit-server --dev"]
+    WK["Voice Worker"]
+    HM["Hermes API server"]
+    ASR["ASR server (MLX/native)"]
+    TTS["TTS server (MLX/ONNX/native)"]
+    API["CallScope API"]
+    BIZ["Business API"]
+    RVW["Review console (Streamlit)"]
+  end
+  subgraph Compose["Docker Compose (data + observability)"]
+    PG[("Postgres 16")]
+    S3[("MinIO optional / local disk")]
+    PRM["Prometheus + Grafana"]
+  end
+  subgraph Hosted["Hosted (optional network)"]
+    TF["Nebius Token Factory LLM"]
+    LS["LangSmith traces (opt-in)"]
+    TK["Toloka TEXT labels (opt-in stretch)"]
+  end
+  U -->|"WebRTC localhost"| LK
+  U -->|"HTTP localhost"| API
+  LK --- WK
+  WK --> ASR
+  WK --> TTS
+  WK --> HM
+  HM -->|"OpenAI-compatible"| TF
+  HM -.->|"optional local fallback"| LLMLocal["mlx-lm / llama.cpp"]
+  WK -.->|"events"| API
+  HM -.->|"tools"| BIZ
+  API --> PG
+  API --> S3
+  RVW --> API
+  PRM -.->|"scrape host.docker.internal"| WK
+  WK -.->|"scrubbed fictional text only"| LS

@@ -8,10 +8,16 @@ Template:
 - Open questions / blockers:
 - Commands to resume:
 
+## 2026-09-22 / T-M6-05 + M6 close
+- Done: README, WRITEUP, interview bullets/walkthrough, architecture SVGs, M6-review,
+  version `1.0.0` prepared (tag pending approval).
+- Next: approve `git tag -a v1.0.0`; operator `demo.mp4` + volunteer WAVs when ready.
+- Commands: `make build`; `make ci`
+
 ## 2026-09-22 / T-M6-03
 - Done: demo runbook, showcase site, VIDEO script, Pages workflow; D-20260922-47
-  (mp4 operator follow-up).
-- Next: PR merge → T-M6-05 write-up / v1.0.0 (T-M6-04 dropped).
+  (mp4 operator follow-up). Merged #105.
+- Next: T-M6-05 write-up / v1.0.0.
 - Commands: `open docs/showcase/index.html`; `make demo`
 
 ## 2026-09-22 / T-M6-02

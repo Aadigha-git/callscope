@@ -3,7 +3,10 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ## [Unreleased]
 
+## [1.0.0] - 2026-09-22
 ### Added
+- README + `docs/WRITEUP.md` + interview one-pager; architecture SVGs under `docs/img/`
+  (T-M6-05)
 - Demo runbook (`docs/runbooks/demo.md`), static showcase (`docs/showcase/`), video
   recording script, optional Pages workflow (T-M6-03, D-20260922-47)
 - Local-demo security suite (`tests/security/`, `pytest.mark.security`) covering
@@ -13,6 +16,7 @@ Format: Keep a Changelog. Versions map to milestones (M1 = 0.1.0 ... M6 = 1.0.0)
 
 ### Changed
 - `scripts/demo_start.sh` banners point at runbook, review, biz, and showcase
+- Package version **1.0.0** (M0–M6 complete; SIP T-M6-04 dropped)
 
 ## [0.5.0] - 2026-09-22
 ### Added

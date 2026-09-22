@@ -1,0 +1,18 @@
+flowchart TB
+  S["Scenario specs (YAML)"] --> DB1["Dataset builder: TTS + augmentation"]
+  R["Recorded human calls"] --> DB1
+  L["Labelled failures from Review console"] --> DB1
+  DB1 --> DQ["Data-quality checks"]
+  DQ --> DS[("Versioned dataset")]
+  DS --> RUN["Eval runner: replay stages or caller-sim"]
+  M["Stack version (ASR, TTS, LLM, VAD, prompt)"] --> RUN
+  RUN --> SC["Scorer + bootstrap CIs"]
+  SC --> GATE{"Regression gate"}
+  GATE -->|pass| GOV["Governance: validation report + model card"]
+  GATE -->|fail| RC["Root-cause review"]
+  RC --> FIX["Improvement experiment (biasing, LoRA, endpointing)"]
+  FIX --> M
+  GOV --> PROD["Promote to demo stack"]
+  PROD --> LIVE["Live calls"]
+  LIVE --> RV["Call Review console"]
+  RV --> L
