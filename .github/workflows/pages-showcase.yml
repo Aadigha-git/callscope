@@ -32,7 +32,7 @@ jobs:
           cp -R docs/* _site/
           # Entry at /showcase/
           echo '<!DOCTYPE html><meta http-equiv="refresh" content="0;url=showcase/">' > _site/index.html
-      - uses: actions/upload-pages-artifact@v3
+      - uses: actions/upload-pages-artifact@v5
         with:
           path: _site
   deploy:
